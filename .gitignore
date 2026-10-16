@@ -11,3 +11,4 @@ paper/*.fdb_latexmk
 paper/*.bbl
 paper/*.blg
 paper/*.synctex.gz
+records/

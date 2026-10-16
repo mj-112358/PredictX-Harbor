@@ -3,7 +3,9 @@
 Usage:  python -m service.train_models [--endpoints heart diabetes breast liver kidney]
 
 Each endpoint's ensemble is trained on its complete cohort using exactly the fields collected by the web
-form. The coronary ensemble additionally uses the Hungarian, Swiss and VA Long Beach cohorts.
+form. The coronary ensemble additionally uses the Hungarian, Swiss and VA Long Beach cohorts. When the
+coronary endpoint is trained, the value-of-information controller is fitted on the Cleveland cohort and saved
+as ``heart_acquisition.joblib``.
 """
 from __future__ import annotations
 
@@ -15,6 +17,7 @@ import time
 import joblib
 
 from predictx import cohorts
+from predictx.acquisition import AcquisitionPolicy
 from predictx.ensemble import PredictXEnsemble
 
 ARTIFACTS = os.environ.get("PREDICTX_ARTIFACTS", os.path.join(os.path.dirname(__file__), "..", "artifacts"))
@@ -33,15 +36,27 @@ def train(endpoint: str) -> dict:
             "fit_seconds": round(time.time() - start, 1)}
 
 
+def train_acquisition() -> dict:
+    cohort = cohorts.load("heart", "web")
+    start = time.time()
+    policy = AcquisitionPolicy(cohort.spec, seed=0).fit(cohort.X, cohort.y)
+    os.makedirs(ARTIFACTS, exist_ok=True)
+    joblib.dump(policy, os.path.join(ARTIFACTS, "heart_acquisition.joblib"))
+    return {"endpoint": "heart_acquisition", "features": list(cohort.X.columns), "n_train": len(cohort.y),
+            "fit_seconds": round(time.time() - start, 1)}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--endpoints", nargs="+", default=list(cohorts.ENDPOINTS), choices=cohorts.ENDPOINTS)
     args = parser.parse_args()
     manifest = [train(e) for e in args.endpoints]
+    if "heart" in args.endpoints:
+        manifest.append(train_acquisition())
     with open(os.path.join(ARTIFACTS, "manifest.json"), "w") as fh:
         json.dump(manifest, fh, indent=2)
     for m in manifest:
-        print(f"{m['endpoint']:9s} n={m['n_train']:4d}  features={len(m['features']):2d}  {m['fit_seconds']}s")
+        print(f"{m['endpoint']:17s} n={m['n_train']:4d}  features={len(m['features']):2d}  {m['fit_seconds']}s")
 
 
 if __name__ == "__main__":

@@ -3,8 +3,8 @@
 Every loader returns a :class:`Cohort`: a feature table with ``NaN`` for unrecorded values, binary labels
 (1 = disease), a feature specification and optional grouping/auxiliary data. Two feature sets are provided:
 
-* ``"full"`` – every predictor recorded in the source cohort (used for benchmarking).
-* ``"web"``  – exactly the fields collected by the PredictX web forms (used for the deployed models).
+* ``"full"``: every predictor recorded in the source cohort (used for benchmarking).
+* ``"web"``: exactly the fields collected by the PredictX web forms (used for the deployed models).
 
 For the coronary, diabetes and breast endpoints the two sets coincide.
 """

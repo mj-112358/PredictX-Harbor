@@ -77,5 +77,25 @@
     ],
     "n_train": 400,
     "fit_seconds": 29.0
+  },
+  {
+    "endpoint": "heart_acquisition",
+    "features": [
+      "age",
+      "trestbps",
+      "chol",
+      "thalach",
+      "oldpeak",
+      "ca",
+      "sex",
+      "cp",
+      "fbs",
+      "restecg",
+      "exang",
+      "slope",
+      "thal"
+    ],
+    "n_train": 303,
+    "fit_seconds": 21.0
   }
 ]

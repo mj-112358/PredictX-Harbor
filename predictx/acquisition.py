@@ -74,26 +74,35 @@ class AcquisitionPolicy:
         z = ((x[columns] - self.mean_[columns]) / self.std_[columns]).fillna(0).values.astype(float)
         return np.argsort(((Z - z) ** 2).sum(1))[: self.k]
 
+    def net_values(self, x: pd.DataFrame, performed: Set[str], lam: float,
+                   kind: str = "information") -> Dict[str, float]:
+        """Net value of information of every test not yet performed for the one-row patient ``x``.
+
+        The value of test ``a`` is ``E[U(p_{t+1}) | a] - U(p_t) - lambda * C(a)``, where the expectation is taken
+        over the values of ``a`` observed in the ``k`` nearest training patients.
+        """
+        p = self.predict(x, performed)[0]
+        observed = self.baseline + [c for t in performed for c in self.tests[t][0]]
+        neighbours = self._neighbours(x.iloc[0], observed)
+        values = {}
+        for t in (t for t in self.tests if t not in performed):
+            cols, c = self.tests[t]
+            candidates = pd.concat([x] * self.k, ignore_index=True)
+            candidates[cols] = self.X_.loc[neighbours, cols].values
+            values[t] = utility(self.predict(candidates, performed | {t}), kind).mean() - utility(p, kind) - lam * c
+        return values
+
     def run(self, patient: pd.Series, lam: float, kind: str = "information"):
         """Sequentially acquire tests for one patient; returns (final probability, total cost, tests ordered)."""
         ordered: Set[str] = set()
-        x = mask_tests(patient.to_frame().T, ordered, self.tests)
-        p = self.predict(x, ordered)[0]
         cost = 0.0
         while True:
-            observed = self.baseline + [c for t in ordered for c in self.tests[t][0]]
-            neighbours = self._neighbours(x.iloc[0], observed)
+            x = mask_tests(patient.to_frame().T, ordered, self.tests)
             best, best_gain = None, 0.0
-            for t in (t for t in self.tests if t not in ordered):
-                cols, c = self.tests[t]
-                candidates = pd.concat([x] * self.k, ignore_index=True)
-                candidates[cols] = self.X_.loc[neighbours, cols].values
-                gain = utility(self.predict(candidates, ordered | {t}), kind).mean() - utility(p, kind) - lam * c
+            for t, gain in self.net_values(x, ordered, lam, kind).items():
                 if gain > best_gain:
                     best, best_gain = t, gain
             if best is None:
-                return p, cost, ordered
+                return self.predict(x, ordered)[0], cost, ordered
             ordered.add(best)
             cost += self.tests[best][1]
-            x = mask_tests(patient.to_frame().T, ordered, self.tests)
-            p = self.predict(x, ordered)[0]

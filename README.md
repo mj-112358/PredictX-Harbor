@@ -24,7 +24,7 @@ Tested with Python 3.13. TabPFN v2 downloads its public weights from Hugging Fac
 | `predictx/learners.py` | Literature-standard comparators, CatBoost, tuned XGBoost, TabPFN v2 |
 | `predictx/ensemble.py` | PredictX ensemble (equal-weight average of TabPFN, CatBoost, LR, HARBOR) |
 | `predictx/acquisition.py` | Value-of-information test-acquisition controller |
-| `predictx/evaluation.py` | Resampling protocols and the Nadeau–Bengio corrected resampled t-test |
+| `predictx/evaluation.py` | Resampling protocols and the Nadeau and Bengio corrected resampled t-test |
 | `predictx/website.py` | Schemas of the five web forms and conversion to model inputs |
 | `experiments/` | Scripts that produce every result, table and figure |
 | `service/` | Training of the deployed models and the HTTP service |
@@ -51,7 +51,7 @@ splits of the breast cohort depend on the scikit-learn version.
 ## Prediction service
 
 ```bash
-python -m service.train_models                            # fits the five deployed ensembles -> artifacts/
+python -m service.train_models          # fits the five deployed ensembles and the coronary test controller -> artifacts/
 uvicorn service.app:app --port 8000
 ```
 
@@ -59,7 +59,8 @@ uvicorn service.app:app --port 8000
 curl -X POST localhost:8000/predict/diabetes -H 'Content-Type: application/json' \
      -d '{"pregnancies": 2, "glucose": 150, "diastolic_bp": 70, "skin_thickness": 30,
           "insulin": 120, "bmi": 31.0, "diabetes_pedigree": 0.5, "age": 45}'
-# {"endpoint": "diabetes", "risk_score": 0.649, "risk_percent": 64.9, "attribution": "Built with PriorLabs-TabPFN"}
+# {"endpoint": "diabetes", "risk_score": 0.649, "risk_percent": 64.9, "model_version": "720cc3c78f1d",
+#  "attribution": "Built with PriorLabs-TabPFN"}
 ```
 
 | Route | Description |
@@ -68,6 +69,10 @@ curl -X POST localhost:8000/predict/diabetes -H 'Content-Type: application/json'
 | `GET /schema/{endpoint}` | Field names, labels, units, ranges and options of a form |
 | `POST /predict/{endpoint}` | Risk score for `heart`, `diabetes`, `breast`, `liver` or `kidney` |
 | `POST /predict/heart/onehot` | Risk score from the one-hot coronary form used on the website |
+| `POST /acquire/heart?lam=0` | Risk score and net value of information of every coronary test not yet performed |
+
+Every prediction is appended to a JSON-lines inference record (`PREDICTX_RECORDS`, default
+`records/inference.jsonl`) with the request, the model version (SHA-256 prefix of the artifact) and the score.
 
 ## Tests
 
@@ -77,7 +82,8 @@ python -m pytest
 
 The suite checks the propositions of the paper (zero gradient of the L1 attention penalty, entropy descent,
 proper-score inequality of the ensemble), mask integrity of every HARBOR variant, the resampling protocols,
-form-to-cohort coding for all five endpoints, and end-to-end service requests.
+form-to-cohort coding for all five endpoints, and end-to-end service requests (risk scores, monotonic response to
+a dominant marker, inference records and test recommendations).
 
 ## Licences
 
