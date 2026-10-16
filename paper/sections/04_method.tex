@@ -1,0 +1,107 @@
+\section{HARBOR: Reliability-Conditioned Biomarker Graph Encoder}\label{sec:harbor}
+\subsection{Typed tokenization and reliability gate}
+For patient $i$ and biomarker $j$ an observed token combines concept identity with value, age, specimen and quality channels,
+\begin{equation}
+\begin{aligned}
+h^{(0)}_{ij}={}&E_{c_j}+f_{\mathrm{val}}(\tilde v_{ij})+f_{\mathrm{time}}(\Delta t_{ij})\\
+&+f_{\mathrm{type}}(s_j)+f_{\mathrm{qual}}(q_{ij},m_{ij}),
+\end{aligned}
+\end{equation}
+where $f_{\mathrm{val}}$ is an affine embedding of the quantile-normalized value for numeric concepts and a learned table for categorical ones. A bounded reliability gate scales the evidence a token may emit, and an absent biomarker becomes a missingness-state token that keeps its concept identity:
+\begin{equation}\label{eq:gate}
+\begin{aligned}
+r_{ij}&=\sigma\!\left(w_r^{\top}\big[h^{(0)}_{ij};q_{ij};m_{ij};\Delta t_{ij}\big]+b_r\right),\\
+\bar h_{ij}&=m_{ij}\,h^{(0)}_{ij}+(1-m_{ij})\big(E_{c_j}+e_{\mu_{ij}}\big).
+\end{aligned}
+\end{equation}
+Keeping $E_{c_j}$ in the missing token preserves concept identity, so an unmeasured creatinine and an unmeasured age are represented by different vectors. The bias $b_r$ is initialized at $2$ so that gates start open ($\sigma(2)\approx0.88$).
+
+\subsection{Two-channel message passing}
+Let $\bar H_i\in\mathbb{R}^{J\times d}$ stack the tokens. HARBOR maintains two graphs per layer. The \emph{value graph} attends only among observed biomarkers and transmits gated value evidence; the \emph{missingness-state graph} attends among all eligible biomarkers using availability embeddings that contain no physiological value:
+\begin{align}
+H^{v}&=\bm m\odot\bm r\odot H,\\
+H^{m}&=E_{\bm c}+\bm m\odot e_{\mathrm{obs}}+(1-\bm m)\odot e_{\bm\mu},\\
+A^{v}&=\mathrm{softmax}\!\Big(\tfrac{(H^{v}Q_v)(H^{v}K_v)^{\top}}{\sqrt d}+\alpha_dA^{\mathrm{prior}}_d\notag\\
+&\qquad\qquad+B^{v}\Big),\label{eq:attn}\\
+A^{m}&=\mathrm{softmax}\!\Big(\tfrac{(H^{m}Q_m)(H^{m}K_m)^{\top}}{\sqrt d}\notag\\
+&\qquad\qquad+B^{m}\Big),
+\end{align}
+where $B^{v}_{jk}=-\infty$ if biomarker $k$ is unobserved or ineligible and $B^{m}$ masks only ineligible biomarkers. The layer update mixes the two channels with an availability-dependent gate:
+\begin{equation}\label{eq:twochannel}
+\begin{aligned}
+\gamma&=\sigma\!\big(w_\gamma^{\top}\mathrm{Pool}(H^{m})+b_\gamma\big),\\
+H'&=\mathrm{LN}\!\big(H+\gamma A^{v}H^{v}W_v+(1-\gamma)A^{m}H^{m}W_m\big),\\
+H^{+}&=\mathrm{LN}\!\big(H'+\mathrm{FFN}(H')\big).
+\end{aligned}
+\end{equation}
+Because $\gamma$ is a function of the availability pattern, the effective interaction topology changes with what has been measured: a patient with a complete laboratory panel is scored mainly through value interactions, and a sparsely tested patient through the pattern of testing, which carries information whenever ordering decisions depend on clinical suspicion. Disease experts pool the final layer and apply a two-layer head, $p_{id}=\sigma\big(g_d(\mathrm{Pool}_{j\in\mathcal{J}_d}h^{(L)}_{ij};\theta_d)\big)$, trained only on records with a verified label for $d$.
+
+\begin{figure*}[!t]
+\centering
+\resizebox{0.92\textwidth}{!}{\input{figures/fig_harbor.tex}}
+\caption{One HARBOR layer. Gated value tokens $H^{v}$ propagate over the value graph among observed biomarkers; availability tokens $H^{m}$ propagate over the missingness-state graph among all biomarkers; an availability-dependent gate $\gamma$ mixes the two messages.}
+\label{fig:harbor}
+\end{figure*}
+
+\begin{proposition}[Cost]\label{prop:cost}
+One HARBOR layer costs $O\!\left(J^2d+Jd^2\right)$ per patient for $J$ biomarkers and width $d$, the same order as a single-head feature-token transformer; the second channel doubles the constant, not the order.
+\end{proposition}
+
+\subsection{Training objective and graph regularization}
+The objective is
+\begin{equation}
+\mathcal{L}=\mathcal{L}_{\mathrm{task}}+\lambda_g\mathcal{L}_{\mathrm{graph}}+\lambda_r\mathcal{L}_{\mathrm{rel}}+\lambda_c\mathcal{L}_{\mathrm{consistency}},
+\end{equation}
+with $\mathcal{L}_{\mathrm{task}}=\sum_d\sum_{i\in\mathcal{I}_d}w_{id}\,\ell(y_{id},p_{id})$ the label-masked binary cross-entropy, $\mathcal{L}_{\mathrm{rel}}=\sum_{(i,j)\in\mathcal{Q}}(r_{ij}-q^*_{ij})^2$ on records with independent quality targets, and $\mathcal{L}_{\mathrm{consistency}}=\sum_k\mathbb{E}[\max(0,g_k(\hat y,X))^2]$ for a reviewed rule catalog (unit ranges, temporal ordering, admissible monotonicities). The graph term is
+\begin{equation}\label{eq:graphloss}
+\mathcal{L}_{\mathrm{graph}}=\sum_{d,i}\Bigg[\frac{1}{|\mathcal{V}_i|}\sum_{j\in\mathcal{V}_i}\mathrm{H}\big(A^{v}_{i,j\cdot}\big)+\kappa\big\|A^{v}_{i}-\bar A^{\mathrm{prior}}_{d}\big\|_F^{2}\Bigg],
+\end{equation}
+where $\mathrm{H}(a)=-\sum_ka_k\log a_k$, $\mathcal{V}_i$ is the observed set and $\bar A^{\mathrm{prior}}_d$ the row-normalized reviewed prior. The choice of entropy rather than an $\ell_1$ norm follows from two elementary facts.
+
+\begin{proposition}[$\ell_1$ degeneracy under softmax]\label{prop:l1}
+If every row of $A\in\mathbb{R}^{n\times n}$ is a softmax of logits $Z$, then $\|A\|_1=n$ for all $Z$ and $\nabla_Z\|A\|_1=0$. An $\ell_1$ sparsity penalty on attention therefore has no effect on training.
+\end{proposition}
+\begin{proof}
+Entries of a softmax row are positive and sum to one, so $\|A\|_1=\sum_{j}\sum_k A_{jk}=\sum_j1=n$, a constant in $Z$.
+\end{proof}
+
+\begin{proposition}[Entropy as a sparsity measure]\label{prop:entropy}
+For a distribution $a$ over $n$ keys, $0\le\mathrm{H}(a)\le\log n$, with $\mathrm{H}(a)=0$ iff $a$ is one-hot and $\mathrm{H}(a)=\log n$ iff $a$ is uniform. With $a=\mathrm{softmax}(z)$, $\partial\mathrm{H}/\partial z_k=-a_k(\log a_k+\mathrm{H}(a))$, which vanishes for every $k$ only when $a$ is uniform on its support (one-hot rows included).
+\end{proposition}
+\begin{proof}
+The bounds are standard properties of Shannon entropy. For the gradient, $\partial a_j/\partial z_k=a_j(\delta_{jk}-a_k)$ and $\partial\mathrm{H}/\partial a_j=-(\log a_j+1)$; combining and using $\sum_ja_j=1$ gives the stated expression.
+\end{proof}
+Numerically, on random $6\times6$ logits the largest $\ell_1$ gradient entry is $6\times10^{-8}$ (floating-point noise), against $7\times10^{-2}$ for the entropy term, and 300 entropy-descent steps raise the largest weight per row from 0.24--0.65 to 0.99. Sparsemax and $\alpha$-entmax \cite{martins2016,peters2019} are alternatives that produce exact zeros.
+
+\section{PredictX: Heterogeneous Ensemble and Cross-Site Training}\label{sec:ensemble}
+\subsection{Ensemble members}
+The deployed predictor for each endpoint averages four learners whose inductive biases differ sharply:
+\begin{equation}\label{eq:ens}
+p^{\mathrm{ENS}}_i=\tfrac14\big(p^{\mathrm{PFN}}_i+p^{\mathrm{CAT}}_i+p^{\mathrm{LR}}_i+p^{\mathrm{HARBOR}}_i\big).
+\end{equation}
+\emph{TabPFN} (version 2, eight estimators) \cite{tabpfn,tabpfn2} approximates the Bayesian posterior predictive under a prior over structural causal models, conditioning on the whole training set in context. \emph{CatBoost} \cite{catboost} is gradient boosting with ordered target statistics, which limits prediction shift on small samples. \emph{Logistic regression} with median imputation, missing-value indicators and an $\ell_2$ penalty chosen by inner cross-validation contributes a low-variance additive model. \emph{HARBOR} contributes availability-conditioned interactions; it is itself a five-member deep ensemble \cite{deepensembles}, each member early-stopped on a different stratified 20\% split. Weights are fixed at $1/4$, which keeps the number of fitted ensemble parameters at zero on cohorts of a few hundred patients.
+
+\begin{proposition}[Proper-score guarantee]\label{prop:ens}
+Let $S$ be the Brier score or the log loss. For any member forecasts $p_1,\dots,p_K\in(0,1)$ and outcome $y\in\{0,1\}$,
+$S\big(\tfrac1K\sum_kp_k,y\big)\le\tfrac1K\sum_kS(p_k,y)$, with equality iff all $p_k$ are equal. The gap for the Brier score equals the variance of the member forecasts, $\tfrac1K\sum_k(p_k-\bar p)^2$.
+\end{proposition}
+\begin{proof}
+Both scores are convex in $p$, so the inequality is Jensen's. For the Brier score, $\tfrac1K\sum_k(p_k-y)^2=(\bar p-y)^2+\tfrac1K\sum_k(p_k-\bar p)^2$.
+\end{proof}
+The ensemble therefore scores at least as well as its average member on both proper scores, and the improvement grows with member disagreement, which heterogeneous inductive biases supply.
+
+\subsection{Cross-site auxiliary training}
+When additional cohorts record the same concepts with different availability patterns, HARBOR's typed tokens allow them to be pooled without imputation. For the coronary endpoint we train on the target cohort plus the Hungarian, Swiss and VA Long Beach cohorts \cite{uciheart}, which share the same concept schema but are missing up to 98\% of some tests. Evaluation uses held-out patients of the target cohort.
+
+\section{Value-of-Information Test Acquisition}\label{sec:voi}
+\subsection{Controller}
+The state of a patient is the observed set $\mathcal{O}_t$ and the current prediction $p_t$. Tests are blocks of biomarkers $a\in\mathcal{A}_t$ with cost $C(a)$; the controller orders
+\begin{equation}\label{eq:voi}
+a^*_t=\arg\max_{a\in\mathcal{A}_t}\Big[\mathbb{E}\{U(p_{t+1})\mid a,\mathcal{O}_t\}-U(p_t)-\lambda C(a)\Big]
+\end{equation}
+if the bracket is positive and stops otherwise. We study two utilities: the decision utility $U_{01}(p)=-\min(p,1-p)$, the negative Bayes risk of the best binary decision, and the information utility $U_{\mathrm H}(p)=p\log p+(1-p)\log(1-p)$, the negative predictive entropy, for which Eq.~\eqref{eq:voi} is expected information gain minus cost.
+
+\para{Conditional surrogate.}The expectation requires $p(z_a\mid\mathcal{O}_t)$ for the unseen block $z_a$. We use the empirical distribution of $z_a$ among the $K=25$ training patients nearest to the current patient on the standardized observed biomarkers. Each candidate test is then scored by $K$ forward passes of the predictor for availability pattern $\mathcal{O}_t\cup a$.
+
+\para{Pattern-complete predictor.}The policy queries predictions for every intermediate availability pattern. We train one predictor per pattern ($2^{|\mathcal{A}|}$ models; eight for three tests), each on exactly the biomarkers it will see.
+

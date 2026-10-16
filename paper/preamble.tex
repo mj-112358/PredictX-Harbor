@@ -1,0 +1,45 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+% IEEE-conference-style layout reproduced with standard packages
+\usepackage[letterpaper,top=0.75in,bottom=1in,left=0.625in,right=0.625in,columnsep=0.22in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{amsmath,amssymb,amsthm,bm}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{definition}\newtheorem{definition}{Definition}
+\usepackage{booktabs,array,tabularx,multirow}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{stfloats}
+\usepackage{titlesec}
+\usepackage[labelsep=newline,justification=centering,singlelinecheck=false]{caption}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+\usepackage{placeins}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+\renewcommand{\baselinestretch}{1.0}
+\raggedbottom
+
+% IEEE-style headings: "I. INTRODUCTION" in small caps, "A. Subsection" in italics
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\Alph{subsection}}
+\titleformat{\section}{\normalsize\scshape\filcenter}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.6ex plus .4ex}{0.9ex}
+\titleformat{\subsection}{\normalsize\itshape}{\thesubsection.}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{1.2ex plus .3ex}{0.6ex}
+
+% IEEE-style captions
+\renewcommand{\thetable}{\Roman{table}}
+\captionsetup[table]{name=TABLE,font=footnotesize,labelfont=footnotesize,textfont=sc,skip=4pt}
+\captionsetup[figure]{name=Fig.,labelsep=period,font=footnotesize,justification=justified,singlelinecheck=false,skip=4pt}
+
+\newcommand{\para}[1]{\textbf{#1}\ }
+\newcommand{\code}[1]{\texttt{\small #1}}
+
+
+\makeatletter
+\newcommand{\tablebody}[1]{\@@input #1 }
+\makeatother

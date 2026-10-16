@@ -1,0 +1,35 @@
+\section{Experimental Setup}\label{sec:setup}
+\subsection{Cohorts}
+We evaluate the five endpoints on their reference cohorts (Table~\ref{tab:cohorts}). Values recorded as zero where zero is physiologically impossible (cholesterol and blood pressure in the heart cohorts; glucose, diastolic pressure, skin-fold, insulin and body-mass index in the Pima cohort) are recoded as unrecorded, following the cohort documentation, and every unrecorded value is passed to each learner in the form it supports natively. The benchmark uses all predictors of each cohort; the deployed configuration (Section~\ref{sec:deployed}) uses the form fields of Table~\ref{tab:forms}, which coincide with the full predictor set for the coronary, diabetes and breast cohorts and comprise 7 of 10 liver and 7 of 24 kidney predictors.
+
+\begin{table}[!t]
+\caption{Cohorts}
+\label{tab:cohorts}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Endpoint (cohort) & $n$ & Feat. & Pos. & Incompl.\\
+\midrule
+Coronary disease (Cleveland \cite{uciheart}) & 303 & 13 & 46\% & 2\%\\
+Diabetes (Pima \cite{pima}) & 768 & 8 & 35\% & 49\%\\
+Breast malignancy (Wisconsin \cite{wolberg1990}) & 699 & 9 & 34\% & 2\%\\
+Liver disease (ILPD \cite{uilpd}) & 583 & 10 & 71\% & 1\%\\
+Chronic kidney disease (UCI CKD \cite{uckd}) & 400 & 24 & 62\% & 60\%\\
+\midrule
+Aux.\ heart cohorts (HU, CH, VA) & 617 & 13 & 60\% & $>$99\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Comparators}
+The \emph{literature-standard methods} are the seven model families used in published comparisons on these cohorts: logistic regression, RBF support vector machine, $k$-nearest neighbours, Gaussian naive Bayes, random forest (500 trees), multilayer perceptron and XGBoost \cite{xgboost}. Non-tree methods use median imputation with missing-value indicators, standardization and one-hot encoding. Hyperparameters are selected by inner cross-validation (regularization strength for logistic regression; $C$ and $\gamma$ for the SVM; $k$ for $k$-NN; weight decay for the MLP), and XGBoost is tuned with 25 Optuna \cite{optuna} trials of inner 3-fold cross-validation over seven hyperparameters. The \emph{state-of-the-art learners} are CatBoost with default settings \cite{catboost} and TabPFN v2 with eight estimators \cite{tabpfn2}. HARBOR uses width $d=32$, two layers, AdamW (learning rate $3\times10^{-3}$, weight decay $10^{-4}$), full-batch training for at most 400 epochs with early stopping (patience 40) on a stratified 20\% split, $\lambda_g=10^{-3}$, and five ensemble members. On the public cohorts we set $\alpha_d=\kappa=\lambda_r=\lambda_c=0$ and use the gate input $[h^{(0)};m]$. HARBOR and the ensemble use the same hyperparameters on every cohort.
+
+\subsection{Protocols and statistics}
+\para{P1, repeated cross-validation.}Stratified 5-fold cross-validation repeated five times gives 25 test folds per cohort. Every fitted transformation is fitted inside the training folds, and the breast cohort is split by sample identifier so that repeated samples of one patient stay in the same fold. Paired AUROC differences are summarized with the corrected resampled $t$ interval of Nadeau and Bengio \cite{nadeau2003}, which accounts for the overlap of training sets across folds.
+
+\para{P2, published benchmark protocol.}For a direct comparison with the strongest published results we reproduce the protocol of the TabPFN benchmark \cite{tabpfn}: five stratified 50/50 train--test splits with ROC AUC averaged over splits. In that benchmark every baseline received 60 minutes of hyperparameter optimization per split.
+
+\para{P3, test acquisition.}On the Cleveland cohort every patient starts from the baseline work-up (age, sex, chest-pain type, resting blood pressure, cholesterol, fasting glucose, resting ECG). Three tests can be ordered: exercise ECG (maximum heart rate, exercise angina, ST depression, ST slope; cost 1), fluoroscopy (number of opacified vessels; cost 2) and thallium scintigraphy (perfusion result; cost 2). Policies are evaluated on the P1 splits.
+
+\para{P4, controlled missingness.}Forty percent of every numeric feature of two complete cohorts, Wisconsin Diagnostic Breast Cancer (WDBC, 30 features) \cite{uwdbc} and ILPD (age and sex retained), is removed either completely at random (MCAR) or by self-masking (MNAR), with removal probability $\sigma(2z+b)$ in the feature's own $z$-score and $b$ set to give a 40\% rate. Single-member HARBOR variants and logistic regression are compared under P1.

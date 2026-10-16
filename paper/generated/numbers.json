@@ -1,0 +1,517 @@
+{
+ "wins_ties_losses": [
+  12,
+  38,
+  0
+ ],
+ "heart_vs_best": {
+  "best": "LR",
+  "best_auroc": 0.909179042408209,
+  "ours": 0.9146380471380472,
+  "delta": 0.005459004729838068,
+  "lo": -0.010392417869485259,
+  "hi": 0.021310427329161396,
+  "p": 0.4840729923174283
+ },
+ "diabetes_vs_best": {
+  "best": "XGB",
+  "best_auroc": 0.8396078266946192,
+  "ours": 0.8462624737945492,
+  "delta": 0.006654647099930116,
+  "lo": -0.003402451265143342,
+  "hi": 0.016711745465003574,
+  "p": 0.18471095855502082
+ },
+ "breast_vs_best": {
+  "best": "SVM",
+  "best_auroc": 0.9948487009594033,
+  "ours": 0.9942955596781854,
+  "delta": -0.0005531412812178039,
+  "lo": -0.002449203835704493,
+  "hi": 0.0013429212732688851,
+  "p": 0.5527511335950785
+ },
+ "liver_vs_best": {
+  "best": "LR",
+  "best_auroc": 0.7481458812075397,
+  "ours": 0.7502751111397461,
+  "delta": 0.002129229932206553,
+  "lo": -0.018568800495482894,
+  "hi": 0.022827260359896004,
+  "p": 0.8336537261560057
+ },
+ "kidney_vs_best": {
+  "best": "RF",
+  "best_auroc": 1.0,
+  "ours": 1.0,
+  "delta": 0.0,
+  "lo": 0.0,
+  "hi": 0.0,
+  "p": 1.0
+ },
+ "diabetes_half": {
+  "ours": 0.8402388059701492,
+  "pfn": 0.8462626865671641,
+  "best_published": 0.8427
+ },
+ "breast_half": {
+  "ours": 0.9952531037048177,
+  "pfn": 0.9954982177585784,
+  "best_published": 0.994
+ },
+ "liver_half": {
+  "ours": 0.7438415750915751,
+  "pfn": 0.7430288461538461,
+  "best_published": 0.7412
+ },
+ "crosssite_LR": 0.002078924162257514,
+ "crosssite_CAT": 0.0012264009139009158,
+ "crosssite_PFN": 0.0001967091550424982,
+ "crosssite_HARBOR": 0.004685395622895618,
+ "crosssite_ENS": 0.0013507094757094773,
+ "heart_web": {
+  "auroc": 0.9146380471380472,
+  "acc": 0.838295081967213,
+  "best": "LR",
+  "best_auroc": 0.909179042408209
+ },
+ "diabetes_web": {
+  "auroc": 0.8462624737945492,
+  "acc": 0.7632442067736186,
+  "best": "XGB",
+  "best_auroc": 0.8396078266946192
+ },
+ "breast_web": {
+  "auroc": 0.9942955596781854,
+  "acc": 0.9665368495583094,
+  "best": "SVM",
+  "best_auroc": 0.9948487009594033
+ },
+ "liver_web": {
+  "auroc": 0.7407636453632201,
+  "acc": 0.7022458001768347,
+  "best": "LR",
+  "best_auroc": 0.7453017979736619
+ },
+ "kidney_web": {
+  "auroc": 0.9963866666666666,
+  "acc": 0.9775,
+  "best": "XGB",
+  "best_auroc": 0.99588
+ },
+ "miss_WDBC_MCAR": {
+  "k": 25,
+  "tc_minus_v0": [
+   -0.0005573189351440222,
+   -0.004766827109247772,
+   0.003652189238959727,
+   0.7869983988027887
+  ],
+  "tc_minus_mc": [
+   -0.00313070498789461,
+   -0.011050218349301913,
+   0.004788808373512693,
+   0.42258678642583464
+  ],
+  "LR": 0.9861017223062752,
+  "mask_concat": 0.9854182545748219,
+  "mask_only": 0.5727405648360446,
+  "two_channel": 0.9822875495869272,
+  "value_only": 0.9828448685220714
+ },
+ "miss_WDBC_MNAR": {
+  "k": 25,
+  "tc_minus_v0": [
+   0.013046751655497154,
+   -0.0005754483629836216,
+   0.02666895167397793,
+   0.059673500048094776
+  ],
+  "tc_minus_mc": [
+   -0.0020478036175710823,
+   -0.015290338379554428,
+   0.011194731144412265,
+   0.75236815093226
+  ],
+  "LR": 0.9882124443473935,
+  "mask_concat": 0.980910731399595,
+  "mask_only": 0.9693318611063451,
+  "two_channel": 0.9788629277820238,
+  "value_only": 0.9658161761265266
+ },
+ "miss_ILPD_MCAR": {
+  "k": 25,
+  "tc_minus_v0": [
+   0.004270169550112826,
+   -0.014208373964871892,
+   0.022748713065097542,
+   0.6377175329084941
+  ],
+  "tc_minus_mc": [
+   -0.0004722736118909188,
+   -0.015281975763555578,
+   0.01433742853977374,
+   0.948069001339985
+  ],
+  "LR": 0.7230366027389415,
+  "mask_concat": 0.7135285118063289,
+  "mask_only": 0.43261713009409675,
+  "two_channel": 0.713056238194438,
+  "value_only": 0.7087860686443253
+ },
+ "miss_ILPD_MNAR": {
+  "k": 25,
+  "tc_minus_v0": [
+   -0.0007978131011440803,
+   -0.025843862824593725,
+   0.024248236622305564,
+   0.9481269275049553
+  ],
+  "tc_minus_mc": [
+   -0.0019005689168694183,
+   -0.014366782422595916,
+   0.010565644588857078,
+   0.7557413463215756
+  ],
+  "LR": 0.7052494572126038,
+  "mask_concat": 0.6969593474483624,
+  "mask_only": 0.6264951734618637,
+  "two_channel": 0.6950587785314929,
+  "value_only": 0.695856591632637
+ },
+ "acquisition": {
+  "full_cost": 5.0,
+  "full_auroc": 0.902666847041847,
+  "full_acc": 0.8323825136612022,
+  "voi_cost": 2.663311475409836,
+  "voi_auroc": 0.8855358645983645,
+  "voi_acc": 0.8219234972677596,
+  "voi_tests": 1.5326994535519125,
+  "baseline_auroc": 0.8304760902677569
+ },
+ "heart_brier_rank": 2,
+ "heart_auroc_rank": 1,
+ "heart_n_models": 11,
+ "diabetes_brier_rank": 2,
+ "diabetes_auroc_rank": 2,
+ "diabetes_n_models": 11,
+ "breast_brier_rank": 2,
+ "breast_auroc_rank": 4,
+ "breast_n_models": 11,
+ "liver_brier_rank": 1,
+ "liver_auroc_rank": 2,
+ "liver_n_models": 11,
+ "kidney_brier_rank": 2,
+ "kidney_auroc_rank": 1,
+ "kidney_n_models": 11,
+ "heart_summary": {
+  "CAT": {
+   "auroc": 0.9027,
+   "accuracy": 0.8324,
+   "brier": 0.1234
+  },
+  "CAT+aux": {
+   "auroc": 0.9039,
+   "accuracy": 0.829,
+   "brier": 0.1241
+  },
+  "ENS": {
+   "auroc": 0.9133,
+   "accuracy": 0.8456,
+   "brier": 0.1168
+  },
+  "ENS+aux": {
+   "auroc": 0.9146,
+   "accuracy": 0.8383,
+   "brier": 0.1168
+  },
+  "HARBOR": {
+   "auroc": 0.9092,
+   "accuracy": 0.8324,
+   "brier": 0.1228
+  },
+  "HARBOR+aux": {
+   "auroc": 0.9139,
+   "accuracy": 0.833,
+   "brier": 0.1181
+  },
+  "KNN": {
+   "auroc": 0.9006,
+   "accuracy": 0.8245,
+   "brier": 0.1283
+  },
+  "LR": {
+   "auroc": 0.9092,
+   "accuracy": 0.841,
+   "brier": 0.1191
+  },
+  "LR+aux": {
+   "auroc": 0.9113,
+   "accuracy": 0.8344,
+   "brier": 0.1208
+  },
+  "MLP": {
+   "auroc": 0.8497,
+   "accuracy": 0.7573,
+   "brier": 0.1796
+  },
+  "NB": {
+   "auroc": 0.8647,
+   "accuracy": 0.7831,
+   "brier": 0.195
+  },
+  "PFN": {
+   "auroc": 0.9132,
+   "accuracy": 0.843,
+   "brier": 0.1164
+  },
+  "PFN+aux": {
+   "auroc": 0.9134,
+   "accuracy": 0.8469,
+   "brier": 0.1172
+  },
+  "RF": {
+   "auroc": 0.9075,
+   "accuracy": 0.8258,
+   "brier": 0.1249
+  },
+  "SVM": {
+   "auroc": 0.9074,
+   "accuracy": 0.8397,
+   "brier": 0.1204
+  },
+  "XGB": {
+   "auroc": 0.9047,
+   "accuracy": 0.8192,
+   "brier": 0.1263
+  }
+ },
+ "diabetes_summary": {
+  "CAT": {
+   "auroc": 0.8306,
+   "accuracy": 0.7612,
+   "brier": 0.1609
+  },
+  "ENS": {
+   "auroc": 0.8463,
+   "accuracy": 0.7632,
+   "brier": 0.1528
+  },
+  "HARBOR": {
+   "auroc": 0.8398,
+   "accuracy": 0.7648,
+   "brier": 0.156
+  },
+  "KNN": {
+   "auroc": 0.8138,
+   "accuracy": 0.7549,
+   "brier": 0.1678
+  },
+  "LR": {
+   "auroc": 0.8339,
+   "accuracy": 0.77,
+   "brier": 0.1578
+  },
+  "MLP": {
+   "auroc": 0.8017,
+   "accuracy": 0.7411,
+   "brier": 0.1771
+  },
+  "NB": {
+   "auroc": 0.8011,
+   "accuracy": 0.7341,
+   "brier": 0.1954
+  },
+  "PFN": {
+   "auroc": 0.8479,
+   "accuracy": 0.7672,
+   "brier": 0.1524
+  },
+  "RF": {
+   "auroc": 0.8335,
+   "accuracy": 0.7606,
+   "brier": 0.1577
+  },
+  "SVM": {
+   "auroc": 0.8357,
+   "accuracy": 0.7593,
+   "brier": 0.1575
+  },
+  "XGB": {
+   "auroc": 0.8396,
+   "accuracy": 0.7567,
+   "brier": 0.1557
+  }
+ },
+ "breast_summary": {
+  "CAT": {
+   "auroc": 0.9924,
+   "accuracy": 0.9671,
+   "brier": 0.0269
+  },
+  "ENS": {
+   "auroc": 0.9943,
+   "accuracy": 0.9665,
+   "brier": 0.0246
+  },
+  "HARBOR": {
+   "auroc": 0.9922,
+   "accuracy": 0.966,
+   "brier": 0.027
+  },
+  "KNN": {
+   "auroc": 0.9918,
+   "accuracy": 0.9663,
+   "brier": 0.0264
+  },
+  "LR": {
+   "auroc": 0.9945,
+   "accuracy": 0.9648,
+   "brier": 0.0269
+  },
+  "MLP": {
+   "auroc": 0.9873,
+   "accuracy": 0.9547,
+   "brier": 0.0959
+  },
+  "NB": {
+   "auroc": 0.9803,
+   "accuracy": 0.9579,
+   "brier": 0.0407
+  },
+  "PFN": {
+   "auroc": 0.995,
+   "accuracy": 0.9661,
+   "brier": 0.0238
+  },
+  "RF": {
+   "auroc": 0.9915,
+   "accuracy": 0.9689,
+   "brier": 0.0285
+  },
+  "SVM": {
+   "auroc": 0.9948,
+   "accuracy": 0.9643,
+   "brier": 0.0264
+  },
+  "XGB": {
+   "auroc": 0.9916,
+   "accuracy": 0.96,
+   "brier": 0.0313
+  }
+ },
+ "liver_summary": {
+  "CAT": {
+   "auroc": 0.7455,
+   "accuracy": 0.7139,
+   "brier": 0.1766
+  },
+  "ENS": {
+   "auroc": 0.7503,
+   "accuracy": 0.7194,
+   "brier": 0.1714
+  },
+  "HARBOR": {
+   "auroc": 0.7425,
+   "accuracy": 0.7081,
+   "brier": 0.175
+  },
+  "KNN": {
+   "auroc": 0.7201,
+   "accuracy": 0.7088,
+   "brier": 0.1782
+  },
+  "LR": {
+   "auroc": 0.7481,
+   "accuracy": 0.7197,
+   "brier": 0.1733
+  },
+  "MLP": {
+   "auroc": 0.5866,
+   "accuracy": 0.7033,
+   "brier": 0.207
+  },
+  "NB": {
+   "auroc": 0.7293,
+   "accuracy": 0.567,
+   "brier": 0.4138
+  },
+  "PFN": {
+   "auroc": 0.7518,
+   "accuracy": 0.7136,
+   "brier": 0.172
+  },
+  "RF": {
+   "auroc": 0.7453,
+   "accuracy": 0.7084,
+   "brier": 0.1747
+  },
+  "SVM": {
+   "auroc": 0.6637,
+   "accuracy": 0.7101,
+   "brier": 0.2023
+  },
+  "XGB": {
+   "auroc": 0.7221,
+   "accuracy": 0.7006,
+   "brier": 0.1864
+  }
+ },
+ "kidney_summary": {
+  "CAT": {
+   "auroc": 1.0,
+   "accuracy": 0.9995,
+   "brier": 0.0017
+  },
+  "ENS": {
+   "auroc": 1.0,
+   "accuracy": 1.0,
+   "brier": 0.0007
+  },
+  "HARBOR": {
+   "auroc": 1.0,
+   "accuracy": 0.9985,
+   "brier": 0.0018
+  },
+  "KNN": {
+   "auroc": 0.9936,
+   "accuracy": 0.941,
+   "brier": 0.0453
+  },
+  "LR": {
+   "auroc": 0.9999,
+   "accuracy": 0.998,
+   "brier": 0.002
+  },
+  "MLP": {
+   "auroc": 0.9865,
+   "accuracy": 0.9445,
+   "brier": 0.0883
+  },
+  "NB": {
+   "auroc": 0.9902,
+   "accuracy": 0.9685,
+   "brier": 0.031
+  },
+  "PFN": {
+   "auroc": 1.0,
+   "accuracy": 1.0,
+   "brier": 0.0003
+  },
+  "RF": {
+   "auroc": 1.0,
+   "accuracy": 0.9975,
+   "brier": 0.0091
+  },
+  "SVM": {
+   "auroc": 1.0,
+   "accuracy": 0.9975,
+   "brier": 0.004
+  },
+  "XGB": {
+   "auroc": 0.9998,
+   "accuracy": 0.9945,
+   "brier": 0.0061
+  }
+ }
+}

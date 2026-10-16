@@ -1,0 +1,36 @@
+\section{System Architecture and Deployment}\label{sec:system}
+\subsection{Architecture}
+Fig.~\ref{fig:system} shows the inference path. A request carries the answers of one endpoint form. A schema layer validates every field against its unit and admissible range, maps categorical answers to the coding of the training cohort, and records a zero entered for a biomarker that cannot physiologically be zero (for example insulin or skin-fold thickness) as unrecorded, matching the convention of the training data. The resulting typed biomarker vector, with value and availability, is passed to the four ensemble members of the endpoint; their probabilities are averaged into the risk score, and the request, the model version and the score are written to a versioned inference record. For the coronary endpoint the value-of-information controller of Section~\ref{sec:voi} ranks the tests that have not yet been performed.
+
+\begin{figure*}[!t]
+\centering
+\resizebox{0.95\textwidth}{!}{\input{figures/fig_system.tex}}
+\caption{PredictX inference path. Form answers are validated and coded into typed biomarkers (value and availability), scored by four heterogeneous learners whose probabilities are averaged into the risk score, and logged with the model version. The acquisition controller proposes the next test for the coronary endpoint.}
+\label{fig:system}
+\end{figure*}
+
+\subsection{Clinical input forms}
+Table~\ref{tab:forms} lists the fields collected for each endpoint. The deployed model of each endpoint is trained on exactly these fields over its complete reference cohort; the coronary model additionally uses the three auxiliary heart cohorts (Section~\ref{sec:ensemble}). The coronary form encodes categorical answers as one-hot groups, which the schema layer converts to the cohort coding.
+
+\begin{table*}[!t]
+\caption{Fields of the five clinical input forms}
+\label{tab:forms}
+\centering\footnotesize
+\begin{tabular}{@{}lp{0.80\textwidth}@{}}
+\toprule
+Endpoint & Fields (unit)\\
+\midrule
+Coronary disease & age (years), resting systolic blood pressure (mmHg), total cholesterol (mg/dL), maximum exercise heart rate (beats/min), exercise-induced ST depression (mm), sex, chest-pain type (4), fasting blood sugar $>$120 mg/dL, resting ECG (3), exercise-induced angina, ST-segment slope (3), vessels coloured by fluoroscopy (0--3), thallium perfusion result (3)\\
+Diabetes & pregnancies, plasma glucose (mg/dL), diastolic blood pressure (mmHg), triceps skin-fold (mm), 2-h serum insulin ($\mu$U/mL), body-mass index (kg/m$^2$), diabetes pedigree function, age (years)\\
+Breast malignancy & clump thickness, uniformity of cell size, uniformity of cell shape, marginal adhesion, single epithelial cell size, bare nuclei, bland chromatin, normal nucleoli, mitoses (cytology scores 1--10)\\
+Liver disease & total bilirubin (mg/dL), direct bilirubin (mg/dL), alkaline phosphatase (U/L), alanine aminotransferase (U/L), total protein (g/dL), albumin (g/dL), albumin/globulin ratio\\
+Chronic kidney disease & blood pressure (mmHg), urine specific gravity, urine albumin grade (0--5), urine sugar grade (0--5), urine red blood cells, urine pus cells, pus-cell clumps\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Prediction service}
+The trained ensembles are served by an HTTP service with three routes: \code{GET /schema/\{endpoint\}} returns the field definitions of Table~\ref{tab:forms} with units, ranges and options; \code{POST /predict/\{endpoint\}} accepts a form and returns the risk score; and \code{POST /predict/heart/onehot} accepts the one-hot coronary form. Each ensemble is stored as a single serialized artifact. TabPFN is persisted through its in-context training table and re-conditioned when the artifact is loaded, HARBOR through its parameter arrays and fitted token encoders, and CatBoost and logistic regression through their fitted estimators. After a one-time load of 5--24\,s per endpoint, a request is answered in 0.24--0.46\,s on two CPU cores.
+
+\subsection{Software verification}
+The repository contains unit and integration tests (Section~\ref{sec:code}) for: the zero gradient of the $\ell_1$ attention penalty and the descent behaviour of the entropy penalty (Propositions~\ref{prop:l1} and~\ref{prop:entropy}); mask integrity, i.e.\ invariance of every HARBOR variant to the stored value of an unobserved biomarker; the proper-score inequality of Proposition~\ref{prop:ens}; agreement of the form coding with the cohort coding for all five endpoints; partition and grouping properties of the resampling protocols; and end-to-end requests to the service, including monotonic response of each risk score to its dominant marker.

@@ -1,0 +1,25 @@
+\begin{tikzpicture}[
+  font=\footnotesize, >=Stealth, node distance=4mm and 5mm,
+  box/.style={draw=black!55, rounded corners=2pt, fill=#1, align=center, inner sep=3pt, minimum height=9mm},
+  box/.default=black!4,
+  lab/.style={font=\scriptsize\itshape, text=black!60}]
+\node[box] (form) {Web form\\\scriptsize five endpoints};
+\node[box, right=of form] (schema) {Schema validation\\\scriptsize units, ranges, coding};
+\node[box, right=of schema] (tokens) {Typed biomarkers\\\scriptsize value $\tilde v$, availability $m$};
+\node[box=blue!6, right=12mm of tokens, yshift=11mm, minimum width=28mm] (pfn) {TabPFN};
+\node[box=blue!6, below=1.5mm of pfn, minimum width=28mm] (cat) {CatBoost};
+\node[box=blue!6, below=1.5mm of cat, minimum width=28mm] (lr) {Logistic regression};
+\node[box=orange!10, below=1.5mm of lr, minimum width=28mm] (harbor) {HARBOR};
+\node[box, right=12mm of cat, yshift=-5mm] (avg) {Equal-weight\\average};
+\node[box=black!10, right=of avg] (risk) {Risk score\\\scriptsize $p\in[0,1]$};
+\node[box, below=10mm of tokens] (voi) {Value-of-information\\test acquisition};
+\node[box, below=10mm of risk] (audit) {Versioned inference\\record};
+\draw[->] (form) -- (schema);
+\draw[->] (schema) -- (tokens);
+\foreach \m in {pfn,cat,lr,harbor} { \draw[->] (tokens.east) -- (\m.west); \draw[->] (\m.east) -- (avg.west); }
+\draw[->] (avg) -- (risk);
+\draw[->] (tokens) -- (voi);
+\draw[->, dashed] (voi.west) -| node[lab, pos=0.25, below] {next test} (form.south);
+\draw[->] (risk) -- (audit);
+\node[lab, above=0.5mm of pfn] {ensemble members};
+\end{tikzpicture}

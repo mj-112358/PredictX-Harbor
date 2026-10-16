@@ -1,0 +1,19 @@
+[project]
+name = "predictx"
+version = "1.0.0"
+description = "PredictX-HARBOR: multi-disease risk prediction from routine clinical biomarkers"
+readme = "README.md"
+requires-python = ">=3.11"
+
+[tool.setuptools]
+packages = ["predictx", "experiments", "service"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore"]

@@ -1,0 +1,81 @@
+[
+  {
+    "endpoint": "heart",
+    "features": [
+      "age",
+      "trestbps",
+      "chol",
+      "thalach",
+      "oldpeak",
+      "ca",
+      "sex",
+      "cp",
+      "fbs",
+      "restecg",
+      "exang",
+      "slope",
+      "thal"
+    ],
+    "n_train": 920,
+    "fit_seconds": 83.7
+  },
+  {
+    "endpoint": "diabetes",
+    "features": [
+      "pregnancies",
+      "glucose",
+      "dbp",
+      "skin",
+      "insulin",
+      "bmi",
+      "dpf",
+      "age"
+    ],
+    "n_train": 768,
+    "fit_seconds": 47.4
+  },
+  {
+    "endpoint": "breast",
+    "features": [
+      "clump_thickness",
+      "uniformity_of_cell_size",
+      "uniformity_of_cell_shape",
+      "marginal_adhesion",
+      "single_epithelial_cell_size",
+      "bare_nuclei",
+      "bland_chromatin",
+      "normal_nucleoli",
+      "mitoses"
+    ],
+    "n_train": 699,
+    "fit_seconds": 51.2
+  },
+  {
+    "endpoint": "liver",
+    "features": [
+      "tb",
+      "db",
+      "alkphos",
+      "sgpt",
+      "tp",
+      "alb",
+      "ag_ratio"
+    ],
+    "n_train": 583,
+    "fit_seconds": 28.6
+  },
+  {
+    "endpoint": "kidney",
+    "features": [
+      "bp",
+      "sg",
+      "al",
+      "su",
+      "rbc",
+      "pc",
+      "pcc"
+    ],
+    "n_train": 400,
+    "fit_seconds": 29.0
+  }
+]

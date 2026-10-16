@@ -1,0 +1,24 @@
+\begin{tikzpicture}[
+  font=\footnotesize, >=Stealth, node distance=3.5mm and 4.5mm,
+  box/.style={draw=black!55, rounded corners=2pt, fill=#1, align=center, inner sep=3pt, minimum height=8mm},
+  box/.default=black!4,
+  lab/.style={font=\scriptsize, text=black!65}]
+\node[box] (in) {Biomarkers\\\scriptsize $(\tilde v_j, m_j, c_j)$};
+\node[box, right=of in] (tok) {Tokens $\bar h_j$\\\scriptsize Eq.~(2)};
+\node[box=orange!10, right=of tok] (gate) {Gate $r_j$};
+\node[box=blue!6, right=9mm of gate, yshift=7mm] (av) {Value graph $A^{v}$\\\scriptsize observed keys};
+\node[box=blue!6, right=9mm of gate, yshift=-7mm] (am) {Missingness graph $A^{m}$\\\scriptsize all keys};
+\node[box, right=9mm of av, yshift=-7mm] (mix) {$\gamma A^{v}H^{v}W_v$\\$+(1-\gamma)A^{m}H^{m}W_m$};
+\node[box, right=of mix] (ffn) {LN, FFN\\\scriptsize $\times L$};
+\node[box, right=of ffn] (head) {Pool, head\\\scriptsize $p$};
+\draw[->] (in) -- (tok);
+\draw[->] (tok) -- (gate);
+\draw[->] (gate.east) -- node[lab, above left, pos=0.5] {$H^{v}$} (av.west);
+\draw[->] (gate.east) -- node[lab, below left, pos=0.5] {$H^{m}$} (am.west);
+\draw[->] (av.east) -- (mix.west);
+\draw[->] (am.east) -- (mix.west);
+\draw[->] (mix) -- (ffn);
+\draw[->] (ffn) -- (head);
+\node[lab, below=1mm of am] {$\gamma=\sigma(w_\gamma^{\top}\mathrm{Pool}(H^{m})+b_\gamma)$};
+\node[lab, above=1mm of av] {entropy penalty $\mathrm{H}(A^{v}_{j\cdot})$};
+\end{tikzpicture}

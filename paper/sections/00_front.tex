@@ -1,0 +1,14 @@
+\twocolumn[{%
+\begin{center}
+{\fontsize{22}{26}\selectfont PredictX-HARBOR: Reliability-Conditioned Biomarker\\[2pt]
+Graphs, Heterogeneous Ensembles, and Value-of-Information\\[2pt]
+Test Acquisition for Multi-Disease Prediction\par}
+\vspace{14pt}
+{\large Pranay Sadani\hspace{1.3in}Mrityunjay Gupta\par}
+\vspace{16pt}
+\end{center}}]
+
+{\small\bfseries\noindent\textit{Abstract}---Clinical biomarker data differ from generic tables: units, specimens, assays and collection times change what a value means, whether a test was ordered carries information, and each disease is observed in its own cohort. We present PredictX-HARBOR, a multi-disease prediction system built on a typed, availability-aware biomarker representation. Its learning core, HARBOR, is a graph encoder that separates a value-message graph over observed biomarkers from a missingness-state graph over all biomarkers and mixes them with an availability-dependent gate; graph sparsity is regularized by attention entropy, and we prove that the $\ell_1$ penalty commonly used for this purpose has identically zero gradient under softmax attention. Predictions are produced by an equal-weight ensemble of TabPFN v2, CatBoost, penalized logistic regression and HARBOR, which provably scores at least as well as its average member on proper scoring rules and supports cross-site training on cohorts with different test availability, and a value-of-information controller selects the next test. On five disease cohorts (coronary disease, diabetes, breast malignancy, liver disease and chronic kidney disease), evaluated with $5\times5$ repeated cross-validation and corrected intervals against seven literature-standard methods and two state-of-the-art learners, PredictX attains the highest AUROC for coronary disease (0.915), is within 0.002 of the best learner on the other four cohorts, is significantly better in 12 and significantly worse in none of 50 paired comparisons, and has a lower Brier score than the best literature-standard method on all five cohorts. Under the protocol of the published TabPFN benchmark it exceeds the best published breast (0.9953 versus 0.9940) and liver (0.7438 versus 0.7412) results. For coronary disease the acquisition controller retains 98\% of full-panel AUROC at 53\% of the testing cost. The deployed models score the five clinical input forms with AUROC 0.741--0.996 and are served through an HTTP interface released with the full experimental code.\par}
+
+\vspace{4pt}
+{\small\bfseries\noindent\textit{Index Terms}---clinical prediction, biomarker graphs, missing data, tabular foundation models, ensembles, active feature acquisition\par}

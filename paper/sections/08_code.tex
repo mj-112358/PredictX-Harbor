@@ -1,0 +1,34 @@
+\section{Code and Data Availability}\label{sec:code}
+All experiments, tables and figures are produced by the accompanying repository, whose layout is listed in Table~\ref{tab:repo}. Library versions are pinned in \code{requirements.txt}. All five cohorts are publicly released, de-identified datasets (Table~\ref{tab:cohorts}), and no new patient data were collected; the TabPFN v2 weights are downloaded from the public Prior Labs release on first use and are used under the Prior Labs License~1.1 (\code{licenses/TabPFN-LICENSE.txt}). The deployed system is ``Built with PriorLabs-TabPFN''.
+
+\begin{table}[!t]
+\caption{Repository layout}
+\label{tab:repo}
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Path & Contents\\
+\midrule
+\texttt{predictx/cohorts.py} & cohort loaders; full and form feature sets\\
+\texttt{predictx/preprocessing.py} & fold-safe encoders; HARBOR token encoder\\
+\texttt{predictx/harbor.py} & HARBOR encoder, variants, deep ensemble\\
+\texttt{predictx/learners.py} & comparators, CatBoost, XGBoost, TabPFN v2\\
+\texttt{predictx/ensemble.py} & PredictX ensemble\\
+\texttt{predictx/acquisition.py} & value-of-information controller\\
+\texttt{predictx/evaluation.py} & protocols, corrected resampled $t$-test\\
+\texttt{predictx/website.py} & form schemas, conversion to model input\\
+\texttt{experiments/benchmark.py} & predictions under P1 and P2\\
+\texttt{experiments/acquisition.py} & protocol P3\\
+\texttt{experiments/missingness.py} & protocol P4\\
+\texttt{experiments/report.py} & all tables, figures and quoted numbers\\
+\texttt{service/train\_models.py} & deployed ensembles on the form fields\\
+\texttt{service/app.py} & HTTP prediction service\\
+\texttt{tests/} & unit and end-to-end tests\\
+\texttt{licenses/} & third-party model licence\\
+\texttt{results/} & per-split predictions of every model\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent A complete reproduction runs \code{experiments.benchmark} for each cohort and protocol, \code{experiments.acquisition}, \code{experiments.missingness} and \code{experiments.report}; \code{python -m pytest} runs the test suite.
