@@ -8,7 +8,7 @@ not show the lesion keeps the video's label but has ``boxes == []`` and ``lesion
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, fields
 from typing import Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
@@ -66,13 +66,11 @@ def to_frame(records: Sequence[Record]) -> pd.DataFrame:
 
 
 def from_frame(frame: pd.DataFrame) -> List[Record]:
-    """Inverse of :func:`to_frame`."""
+    """Inverse of :func:`to_frame`; columns that are not schema fields (group ids, flags) are ignored."""
+    names = {f.name for f in fields(Record)}
     out = []
     for d in frame.to_dict("records"):
-        d = {k: (None if isinstance(v, float) and np.isnan(v) else v) for k, v in d.items()}
-        d.pop("lesion_present", None)
-        for k in ("group_id", "dup_cluster"):
-            d.pop(k, None)
+        d = {k: (None if isinstance(v, float) and np.isnan(v) else v) for k, v in d.items() if k in names}
         d["boxes"] = [tuple(b) for b in json.loads(d["boxes"])]
         d["mask_paths"] = json.loads(d["mask_paths"])
         d["meta"] = json.loads(d["meta"])

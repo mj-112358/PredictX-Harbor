@@ -35,15 +35,17 @@ def _hash_input(path: str):
     return crop_to_content(gray).apply(gray)
 
 
-def build(sites=None, max_distance: int = 6, frame_stride: int = 10) -> pd.DataFrame:
+def build(sites=None, max_distance: int = 6, frame_stride: int = 10, raw: Path = RAW, extracted: Path = EXTRACTED,
+          processed: Path = PROCESSED) -> pd.DataFrame:
+    raw, extracted, processed = Path(raw), Path(extracted), Path(processed)
     records = []
     for site, (module, folder) in LOADERS.items():
         if sites and site not in sites:
             continue
-        if not (RAW / folder).exists():
-            print(f"[skip] {site}: {RAW / folder} not present")
+        if not (raw / folder).exists():
+            print(f"[skip] {site}: {raw / folder} not present")
             continue
-        recs = module.load(str(RAW / folder), str(EXTRACTED / folder))
+        recs = module.load(str(raw / folder), str(extracted / folder))
         print(f"[load] {site}: {len(recs)} records")
         records += recs
     if not records:
@@ -55,15 +57,15 @@ def build(sites=None, max_distance: int = 6, frame_stride: int = 10) -> pd.DataF
         hashes[r.uid] = dedup.phash(_hash_input(r.image_path))
     groups = dedup.assign_groups(records, hashes, max_distance)
     table = to_frame(records).merge(groups[["uid", "group_id", "dup_cluster", "discordant", "cross_site"]], on="uid")
-    PROCESSED.mkdir(parents=True, exist_ok=True)
-    table.to_csv(PROCESSED / "records.csv", index=False)
-    (PROCESSED / "dedup_summary.json").write_text(json.dumps(
+    processed.mkdir(parents=True, exist_ok=True)
+    table.to_csv(processed / "records.csv", index=False)
+    (processed / "dedup_summary.json").write_text(json.dumps(
         {"max_hamming": max_distance, "frame_stride": frame_stride, "sites": dedup.summary(groups)}, indent=1))
     return table
 
 
-def load_table() -> pd.DataFrame:
-    return pd.read_csv(PROCESSED / "records.csv")
+def load_table(processed: Path = PROCESSED) -> pd.DataFrame:
+    return pd.read_csv(Path(processed) / "records.csv")
 
 
 def main(argv=None):

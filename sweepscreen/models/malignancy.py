@@ -3,7 +3,7 @@
 Input per lesion frame: the CLS token, the mean of the patch tokens inside the lesion box (the
 ground-truth box during training, the detected box at inference), and age with a missing-value
 indicator (age is recorded for BrEaST only). Model: standardisation + L2 logistic regression with the
-regularisation strength chosen by 5-fold grouped cross-validation on log loss.
+regularisation strength chosen by (up to) 5-fold stratified grouped cross-validation on log loss.
 """
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from typing import Optional, Sequence, Tuple
 
 import numpy as np
 from sklearn.linear_model import LogisticRegressionCV
-from sklearn.model_selection import GroupKFold
+from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
@@ -48,8 +48,13 @@ class MalignancyHead:
     seed: int = 0
 
     def fit(self, X: np.ndarray, y: np.ndarray, groups: np.ndarray) -> "MalignancyHead":
-        n_splits = int(min(5, len(np.unique(groups))))
-        cv = list(GroupKFold(n_splits=n_splits).split(X, y, groups))
+        y, groups = np.asarray(y), np.asarray(groups)
+        min_class_groups = min(len(np.unique(groups[y == c])) for c in (0, 1))
+        n_splits = int(max(2, min(5, min_class_groups)))
+        cv = [(tr, te) for tr, te in StratifiedGroupKFold(n_splits=n_splits, shuffle=True, random_state=self.seed)
+              .split(X, y, groups) if len(np.unique(y[tr])) == 2 and len(np.unique(y[te])) == 2]
+        if not cv:
+            raise ValueError("malignancy head needs at least two groups of each class")
         self.model_ = make_pipeline(StandardScaler(), LogisticRegressionCV(
             Cs=np.logspace(-4, 1, 11), cv=cv, scoring="neg_log_loss", max_iter=5000))
         self.model_.fit(X, y)

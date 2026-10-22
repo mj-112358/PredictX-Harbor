@@ -99,6 +99,18 @@ class QualityGate:
         self.threshold_ = float(np.quantile(p_ok, 1 - self.target_pass))
         return self
 
+    def fit_features(self, X_ok: np.ndarray, X_fail: np.ndarray) -> "QualityGate":
+        """Fit from precomputed feature vectors of adequate frames and of synthetic failures."""
+        X = np.vstack([X_ok, X_fail])
+        y = np.r_[np.ones(len(X_ok)), np.zeros(len(X_fail))]
+        self.model_ = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.1, random_state=self.seed)
+        self.model_.fit(X, y)
+        self.threshold_ = float(np.quantile(self.model_.predict_proba(X_ok)[:, 1], 1 - self.target_pass))
+        return self
+
+    def score_features(self, X: np.ndarray) -> np.ndarray:
+        return self.model_.predict_proba(np.asarray(X))[:, 1]
+
     def score(self, frames: Sequence[np.ndarray]) -> np.ndarray:
         """P(adequate) per frame."""
         X = np.asarray([frame_features(g) for g in frames])
