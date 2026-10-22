@@ -1,6 +1,6 @@
-# Niche decision memo
+# SweepScreen: niche decision memo
 
-**Version 2 (2026-10-22), for author review before the protocol is frozen.**
+**Version 3 (2026-10-22), for author review before the protocol is frozen.**
 v1 (lesion triage, Option A as first framed) is kept in git history (commit `e88cc56`). This version
 reflects two author decisions: Track A (breast ultrasound), then a change of scope to **first-step
 screening of asymptomatic women**.
@@ -15,6 +15,11 @@ secondary source; full text was blocked in this session), **unknown**.
 | 2026-10-22 | Track A (breast ultrasound) over B (BCSC risk), C (screening mammography) and D (NHANES liver) | author |
 | 2026-10-22 | Not lesion triage. The device must support screening and carry a novel contribution | author |
 | 2026-10-22 | Use case: health worker does a handheld whole-breast sweep with or after CBE; AI outputs NORMAL / RECALL / UNREADABLE per woman; primary endpoints at screening prevalence | author |
+| 2026-10-22 | Sensitivity > 0.80 with 150 cancers, labelled pilot; > 0.85 deferred to a pivotal study | author |
+| 2026-10-22 | Primary operating point AI-added recall ≤ 5 points (≤ 10 secondary) | author |
+| 2026-10-22 | Confirmatory test CBE + AI vs CBE alone must account for recall cost → intersection-union test (protocol §7.2) | author |
+| 2026-10-22 | Enriched arm ≥ 40% non-palpable or ≤ 2 cm imaging-detected cancers, reported separately; CBE-negative cancers are the key subgroup | author |
+| 2026-10-22 | HARBOR and the VoI controller removed; project renamed SweepScreen; five-disease framing dropped (archived to `legacy/predictx-harbor/`) | author |
 
 ## 2. The use case in one paragraph
 
@@ -65,9 +70,10 @@ screening device until the field study is done.
   only**. They cannot measure screening sensitivity, recall rate or false recalls per 1,000. Only
   BUSI (133) and BUS-UCLM (419 images, 38 patients) contain a meaningful number of normal frames, so
   even the frame-level false-positive rate can only be estimated at two sites.
-* Therefore **the core screening evidence must come from new data.** The protocol adds a pilot
-  (~300 camp women + ~60 cancers) to fix the sweep protocol, aggregation and thresholds, and then the
-  frozen enriched field study (~3,000 camp women + ~150 cancers + ~150 benign).
+* Therefore **the core screening evidence must come from new data.** The protocol adds a run-in
+  (≥ 500 camp women + ~60 cancers) to fix the sweep protocol, aggregation and thresholds; then the
+  frozen pilot accuracy study (~3,000 camp women + 150 cancers + ~150 benign); and later a pivotal
+  study for a > 0.85 sensitivity claim.
 * **What this project can deliver without new data:** a detector and quality gate developed and
   stress-tested across 4–6 countries' still images; the C1 method with its lesion-level proxy
   evaluation; and the pre-registered, exactly powered field-study protocol. A paper written now
@@ -77,20 +83,19 @@ screening device until the field study is done.
 
 | Risk | Severity | Mitigation |
 |---|---|---|
-| **PC-PNDT Act** restricts ultrasound machines to registered premises and regulates operators. Health workers carrying handhelds to camps may be unlawful without registration or exemption | **High** (could block deployment in India) | Legal advice and state PC-PNDT authority engagement before the pilot; camps at registered facilities or registered mobile units; check whether breast-only devices can be exempted |
-| No public sweep data → false-recall behaviour of aggregation unknown until the pilot | High | Pilot before freezing field-study thresholds; persistence-based aggregation |
-| Spectrum bias: enriched cancers larger and more palpable than screen-detected ones | High | Spectrum-stratified recruitment; spectrum-weighted sensitivity (C1c); camp cancers as a check |
-| Benign lesions and cysts trigger RECALL, inflating false recalls (cysts are common at 30–50) | Medium | Detector trained to flag *suspicious* lesions; simple-cyst handling decided in the pilot; benign arm measures it |
+| **PC-PNDT Act** restricts ultrasound machines to registered premises and regulates operators. Health workers carrying handhelds to camps may be unlawful without registration or exemption | **High** (could block deployment in India) | Legal advice and state PC-PNDT authority engagement before the run-in; camps at registered facilities or registered mobile units; check whether breast-only devices can be exempted |
+| No public sweep data → false-recall behaviour of aggregation unknown until the run-in | High | Run-in (≥ 500 women) before freezing pilot-study thresholds; persistence-based aggregation |
+| Spectrum bias: enriched cancers larger and more palpable than screen-detected ones | High | ≥ 40% non-palpable or ≤ 2 cm imaging-detected cancers, reported as a separate stratum; spectrum-weighted sensitivity (C1c); camp cancers as a check |
+| Benign lesions and cysts trigger RECALL, inflating false recalls (cysts are common at 30–50) | Medium | Detector trained to flag *suspicious* lesions; simple-cyst handling decided in the run-in; benign arm measures it |
 | Low-end handheld image quality | Medium | Quality gate; degradation robustness; device-specific certification (C1) |
 | Pretrained encoder licences and access (Hugging Face blocked here) | Low/medium | Network access change requested; fallbacks listed |
 
 ## 6. What I need from you
 
-1. **Approve or amend** the protocol draft (`docs/protocol.md` v0.10). The key choices to confirm:
-   * sensitivity claim target: **> 0.80 with 150 cancers** (a > 0.85 claim needs 185–380 cancers);
-   * recall operating points: **OP-5 and OP-10**;
-   * primary comparison: **CBE + AI vs CBE alone at OP-10** (85% power for +10 points with 150 cancers);
-   * HARBOR and the VoI controller moved out of the primary pipeline (one exploratory HARBOR test kept).
+1. **Approve or amend** the protocol draft (`docs/protocol.md` v0.11). Decisions D1–D6 are applied.
+   One open choice remains: the confirmatory test has ~0.86 power if the AI adds ≥ 12 points of
+   sensitivity at ≤ 3.5% added recall, but only ~0.65 at +10 points. Keep 150 cancers (as decided) or
+   raise to ~230.
 2. **Network access.** Still blocked in this session (every data host returns 403). If you changed
    the setting, please start a new session on this branch, since the change likely applies only to new
    containers. Hosts needed: `huggingface.co`, `cdn-lfs.huggingface.co`, `*.hf.co`, `zenodo.org`,

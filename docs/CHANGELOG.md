@@ -2,6 +2,27 @@
 
 Running log of what changed in the project and why. Newest first.
 
+## 2026-10-22: Author decisions D1–D6 applied (protocol v0.11, memo v3); project renamed SweepScreen
+
+* **Renamed to SweepScreen** (working name; trademark check pending). The five-disease PredictX-HARBOR
+  project (library, experiments, results, service, tests, paper, trained artifacts, data) was moved
+  unchanged with `git mv` to `legacy/predictx-harbor/`, keeping history. Its 30 non-TabPFN tests still
+  pass from there. New top-level `README.md` and `pyproject.toml` describe SweepScreen only.
+* Protocol v0.11:
+  * D1: sensitivity > 0.80 with 150 cancers is labelled a pilot claim; > 0.85 is deferred to a pivotal study.
+  * D2: primary operating point is AI-added recall ≤ 5 points; ≤ 10 points is secondary.
+  * D3: confirmatory test replaced by an intersection-union test (added sensitivity > 5 points AND
+    added recall < 5 points), because CBE + AI ⊇ CBE makes a McNemar test trivially positive. Power
+    re-computed with the new `scripts/sample_size_iut.py`: ~0.86 at +12 points / 3.5% added recall,
+    ~0.65 at +10 points.
+  * D4: enriched arm needs ≥ 40% non-palpable or ≤ 2 cm imaging-detected cancers, reported as a
+    separate stratum; CBE-negative cancers are the key subgroup.
+  * D5: certification tables now show 0 / 1 / 2 misses.
+  * D6: HARBOR and the VoI controller removed entirely, including the exploratory HARBOR test.
+  * The earlier "pilot" was renamed **run-in** and enlarged to ≥ 500 women, so that it can certify the
+    5-point cap with headroom (certified only if observed ≤ 3.2%).
+* Phase 0 audit: path note added (the audited files now live under `legacy/predictx-harbor/`).
+
 ## 2026-10-22: Scope change to first-step screening (protocol v0.10, memo v2)
 
 * Author changed the use case from lesion triage to **screening asymptomatic women**: a health worker

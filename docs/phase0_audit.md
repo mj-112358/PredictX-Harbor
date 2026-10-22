@@ -1,5 +1,9 @@
 # Phase 0: audit and reproduction
 
+> **Path note (added 2026-10-22):** the audited project has since been archived to
+> `legacy/predictx-harbor/`. The paths below (`predictx/`, `experiments/`, `results/`, `paper/`)
+> are relative to that folder.
+
 Date: 2026-10-22. Code at commit `458111e` (identical to the attached `PredictX-Harbor-main.zip`,
 checked with a recursive diff). The paper was read from `paper/sections/*.tex` and `paper/main.pdf`,
 because the separate PDF was not attached. Every re-run below wrote to a scratch directory, so

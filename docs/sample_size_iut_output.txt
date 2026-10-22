@@ -1,0 +1,59 @@
+Enriched cancers n=150; camp cancer-free women n=2985; added-recall cap 5%
+
+H1a power (added sensitivity lower bound > delta):
+  delta=0.00: true +0.08 -> 1.000  true +0.10 -> 1.000  true +0.12 -> 1.000  true +0.15 -> 1.000  true +0.20 -> 1.000
+  delta=0.03: true +0.08 -> 0.769  true +0.10 -> 0.940  true +0.12 -> 0.989  true +0.15 -> 0.999  true +0.20 -> 1.000
+  delta=0.05: true +0.08 -> 0.314  true +0.10 -> 0.647  true +0.12 -> 0.873  true +0.15 -> 0.985  true +0.20 -> 1.000
+H1b power (added recall upper bound < 5%):
+  true 0.030 -> 1.000  true 0.035 -> 0.980  true 0.040 -> 0.719  true 0.042 -> 0.510  true 0.045 -> 0.219
+
+Joint IUT power (product), delta = 0.05:
+  true added sens +0.10, true added recall 0.030: power 0.647
+  true added sens +0.10, true added recall 0.035: power 0.634
+  true added sens +0.10, true added recall 0.040: power 0.465
+  true added sens +0.12, true added recall 0.030: power 0.873
+  true added sens +0.12, true added recall 0.035: power 0.856
+  true added sens +0.12, true added recall 0.040: power 0.628
+  true added sens +0.15, true added recall 0.030: power 0.985
+  true added sens +0.15, true added recall 0.035: power 0.965
+  true added sens +0.15, true added recall 0.040: power 0.708
+  true added sens +0.20, true added recall 0.030: power 1.000
+  true added sens +0.20, true added recall 0.035: power 0.980
+  true added sens +0.20, true added recall 0.040: power 0.719
+
+Cancers needed for 80% / 90% H1a power at delta = 0.05:
+  true +0.10: 234 / 301
+  true +0.12: 131 / 175
+  true +0.15: 75 / 100
+
+Camp women needed for 80% / 90% H1b power (cap 5%):
+  true 0.035: ~1500 / ~2050
+  true 0.040: ~3600 / ~4650
+
+Extra recalls per extra cancer detected (screening prevalence), at true added recall 4%:
+  prevalence 2/1000, added sens +0.10: extra cancers/1000 = 0.20, extra recalls/1000 = 40, ratio = 200
+  prevalence 2/1000, added sens +0.15: extra cancers/1000 = 0.30, extra recalls/1000 = 40, ratio = 133
+  prevalence 5/1000, added sens +0.10: extra cancers/1000 = 0.50, extra recalls/1000 = 40, ratio = 80
+  prevalence 5/1000, added sens +0.15: extra cancers/1000 = 0.75, extra recalls/1000 = 40, ratio = 53
+
+Stratum precision (non-palpable or <= 2 cm, imaging-detected; >= 40% of 150 -> n >= 60):
+  n=60, AI sensitivity 0.60: 36/60 -> 95% CI 0.465-0.724
+  n=60, AI sensitivity 0.70: 42/60 -> 95% CI 0.568-0.812
+  n=60, AI sensitivity 0.80: 48/60 -> 95% CI 0.677-0.892
+  n=75, AI sensitivity 0.60: 45/75 -> 95% CI 0.480-0.711
+  n=75, AI sensitivity 0.70: 52/75 -> 95% CI 0.576-0.795
+  n=75, AI sensitivity 0.80: 60/75 -> 95% CI 0.692-0.884
+
+Certification lower bounds (one-sided 95% Clopper-Pearson) with 0 / 1 / 2 misses:
+  n=29: 0 miss -> 0.902  1 miss -> 0.847  2 miss -> 0.798
+  n=46: 0 miss -> 0.937  1 miss -> 0.901  2 miss -> 0.869
+  n=59: 0 miss -> 0.950  1 miss -> 0.922  2 miss -> 0.897
+  n=93: 0 miss -> 0.968  1 miss -> 0.950  2 miss -> 0.934
+  n=124: 0 miss -> 0.976  1 miss -> 0.962  2 miss -> 0.950
+  n=149: 0 miss -> 0.980  1 miss -> 0.969  2 miss -> 0.958
+
+Run-in certification of the added-recall cap (one-sided 95% upper bound < 5%):
+  n=300 run-in camp women: certified if <= 8 AI-only recalls (observed added recall <= 0.027)
+  n=400 run-in camp women: certified if <= 12 AI-only recalls (observed added recall <= 0.030)
+  n=500 run-in camp women: certified if <= 16 AI-only recalls (observed added recall <= 0.032)
+  n=600 run-in camp women: certified if <= 20 AI-only recalls (observed added recall <= 0.033)

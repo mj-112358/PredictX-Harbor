@@ -1,15 +1,13 @@
 [project]
-name = "predictx"
-version = "1.0.0"
-description = "PredictX-HARBOR: multi-disease risk prediction from routine clinical biomarkers"
+name = "sweepscreen"
+version = "0.0.1"
+description = "SweepScreen: AI reading of handheld whole-breast ultrasound sweeps for first-step breast cancer screening (research code; not a medical device)"
 readme = "README.md"
 requires-python = ">=3.11"
 
-[tool.setuptools]
-packages = ["predictx", "experiments", "service"]
-
 [tool.ruff]
 line-length = 120
+extend-exclude = ["legacy"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "B"]
