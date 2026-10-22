@@ -43,6 +43,13 @@ def coverage_targets(boxes_list: Sequence[Sequence[Box]], masks: Optional[Sequen
     return out
 
 
+class _MaxPatch:
+    """Stand-in frame calibrator when training data has a single frame class."""
+
+    def predict_proba(self, stats: np.ndarray) -> np.ndarray:
+        return np.column_stack([1 - stats[:, 0], stats[:, 0]])
+
+
 class PatchHead(nn.Module):
     def __init__(self, dim: int, hidden: int = 128, dropout: float = 0.1):
         super().__init__()
@@ -125,9 +132,13 @@ class PatchDetector:
                     break
         if best_state is not None:
             self.head_.load_state_dict(best_state)
+        self.val_idx_ = va
         calib_idx = va if len(np.unique(frame_labels[va])) == 2 else np.arange(len(frame_labels))
-        self.calibrator_ = make_pipeline(StandardScaler(), LogisticRegression(C=10.0, max_iter=1000)).fit(
-            frame_stats(self.patch_probabilities(tokens[calib_idx])), frame_labels[calib_idx])
+        if len(np.unique(frame_labels[calib_idx])) == 2:
+            self.calibrator_ = make_pipeline(StandardScaler(), LogisticRegression(C=10.0, max_iter=1000)).fit(
+                frame_stats(self.patch_probabilities(tokens[calib_idx])), frame_labels[calib_idx])
+        else:                         # no lesion-free frames: frame score = max patch probability
+            self.calibrator_ = _MaxPatch()
         return self
 
     @torch.no_grad()

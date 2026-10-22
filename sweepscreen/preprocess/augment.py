@@ -107,3 +107,17 @@ def random_augment(g, boxes, rng: np.random.Generator, p_each: float = 0.15):
         g = g[:, ::-1].copy()
         boxes = [(w - x1, y0, w - x0, y1) for x0, y0, x1, y1 in boxes]
     return g, boxes
+
+
+class RandomAugment:
+    """:func:`random_augment` with a generator seeded from ``seed`` and the image content, so each image
+    receives the same degradation regardless of processing order (and on resumed runs)."""
+
+    def __init__(self, seed: int = 0, p_each: float = 0.3):
+        self.seed, self.p_each = seed, p_each
+
+    def __call__(self, g, boxes):
+        import zlib
+
+        rng = np.random.default_rng([self.seed, zlib.crc32(np.ascontiguousarray(g).tobytes())])
+        return random_augment(g, boxes, rng, self.p_each)
