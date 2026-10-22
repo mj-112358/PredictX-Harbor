@@ -2,6 +2,28 @@
 
 Running log of what changed in the project and why. Newest first.
 
+## 2026-10-22: Scope change to first-step screening (protocol v0.10, memo v2)
+
+* Author changed the use case from lesion triage to **screening asymptomatic women**: a health worker
+  does a handheld whole-breast sweep with or after CBE, and the AI outputs NORMAL / RECALL / UNREADABLE
+  per woman.
+* `docs/protocol.md` rewritten as v0.10: lesion detection (frame detector plus persistence-based
+  woman-level aggregation) is the core, with a quality/coverage reject gate. Primary endpoints are
+  at screening prevalence: sensitivity at recall ≤ 5% and ≤ 10%, false recalls per 1,000, and
+  unreadable rate. The confirmatory comparison is CBE + AI vs CBE alone (paired McNemar). C1 is
+  adapted to a woman-level recall ceiling and sensitivity floor, plus spectrum weighting (new) and
+  hierarchical borrowing (H1).
+* Added an enriched field-study design (~3,000 camp women + ~150 cancers + ~150 benign, preceded by
+  a ~300 + 60 pilot), with exact binomial sample sizes from the new
+  `scripts/sample_size_field_study.py` (output in `docs/sample_size_output.txt`).
+* Literature search: no public whole-breast sweep or screening ultrasound dataset exists. Public
+  still images are declared development-only.
+* `docs/niche_decision.md` v2: India positioning (CBE/NP-NCD, iBreastExam, Thermalytix,
+  mammography, AI ultrasound), data reality, and risks, including **PC-PNDT Act restrictions on
+  portable ultrasound** (high severity).
+* HARBOR moved out of the primary pipeline (one exploratory field-data test retained); the VoI
+  controller is not used.
+
 ## 2026-10-22: Track A chosen; Phase 2 protocol drafted
 
 * Author chose Track A and asked for a novel contribution in a design that can support a screening

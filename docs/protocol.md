@@ -1,237 +1,308 @@
-# Pre-registered protocol: certified-sensitivity AI referral for handheld breast ultrasound
+# Pre-registered protocol: AI-read handheld whole-breast ultrasound for first-step screening of asymptomatic women
 
-**Version 0.9 (DRAFT, not yet frozen).** It becomes v1.0, frozen and tagged `protocol-v1.0`, after
-the label-blind data audit in Section 4. No model is trained on, or evaluated against, any
-held-out site before that tag exists. Every change after freezing goes in `docs/deviations.md`,
-with date, reason and expected impact.
+**Version 0.10 (DRAFT, not frozen; for author review).** Supersedes v0.9 (lesion triage), following
+the author's change of scope on 2026-10-22. It becomes v1.0, frozen and tagged `protocol-v1.0`,
+only after (a) the author approves this draft and (b) the label-blind data audit in Section 5.
+Nothing is evaluated on a held-out site before that tag exists. Every later change goes in
+`docs/deviations.md`.
 
-Reporting follows TRIPOD+AI (2024) and CLAIM (2024 update); STARD 2015 items are used for the
-diagnostic-accuracy tables.
+Reporting: TRIPOD+AI (2024), CLAIM (2024 update), STARD 2015; for the field study also
+STARD-AI when published, and ICMR's 2023 ethical guidelines for AI in biomedical research.
+
+Every sample-size number below is produced by `scripts/sample_size_field_study.py`
+(output: `docs/sample_size_output.txt`).
 
 ---
 
-## 1. Intended use and claim ceiling
+## 1. Intended use
 
-**Device concept.** A software module for a handheld or portable breast ultrasound system, for use
-in settings without mammography or on-site breast radiology (WHO GBCI "timely diagnosis" pillar;
-BHGI basic and limited resource levels). For each woman it outputs **REFER** (send for biopsy or
-specialist work-up) or **ROUTINE** (no referral: either no suspicious lesion, or a lesion that can go
-to short-interval follow-up). It also reports a calibrated risk and an explicit **ABSTAIN → REFER**
-flag when the input lies outside what the model was calibrated on.
+**Setting.** Community screening of asymptomatic women aged 30–65 (the NP-NCD target group) at
+screening camps, sub-centres or Ayushman Arogya Mandirs, where there is no mammography and no
+radiologist on site.
 
-**Pipeline (two stages, evaluated separately and then together):**
+**Workflow.** A trained health worker performs clinical breast examination (CBE) and a handheld
+ultrasound whole-breast sweep of both breasts following a fixed protocol (radial or
+quadrant-by-quadrant sweeps plus the axillary tail; protocol to be fixed in the pilot, Section
+8.2). The AI reads the sweep and outputs one result per woman:
 
-* **S1, lesion detection (screening stage).** Does this image or sweep contain a suspicious
-  focal lesion? Used for asymptomatic women and for whole-breast scanning.
-* **S2, malignancy triage (diagnostic stage).** For a detected lesion: refer for biopsy, or
-  short-interval follow-up?
-* **REFER** if S2 says refer, or if either stage abstains.
-
-**What public retrospective data can and cannot show (stated now so the paper stays within it):**
-
-| Claim | Supportable here? |
-|---|---|
-| S2 accuracy at prespecified operating points, externally validated across countries | **Yes**: primary evidence |
-| A sensitivity guarantee that transfers to a new site, and how many local cases that needs | **Yes**: the novel contribution (Section 3) |
-| S1 detection accuracy | **Partly**: only on curated still images; normal images come from few sites (BUSI, BUS-UCLM, possibly BUS-CoT); no whole-breast sweeps |
-| End-to-end screening sensitivity, specificity and recall rate in an asymptomatic population | **No.** Projected under stated prevalence assumptions only, labelled as projections, never as results. Needs the prospective study in Section 11. |
-| Performance on low-cost handheld devices operated by non-specialists | **No**: simulated degradations only (Section 9) |
-| Clinical validation or regulatory readiness | **No.** Never claimed. |
-
-## 2. Data
-
-### 2.1 Sites
-A "site" is a source dataset. Development and validation use **leave-one-site-out (LOSO)**: each
-site is held out once, and everything else (model fitting, threshold choice, calibration) uses only
-the remaining sites.
-
-| Site | Country | Role | Expected use |
-|---|---|---|---|
-| BUS-BRA | Brazil | LOSO site | S2; BI-RADS comparator |
-| BrEaST (Breast-Lesions-USG) | Poland | LOSO site | S2; BI-RADS comparator; clinical metadata (age, composition, symptoms) |
-| BUSI (curated release; original audited for duplicates) | Egypt | LOSO site | S2; S1 normals |
-| BUS-CoT | China | LOSO site | S2 (largest); descriptors |
-| BUS-UCLM | Spain | S1 only (38 patients; too few for an S2 site) | S1 normals |
-| GDPH&SYSUCC, UDIAT, PersonalizedUS tabular | China / Spain / Brazil | optional, only if obtained before freeze | S2 |
-
-Final inclusion is fixed at freeze. A site is an S2 LOSO site only if it has **≥ 50 malignant
-lesions** after exclusions. Smaller sites are pooled into training only and reported descriptively.
-
-### 2.2 Unit of analysis
-* **Lesion** where lesion IDs exist; otherwise **patient** where patient IDs exist; otherwise **image**, flagged in every table.
-* Multiple images of one lesion: the lesion score is the **mean** of image probabilities (prespecified; max reported as a sensitivity analysis).
-* Woman-level output (end-to-end): REFER if any lesion is referred.
-
-### 2.3 Reference standard
-Histopathology (core biopsy or excision) for malignant. Benign by histopathology, or by stable
-follow-up where the dataset documents it (≥ 2 years preferred; the dataset's own definition
-recorded per site). Every table reports the verification method per site. Lesions without
-verification are excluded.
-
-### 2.4 Exclusions (applied label-blind where possible)
-1. Non-breast images (axilla), images with visible biopsy needles, Doppler-only or elastography-only frames.
-2. **Duplicates and near-duplicates:** perceptual hash (pHash, 64-bit) with Hamming distance
-   ≤ 6, plus SSIM ≥ 0.95 on 256 px greyscale, within and across sites. Near-duplicate clusters are
-   kept inside one split. Clusters with discordant labels are excluded and counted. Cross-site
-   duplicates are removed from the *training* side of each LOSO fold. The threshold is set on
-   pairs a human has reviewed during the audit and then frozen.
-3. Images with burned-in annotations (calipers, text, arrows) are kept, but annotations are
-   masked by a fixed preprocessing step. Caliper presence is recorded as a covariate, because
-   calipers can leak suspicion into the label.
-
-## 3. Primary hypothesis and novel contribution
-
-**Problem.** Public breast-ultrasound models lose about 0.08 AUROC across datasets (Diagnostics
-2026 benchmark), and a threshold tuned for 98% sensitivity at one site gives an unknown,
-usually lower, sensitivity at another. For a referral device the missed-cancer rate is the
-safety-critical quantity, and no published ultrasound work certifies it at a new site.
-
-**Contribution C1, certified-sensitivity referral under site shift (the main novelty).** A
-threshold-selection procedure that, at a new site, comes with a stated guarantee on the
-missed-cancer rate and a stated local-data requirement:
-
-* **C1a, local certification (exact).** Given *n* local biopsy-proven cancers, pick the highest
-  REFER threshold whose one-sided 95% Clopper–Pearson lower bound on sensitivity is ≥ the target.
-  Finite-sample and distribution-free (needs only the local cancers to be representative). Its
-  cost is known in closed form: with zero misses, **59 cancers certify ≥ 0.95, and 149 certify ≥ 0.98**
-  (93 and 236 if one miss is allowed).
-* **C1b, source-weighted conformal (approximate, needs no local labels).** Site-weighted / Mondrian
-  conformal calibration on the training sites, with the threshold set so that the
-  weighted miss rate is ≤ 1 − target. Valid only under exchangeability with the new site, so its
-  validity is *tested* under LOSO, not assumed.
-* **C1c, borrowing strength (the hypothesis that would be genuinely new).** A hierarchical
-  beta-binomial model of site-level sensitivity at each threshold (source sites as exchangeable
-  draws from the site population), updated with the *n* local cancers. The threshold is set so the
-  posterior probability that sensitivity ≥ target is ≥ 0.95. **Hypothesis H1:** at matched
-  achieved coverage, C1c needs substantially fewer local cancers than C1a, for example ≤ 30
-  instead of 59 for the 0.95 floor.
-
-**Primary endpoint (prespecified).** For each LOSO held-out site, with the threshold chosen by the
-method under test and applied unchanged:
-
-1. **Achieved held-out sensitivity** against the 0.95 target (validity), and
-2. **Specificity**, equivalently the **fraction of benign lesions spared referral** (utility).
-
-**Primary comparison (the only one with confirmatory status).** C1b (source-only, no local labels)
-against the **naive transfer threshold** (the threshold giving 0.95 sensitivity on pooled training
-sites, applied as-is), on the **across-site shortfall**: the mean over held-out sites of
-max(0, 0.95 − achieved sensitivity). H0: equal shortfall. Test: paired permutation over
-sites, with lesion-level bootstrap CIs per site. **With 4–5 sites this test has low power. It is
-pre-registered anyway, and a null result will be reported as such.**
-
-**Secondary, utility comparison against standard of care.** On held-out sites that record
-radiologist BI-RADS: the proposed S2 against the rule **"biopsy if BI-RADS ≥ 4"**. Endpoint:
-benign biopsies avoided at **non-inferior sensitivity** (margin −0.02; paired lesion-level
-bootstrap, one-sided 97.5%). Also against "biopsy if BI-RADS ≥ 4B" where the subcategory exists.
-
-**C1a/C1c evaluation design.** Within each held-out site, repeat 200 times: draw a certification
-subset with *n* ∈ {10, 20, 30, 59, 100, 149} cancers (and benign lesions in the site's ratio), set
-the threshold, and evaluate on the disjoint remainder. Report the achieved coverage (the fraction of
-repeats in which remainder sensitivity ≥ target) and the specificity, as functions of *n*.
-
-## 4. Label-blind data audit (done before freezing; allowed)
-Allowed before freeze: file integrity and checksums, image counts, metadata fields and missingness
-per site, verification-method counts, label *counts* per site, duplicate detection (Section 2.4),
-caliper/annotation detection, image size and pixel-spacing availability. **Not allowed** before
-freeze: fitting any model whose outputs are evaluated on a held-out site, or looking at
-performance on a held-out site. The audit output (`docs/data_audit.md`) fixes the site list, the
-unit of analysis per site and the exclusion counts. Then the protocol is frozen.
-
-## 5. Inputs and models
-
-### 5.1 Image representation (frozen encoders on CPU; no fine-tuning in the primary analysis)
-* E1: DINOv2 ViT-B/14 (general). E2: BiomedCLIP ViT-B/16 (medical). An ultrasound-specific encoder only if its weights are obtainable before freeze.
-* Input: **whole image** with annotations masked (deployable: needs no lesion outline). Secondary: lesion ROI crop from dataset masks or boxes, reported as an **optimistic upper bound**, since deployment would need an automatic detector.
-* The encoder is chosen *inside* the training sites by grouped internal CV (mean of S2 AUROC over training sites). It is never chosen on a held-out site.
-
-### 5.2 Clinical and report fields (availability varies by site)
-Age; palpable/symptomatic; breast composition; radiologist BI-RADS category; BI-RADS descriptors
-(shape, margin, orientation, echo pattern, posterior features, calcifications); device. A field is
-used only if present at ≥ 1 training site. **When BI-RADS is used as a model input, the model is
-not compared against BI-RADS as an independent comparator.** Two model families are therefore
-reported: *image + clinical without BI-RADS* (compared against BI-RADS) and *image + clinical +
-BI-RADS* (decision support for a reader).
-
-### 5.3 Heads (all fitted only on training sites)
-| ID | Model | Role |
+| Output | Meaning | Action |
 |---|---|---|
-| B0 | Radiologist BI-RADS rule (≥ 4; ≥ 4B) | standard of care |
-| B1 | Logistic regression on clinical fields | baseline |
-| B2 | Image-only: L2 logistic regression on frozen embeddings | baseline |
-| B3 | TabPFN v2 on [PCA-64 of embedding; clinical] | baseline (strong tabular) |
-| B4 | CatBoost on the same inputs | baseline |
-| B5 | Concatenation fusion with median imputation plus missingness indicators | baseline |
-| B6 | Modality dropout (random field masking during training) | comparator for H2 |
-| M1 | HARBOR availability-aware fusion: embedding as one token group, each clinical field as a token; availability channel active | tested in H2 |
+| **NORMAL** | No suspicious lesion detected in an adequate scan | Routine re-screening per programme interval |
+| **RECALL** | Suspicious lesion detected | Referral to a facility with diagnostic ultrasound and a radiologist (± biopsy) |
+| **UNREADABLE** | Scan quality or coverage inadequate | Immediate rescan; after 2 failed rescans → treated as RECALL |
 
-The classifier behind the C1 procedures is the best of B2–B6/M1 by **training-site internal CV**,
-chosen before any held-out evaluation. If two are within 0.005 AUROC, the simpler one is used.
+CBE is done in every woman. A positive CBE is referred regardless of the AI result (the AI never
+overrides a positive CBE).
 
-## 6. Secondary hypotheses (each with its ablation; dropped if it fails under LOSO)
+**Components.**
+1. **Q, quality and coverage gate:** per-frame image adequacy (gain, contact, depth, motion) and per-breast coverage of the sweep. Produces UNREADABLE.
+2. **D, frame-level lesion detector (the core model):** probability that a frame contains a suspicious focal lesion, with a localisation box.
+3. **A, woman-level aggregation:** temporal smoothing over consecutive frames, then the maximum over frames within a breast, then the maximum over both breasts, then a threshold set for the target recall rate (Section 4).
+4. **C1, certified operating point:** the recall threshold carries a stated sensitivity floor and recall ceiling at a new site (Section 4).
 
-* **H2, availability-aware fusion.** M1 shows a smaller held-out AUROC drop than B5 and B6 when the
-  held-out site's set of recorded fields differs from training. Ablation: M1 without the
-  availability channel (value-only). Measured as held-out minus internal AUROC per site. *Expected
-  power: low (4–5 sites). If M1 is not better than B5, HARBOR is removed from the method.*
-* **H3, biopsy reduction in BI-RADS 3/4A.** Among lesions rated BI-RADS 3–4A, the fraction of benign
-  lesions spared referral at the C1-certified threshold. Reported only where BI-RADS subcategories
-  exist.
-* **H4, calibration transfer.** Calibration intercept and slope on the held-out site before and after
-  logistic recalibration on *m* ∈ {25, 50, 100, 200} local lesions (repeated draws, evaluated on the
-  remainder). Endpoint: the smallest *m* for which the median |intercept| < 0.1 and the slope lies in
-  [0.9, 1.1].
-* **H5, S1 detection.** Lesion-vs-normal AUROC and specificity at sensitivity 0.95, LOSO over sites
-  with normal images. Descriptive only; too few normal-image sites for inference.
+Malignancy characterisation (benign vs malignant) is **not** part of the screening output. It may
+be used internally to rank recalls, but RECALL is triggered by *suspicious lesion presence*.
 
-The value-of-information controller is **not** part of this protocol. Phase 0 showed it did not
-beat simple fixed-panel mixtures on its own benchmark (`docs/phase0_audit.md`), and these data have
-no sequential test decision to optimise. It may come back only as a pre-registered amendment.
+## 2. Claim ceiling
 
-## 7. Statistics
-* Lesion- or patient-clustered bootstrap (2,000 replicates) for every per-site CI.
-  Clopper–Pearson for sensitivity and specificity at fixed thresholds.
-* Across sites: random-effects meta-analysis (logit scale; DerSimonian–Laird, with Hartung–Knapp
-  CIs given the few sites) of sensitivity and specificity, plus the per-site forest plot. Pooling
-  is never done by concatenating predictions across sites.
-* AUROC comparisons on a held-out site: DeLong (paired). Internal CV within training sites:
-  5×5 grouped CV with the Nadeau–Bengio corrected resampled t-test.
-* One confirmatory test (Section 3). Everything else is exploratory, reported with CIs and no
-  significance stars.
-* PPV/NPV are reported at each site's observed prevalence **and** re-weighted to an assumed
-  screening prevalence (5 per 1,000) and a symptomatic-clinic prevalence (10%), labelled as
-  re-weighted.
+| Question | Answered by | Claim allowed |
+|---|---|---|
+| Can the detector find lesions in still images from other countries? | Public still images (Section 3), leave-one-site-out | "Lesion detection on curated still images", development evidence only |
+| What is screening sensitivity, recall rate and false recalls per 1,000? | **Only the field study (Section 8)** | Public still-image data **cannot** measure these and will never be reported as screening accuracy. Projections to screening prevalence from public data appear only in a clearly labelled "projection" table, if at all. |
+| Does the operating point hold at a new site? | C1 on public data (lesion level, proxy) → pilot → field study | Woman-level certification only from field data |
+| Does it work on low-cost handheld probes used by health workers? | Field study (simulated degradations on public data are a robustness check only) | Only after the field study |
+| Is it clinically validated or approved? | Neither this protocol nor the field study alone | Never claimed |
 
-## 8. Calibration and decision analysis
-Reliability plots (10 quantile bins, lesion-level), calibration intercept and slope, ECE as a
-secondary measure. Decision curves (net benefit) over threshold probabilities of 1–20%, relevant to
-biopsy referral, against "refer all", "refer none" and BI-RADS rules.
+## 3. Public data: development only
 
-## 9. Robustness: portable-ultrasound degradations
-Applied to held-out images only, at prespecified levels: additive speckle (Rayleigh multiplicative
-noise, σ ∈ {0.1, 0.2, 0.3}), Gaussian blur (σ ∈ {1, 2} px), downsampling to {0.5, 0.25} resolution
-and back, JPEG quality {50, 20}, gain/contrast ±30%, depth crop (bottom 25% removed). Endpoint:
-change in sensitivity at the frozen threshold, and whether the abstention rule fires.
+### 3.1 Search result
+A search on 2026-10-22 (peer-reviewed literature, arXiv, dataset atlases including
+github.com/TIanCat/open-medical-ultrasound-datasets) found **no public whole-breast
+handheld-sweep dataset and no public screening (asymptomatic) breast ultrasound dataset.** The closest
+resources:
 
-## 10. Subgroups and error analysis
-Age bands (< 40, 40–49, 50–69, ≥ 70) where age exists; breast composition; device; lesion size
-(mask area in mm² where pixel spacing exists, else in pixels, flagged); BI-RADS category;
-histological subtype for the missed cancers. Every false negative at the certified threshold is
-listed with its site, BI-RADS, size and histology, and up to 12 example images go in the
-supplement.
+| Dataset | Content | Normal women/frames? | Use here |
+|---|---|---|---|
+| BreastVid / CVA-Net (MICCAI 2022, China) | 188 lesion-centred cine clips (113 malignant, 75 benign), 25,272 frames with per-frame boxes | **No.** Each clip starts and ends at the lesion edges | Temporal aggregation; per-frame detection sensitivity |
+| TDSC-ABUS 2023 (China) | 200 automated 3D breast volumes, tumour-focused | No normal screening volumes | Optional (by application); 3D slices as pseudo-sweeps |
+| BUSI (Egypt) | 780 stills incl. 133 normal | Yes (stills) | Detector training/validation |
+| BUS-UCLM (Spain) | 683 stills incl. 419 normal, 38 patients | Yes (stills) | Detector training/validation |
+| BUS-BRA (Brazil), BrEaST (Poland), BUS-CoT (China), BUSI_WHU, BUS_UC, US3M, QAMEBI | Lesion stills (with masks/boxes) | Few or none | Lesion-positive frames for the detector |
+| ALN-Ultra (videos) | Axillary nodes | — | Not used (controlled access, wrong target) |
 
-## 11. Prospective study the paper will specify (not run)
-Paired-design diagnostic accuracy study at ≥ 3 LMIC clinics, with women presenting for CBE
-(symptomatic and asymptomatic arms). Handheld ultrasound by trained non-radiologists with the
-device, followed by standard-of-care ultrasound and biopsy or 2-year follow-up. Sample size (exact
-binomial, Clopper–Pearson, 80% power, true sensitivity 0.97): **100 cancers** to show a lower 95%
-bound > 0.90; **240 cancers** to show a lower bound > 0.93. At 10% prevalence in the symptomatic arm
-that is about 1,000 or 2,400 women. The asymptomatic arm is powered for recall rate, not
-sensitivity, because at about 5 cancers per 1,000 it cannot be powered for sensitivity at a
-feasible size.
+**Statement for the paper (verbatim intent):** *Public breast-ultrasound datasets consist of curated
+still images or lesion-centred clips acquired by specialists, on mid- or high-end systems, in
+women already referred for imaging. They contain almost no normal tissue from asymptomatic women
+and no whole-breast sweeps. They can be used to develop and stress-test a lesion detector, but
+they cannot measure screening sensitivity, recall rate or false recalls, and no such figure in this
+paper comes from them.*
 
-## 12. Software and reproducibility
-Every number in the paper is regenerated by `scripts/reproduce.sh` from raw files whose SHA-256
-checksums are listed in `data/MANIFEST.sha256`. Seeds are fixed; HARBOR's run-to-run
-nondeterminism (Phase 0) is either removed or quantified by repeated fits. Held-out evaluation
-scripts refuse to run unless `git tag protocol-v1.0` exists and the protocol file matches the tagged
-version.
+### 3.2 Development experiments on public data (pre-registered; secondary evidence)
+* **P-D1, frame-level detection, leave-one-site-out (LOSO).** Sites with both normal and lesion
+  frames (BUSI, BUS-UCLM; BUS-CoT if it contains normal frames). Lesion frames from all other sites
+  are used in training. Endpoints: frame-level AUROC (lesion vs normal); sensitivity for
+  **malignant** lesion frames at a fixed **normal-frame false-positive rate** of 1%, 2% and 5%.
+  Both are reported per held-out site, with patient-clustered bootstrap CIs.
+* **P-D2, clip-level aggregation (BreastVid).** Fraction of malignant and benign clips detected
+  at the frame thresholds fixed in P-D1, for each aggregation rule (Section 4.1). Gives only
+  *sensitivity*: with no normal clips, the false-positive behaviour of aggregation cannot be
+  estimated from public data.
+* **P-D3, quality gate.** Detection sensitivity under the portable-ultrasound degradations of
+  Section 10, and whether Q flags them. Q is developed on synthetic degradations of public stills;
+  its real calibration happens in the pilot.
+* **P-D4, C1 on public data (lesion-level proxy).** Section 4.3.
+
+Frozen encoders on CPU (DINOv2 ViT-B/14; BiomedCLIP ViT-B/16) with linear/patch-level detection
+heads are the primary detector. Fine-tuning a detector (for example a small YOLO/DETR) needs a
+GPU and is optional, as a pre-specified secondary analysis. The encoder and head are chosen by
+internal CV within training sites only.
+
+Duplicate control (all public data): pHash (64-bit, Hamming ≤ 6) plus SSIM ≥ 0.95, within and across
+datasets. Clusters are kept inside one split, label-discordant clusters are excluded, and cross-site
+duplicates are removed from the training side. BUSI is audited against its documented defects
+(duplicates, axillary images, visible needles); the curated release is preferred.
+
+## 4. Woman-level decision and the novel contribution (C1)
+
+### 4.1 Aggregation (fixed before field data; tuned only on pilot data)
+Frame score s_t → smoothed score: mean of a sliding window of *w* frames (w ∈ {1, 3, 5, 9}, chosen
+in the pilot) → breast score = max over frames → woman score = max over breasts. A suspicious lesion
+must be persistent over ≥ *w* consecutive frames. This suppresses single-frame artefacts, which
+drive false recalls.
+
+### 4.2 Operating points
+Thresholds are chosen to give target recall rates (prevalence is 2–5 per 1,000, so recall rate
+≈ false-recall rate):
+
+* **OP-5:** recall ≤ 5% (≤ 50 false recalls per 1,000 women)
+* **OP-10:** recall ≤ 10% (≤ 100 false recalls per 1,000 women)
+
+The field study reports **sensitivity at OP-5 and OP-10** as the primary measures.
+
+### 4.3 C1: certified recall operating point under site shift (main methodological contribution)
+At a new site (new country, device, operator cadre), the threshold must come with a stated
+guarantee. C1 has four parts:
+
+* **C1a, recall ceiling from local normals (exact).** Choose the lowest threshold whose one-sided
+  95% Clopper–Pearson upper bound on the recall rate among *m* local screen-negative women is
+  ≤ R_max. For example: at an observed 3% recall, certifying ≤ 5% needs about 340 women and certifying
+  ≤ 10% about 70; at an observed 7%, certifying ≤ 10% needs about 290.
+* **C1b, sensitivity floor from local cancers (exact).** At that threshold, the one-sided 95% lower
+  bound on sensitivity from *n* local cancers. With zero misses, 29 cancers certify ≥ 0.90 and 59
+  certify ≥ 0.95 (46 and 93 with one miss).
+* **C1c, spectrum weighting (new).** Locally available cancers are usually symptomatic and larger
+  than screen-detected cancers, so an unweighted sensitivity overstates screening sensitivity.
+  Cancers are weighted to a prespecified target spectrum (tumour size ≤ 10 / 11–20 / > 20 mm ×
+  palpable yes/no; target proportions from published screen-detected series in similar settings,
+  fixed at freeze). The bound uses the effective sample size (Kish). Hypothesis: unweighted
+  enriched-sample sensitivity exceeds the spectrum-weighted value, and the weighted value is closer
+  to sensitivity among camp-detected cancers (checked in the field study, with the limited number
+  of camp cancers).
+* **C1d, borrowing strength across sites (new; main hypothesis H1).** A hierarchical
+  beta-binomial model of site-level sensitivity and recall at each threshold. Prior sites are
+  treated as exchangeable draws, and the model is updated with the local data. **H1:** at matched
+  achieved coverage, C1d needs about half the local cancers that C1b needs (≤ 30 instead of 59 for a
+  0.95 floor; ≤ 15 instead of 29 for 0.90).
+
+**Evaluation of C1:**
+* *On public data (proxy, lesion level):* LOSO, with "recall" replaced by the normal-frame
+  false-positive rate and "sensitivity" by malignant-lesion detection. Within each held-out site,
+  200 repeated draws of a certification subset (*n* cancers ∈ {10, 15, 20, 30, 59}; *m* normals as
+  available), evaluated on the disjoint remainder. Endpoint: **achieved coverage** (the fraction of
+  draws in which the remainder meets the certified floor or ceiling), against the nominal 95%. Few
+  sites have normals, so this is exploratory.
+* *Woman level:* pilot data (Section 8.2) certify the operating point carried into the field study.
+  The field study then tests whether the certified floor and ceiling held (Section 8.4).
+
+**Confirmatory status.** On public data C1 is exploratory. In the field study the certified
+recall ceiling and sensitivity floor are co-primary validity checks (Section 8.4).
+
+## 5. Label-blind data audit (public data; before freezing)
+Allowed: checksums, counts, metadata fields and missingness, verification method, label *counts*,
+duplicate detection, annotation/caliper detection, pixel spacing. Not allowed: training any model
+evaluated on a held-out site, or looking at held-out performance. The output is
+`docs/data_audit.md`, which fixes site roles, units and exclusions.
+
+## 6. Comparators
+* **Field study (primary):** CBE by the same health worker in the same woman (paired). This is the
+  standard of care in India's NP-NCD.
+* **Field study (secondary, where feasible):** expert radiologist reading of the same stored sweep
+  (upper bound for the AI on the same data); expert radiologist live diagnostic ultrasound (part of
+  the reference standard, Section 8.3).
+* **Not head-to-head in this protocol:** iBreastExam (tactile) and Thermalytix (thermal). Their
+  published figures are used for positioning only. They could be added as arms if a partner site
+  already uses them.
+* **Public development:** image-only linear probe on each encoder; TabPFN and CatBoost on
+  embedding PCA; a simple baseline of a frame classifier trained only on BUSI. These test whether a
+  stronger tabular head adds anything over a linear probe.
+
+HARBOR's availability-aware fusion has no natural role here: the input is the sweep, and screening
+women have little structured metadata (age, CBE result, symptoms). It is **dropped from the primary
+pipeline**. One pre-registered exploratory test remains: does adding age and the CBE result as inputs
+(B5 concatenation vs M1 HARBOR) change field-study sensitivity at OP-10? That test is run in the
+field data only. The value-of-information controller is not used (Phase 0).
+
+## 7. Primary endpoints (field study)
+1. **Sensitivity at OP-5 and OP-10** (woman level; cancer diagnosed within 12 months of the screen;
+   UNREADABLE after rescans counts as RECALL), estimated on the enriched cancer arm with spectrum
+   weighting (C1c), and unweighted as a secondary measure.
+2. **False recalls per 1,000 women** and **recall rate**, estimated in the screening-camp arm.
+3. **UNREADABLE rate** (before and after rescan).
+4. **Primary comparison (confirmatory):** sensitivity of **CBE + AI** (RECALL if either is positive)
+   against **CBE alone**, paired on the same cancers, at the frozen OP-10 threshold. Exact McNemar,
+   two-sided α = 0.05. Co-primary: the one-sided 95% upper bound of the CBE + AI recall rate among
+   camp women must be ≤ 10%.
+5. Secondary: PPV re-weighted to 2 and 5 per 1,000; sensitivity by tumour size, palpability, age band,
+   breast density proxy (ultrasound tissue composition) and device; per-breast localisation
+   accuracy for recalled cancers; health-worker scan time.
+
+## 8. Enriched field study (design for the paper; not conducted by this project)
+
+### 8.1 Design overview
+A prospective, multicentre, paired diagnostic-accuracy study with two arms enrolled in parallel
+at the same sites, by the same health workers, on the same handheld device model:
+
+* **Screening-camp arm:** about **3,000 consecutive asymptomatic women** aged 30–65 attending NP-NCD
+  screening camps (estimates recall rate, false recalls per 1,000 and unreadable rate, plus the few
+  camp-detected cancers).
+* **Enriched cancer arm:** about **150 women with biopsy-confirmed breast cancer**, recruited *before
+  treatment* at partner cancer centres, plus a matched sample of about 150 women with biopsy-proven
+  benign lesions (to estimate how often benign lesions trigger RECALL). Recruitment is
+  **spectrum-stratified**: target ≥ 50% tumours ≤ 20 mm and ≥ 30% clinically non-palpable or only
+  equivocally palpable (screen-detected, mammography-detected in urban centres, or incidental
+  findings). Health workers are blinded to arm status where practical (mixed scanning sessions).
+
+### 8.2 Pilot (precedes the frozen validation)
+About 300 camp women plus about 60 enriched cancers, scanned by the same health-worker cadre. The
+pilot data are used to fix the sweep protocol, the aggregation window *w*, the quality gate
+thresholds and the C1-certified OP-5 and OP-10 thresholds. **Pilot women are never part of the
+validation sample.**
+
+### 8.3 Reference standard and verification
+* Every RECALL (by AI or by CBE): diagnostic ultrasound by a radiologist ± biopsy, within 30 days.
+* Every screening-camp woman: 12-month follow-up for interval cancer (phone contact plus linkage
+  to cancer registries/hospital records where available).
+* **Verification sample of screen-negatives:** a random 10% of AI-NORMAL + CBE-negative camp women,
+  plus all UNREADABLE women, get a radiologist ultrasound at the visit. This addresses partial
+  verification bias; analysis uses inverse-probability weighting (Begg–Greenes).
+* An expert reader reads all stored sweeps blinded to AI, CBE and outcome.
+
+### 8.4 Sample size (exact binomial; from `scripts/sample_size_field_study.py`)
+
+**Sensitivity (enriched arm, n = 150 cancers):**
+
+| True sensitivity | Observed | 95% CI (Clopper–Pearson) |
+|---|---|---|
+| 0.85 | 128/150 | 0.786–0.906 |
+| 0.90 | 135/150 | 0.840–0.943 |
+| 0.95 | 142/150 | 0.898–0.977 |
+
+| Goal: lower 95% bound above… | True sens. | Power at n = 150 | n for 80% | n for 90% |
+|---|---|---|---|---|
+| 0.80 | 0.90 | **0.93** | 113 | 149 |
+| 0.85 | 0.92 | 0.69 | 185 | 240 |
+| 0.85 | 0.90 | 0.35 | 379 | 492 |
+| 0.90 | 0.95 | 0.52 | 243 | 316 |
+
+→ 150 cancers support a claim of **sensitivity > 0.80** (if true ≈ 0.90). A claim of > 0.85 needs
+185–380 cancers, depending on true performance. **The author should choose the target claim; this
+draft proposes > 0.80, with 150 cancers.**
+
+**Primary comparison, CBE + AI vs CBE alone (paired, exact McNemar, n = 150 cancers):**
+
+| Added sensitivity (discordant cells) | Power, n = 150 | Power, n = 100 |
+|---|---|---|
+| +10 points (13% / 3%) | 0.85 | 0.67 |
+| +15 points (18% / 3%) | 0.99 | 0.92 |
+| +20 points (22% / 2%) | 1.00 | 0.995 |
+
+**Recall and specificity (camp arm, about 2,985 cancer-free women of 3,000 enrolled):**
+
+| True false-recall rate | Observed | 95% CI | False recalls per 1,000 (95% CI) |
+|---|---|---|---|
+| 3% | 90/2,985 | 2.4–3.7% | 30 (24–37) |
+| 5% | 149/2,985 | 4.2–5.8% | 50 (42–58) |
+| 10% | 298/2,985 | 8.9–11.1% | 100 (89–111) |
+
+Power to show specificity lower bound > 0.93 when true 0.95: **0.996**; > 0.94: 0.64 (needs about
+4,225 cancer-free women for 80%); > 0.88 when true 0.90: 0.94.
+
+**Camp-detected cancers:** at 2–5 per 1,000, about 6–15 cancers are expected among 3,000 women
+(P(≥ 10) is 0.08 at 2/1,000 and 0.93 at 5/1,000). That is too few to estimate screening sensitivity
+directly, which is why the enriched arm exists. The camp cancers are used only as a descriptive
+check of spectrum weighting (C1c).
+
+### 8.5 Analysis
+Sensitivity: spectrum-weighted (primary) and unweighted. Specificity and recall: verification-bias
+corrected (Begg–Greenes) and naive. PPV and NPV re-weighted to 2 and 5 per 1,000. Clustered by
+health worker and site (GEE or cluster bootstrap). Prespecified subgroups as in Section 7.
+
+### 8.6 Regulatory and ethics (must be resolved before the field study)
+* **PC-PNDT Act (India):** ultrasound machines must be registered to specific premises, and
+  state guidance (e.g. Delhi) permits portable use only within registered premises. Operator
+  qualifications are regulated. Health-worker operation of handheld ultrasound at camps may
+  need registered mobile units, operation within registered facilities, or a specific exemption.
+  **Legal advice and state PC-PNDT authority approval are a precondition.**
+* CDSCO: AI software for screening is regulated as a medical device (SaMD) under the Medical Device
+  Rules 2017. The field study would be a clinical performance investigation needing CDSCO and
+  ethics approval.
+* ICMR ethical guidelines for AI in health (2023); DPDP Act 2023 for data protection; written
+  informed consent in local languages; trial registration in CTRI before enrolment.
+
+## 9. Statistics (public development)
+Patient-clustered bootstrap (2,000 replicates) per site; Clopper–Pearson at fixed thresholds;
+random-effects meta-analysis across LOSO sites (Hartung–Knapp); DeLong for paired AUROC on a held-out
+site; 5×5 grouped CV with the Nadeau–Bengio correction within training sites. No significance
+stars on exploratory results.
+
+## 10. Robustness: portable-device degradations (public data)
+Speckle (multiplicative Rayleigh, σ ∈ {0.1, 0.2, 0.3}), blur (σ ∈ {1, 2} px), downsampling
+(×0.5, ×0.25), JPEG quality {50, 20}, gain/contrast ±30%, depth crop 25%, partial probe contact
+(random dark sector). Endpoints: detection sensitivity at the frozen frame threshold, and the
+fraction of degraded frames that Q flags as unreadable.
+
+## 11. Reproducibility
+`scripts/reproduce.sh` regenerates every number from raw files whose SHA-256 checksums are in
+`data/MANIFEST.sha256`. Held-out evaluation scripts refuse to run unless the `protocol-v1.0` tag
+exists and `docs/protocol.md` matches it. HARBOR's run-to-run nondeterminism (Phase 0) is no longer
+relevant to the primary pipeline. Seeds are fixed for all models.

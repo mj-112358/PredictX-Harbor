@@ -1,0 +1,33 @@
+== Sensitivity, enriched cancers (n = 150)
+  expected sens 0.85: observed 128/150 -> 95% CI 0.786-0.906
+  expected sens 0.90: observed 135/150 -> 95% CI 0.840-0.943
+  expected sens 0.95: observed 142/150 -> 95% CI 0.898-0.977
+  power(n=150, true 0.9, lower bound > 0.8) = 0.928; min n for 80% = 113; for 90%: 149
+  power(n=150, true 0.9, lower bound > 0.85) = 0.353; min n for 80% = 379; for 90%: 492
+  power(n=150, true 0.95, lower bound > 0.9) = 0.523; min n for 80% = 243; for 90%: 316
+  power(n=150, true 0.92, lower bound > 0.85) = 0.686; min n for 80% = 185; for 90%: 240
+== Specificity / recall, screening-camp women (3,000 enrolled)
+  prevalence 2/1000: expected camp cancers 6; P(>=10 cancers)=0.08
+  prevalence 5/1000: expected camp cancers 15; P(>=10 cancers)=0.93
+  true false-recall 0.03: 90/2985 -> 95% CI 0.0243-0.0369 (false recalls per 1,000: 30, CI 24-37)
+  true false-recall 0.05: 149/2985 -> 95% CI 0.0424-0.0583 (false recalls per 1,000: 50, CI 42-58)
+  true false-recall 0.10: 298/2985 -> 95% CI 0.0893-0.1111 (false recalls per 1,000: 100, CI 89-111)
+  power(n=2985, true spec 0.95, lower bound > 0.93) = 0.996
+  power(n=2985, true spec 0.95, lower bound > 0.94) = 0.644
+  power(n=2985, true spec 0.9, lower bound > 0.88) = 0.935
+  min non-cancer women for 80% power, true spec 0.95, lower bound > 0.94: ~4225
+  min non-cancer women for 80% power, true spec 0.9, lower bound > 0.88: ~2000
+== Certification at a new site (zero / one / two misses, one-sided 95%)
+  sensitivity >= 0.85: n cancers = [19, 30, 40]
+  sensitivity >= 0.9: n cancers = [29, 46, 61]
+  sensitivity >= 0.95: n cancers = [59, 93, 124]
+  recall <= 0.05 certified (one-sided 95% upper bound) when observed 0.03: n normals ~340
+  recall <= 0.05 certified (one-sided 95% upper bound) when observed 0.04: n normals ~1260
+  recall <= 0.10 certified (one-sided 95% upper bound) when observed 0.03: n normals ~70
+  recall <= 0.10 certified (one-sided 95% upper bound) when observed 0.04: n normals ~80
+  recall <= 0.10 certified (one-sided 95% upper bound) when observed 0.07: n normals ~290
+  recall <= 0.10 certified (one-sided 95% upper bound) when observed 0.08: n normals ~630
+== Paired comparison on cancers: device (+CBE) vs CBE alone, exact McNemar, two-sided alpha 0.05
+  +10 points (disc. 13%/3%): power with 150 cancers = 0.846; with 100 = 0.665
+  +15 points (disc. 18%/3%): power with 150 cancers = 0.988; with 100 = 0.918
+  +20 points (disc. 22%/2%): power with 150 cancers = 1.000; with 100 = 0.995
