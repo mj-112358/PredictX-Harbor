@@ -1,21 +1,20 @@
-# Exact versions used for every result in the paper.
-# scikit-learn is pinned: grouped cross-validation splits differ across versions.
+# SweepScreen: exact versions used for every result. CPU-only.
 numpy==2.5.3
 pandas==2.3.3
 scipy==1.18.1
 scikit-learn==1.6.1
-jax==0.11.2
-jaxlib==0.11.2
-optax==0.2.8
 torch==2.5.1
-tabpfn==2.2.1
-catboost==1.2.10
-xgboost==3.4.1
-optuna==5.0.0
-pyreadr==0.5.7
+transformers==4.57.1
+safetensors==0.8.0
+huggingface-hub==0.36.2
+opencv-python-headless==5.0.0.93
+imagehash==4.3.2
+pillow==13.0.0
+openpyxl==3.1.5
 matplotlib==3.11.2
 joblib==1.6.0
 fastapi==0.143.2
 uvicorn==0.53.0
+python-multipart==0.0.32
 httpx==0.28.1
 pytest==9.1.1
