@@ -311,7 +311,7 @@ def ablation(results: Path, out: Path):
             d = _robustness_drop(res) if (res / "robustness").exists() else pd.DataFrame()
             d = d[d.site == site] if len(d) else d
             drops.append(float(d.d_sens.mean()) if len(d) else float("nan"))
-        lines.append(f"{site} & {f3(aps[1])} & {f3(aps[0])} & {f3(drops[1])} & {f3(drops[0])} \\")
+        lines.append(f"{site} & {f3(aps[1])} & {f3(aps[0])} & {f3(drops[1])} & {f3(drops[0])} \\\\")
         put(f"abl_{site}_ap_noaug", aps[1])
         put(f"abl_{site}_ap_aug", aps[0])
         put(f"abl_{site}_drop_noaug", drops[1])
@@ -414,6 +414,54 @@ def runtime(results: Path, out: Path):
               "encoder_batch1_ms", "encoder_batch16_ms_per_frame"):
         if r.get(k) is not None:
             put(f"rt_{k}", r[k])
+    put("rt_sweep_seconds", 2 * 20 * 15 / r["end_to_end_frames_per_second"])   # two 20-s sweeps at 15 fps
+
+
+def ranges(allm: dict):
+    """Cross-site minimum and maximum of each LOSO metric (for the text)."""
+    for key in ("det_auroc", "mal_auroc_gt", "mal_auroc_det"):
+        vals = [m[key][0] for m in allm.values() if key in m and np.isfinite(m[key][0])]
+        if vals:
+            put(f"range_{key}_min", min(vals))
+            put(f"range_{key}_max", max(vals))
+    for key in ("ap50",):
+        vals = [m[key] for m in allm.values() if np.isfinite(m[key])]
+        if vals:
+            put(f"range_{key}_min", min(vals))
+            put(f"range_{key}_max", max(vals))
+    vals = [m["froc"]["at"][1.0] for m in allm.values()]
+    if vals:
+        put("range_froc_one_min", min(vals))
+        put("range_froc_one_max", max(vals))
+    drops = [NUM[f"internal_{s}_ap50"] - NUM[f"loso_{s}_ap50"] for s in allm if f"internal_{s}_ap50" in NUM]
+    if drops:
+        put("shift_mean_ap_drop", float(np.mean(drops)))
+    md = [NUM[f"internal_{s}_mal_auroc_gt"] - NUM[f"loso_{s}_mal_auroc_gt"] for s in allm
+          if f"internal_{s}_mal_auroc_gt" in NUM and f"loso_{s}_mal_auroc_gt" in NUM]
+    if md:
+        put("shift_mean_mal_drop", float(np.mean(md)))
+
+
+def pathway():
+    """Sample-size numbers of the deployment-pathway design (Appendix)."""
+    from sweepscreen.evaluation import sample_size as ss
+    from sweepscreen.safety import min_positives
+
+    n_ca, n_neg = 150, 2985
+    put("path_cancers", n_ca)
+    put("path_camp", 3000)
+    put("path_runin", 500)
+    put("path_power_twelve", ss.iut_power(n_ca, n_neg, 0.12, 0.035))
+    put("path_power_ten", ss.iut_power(n_ca, n_neg, 0.10, 0.035))
+    put("path_power_fifteen", ss.iut_power(n_ca, n_neg, 0.15, 0.035))
+    put("path_runin_max_count", ss.max_certifiable_count(500, 0.05))
+    lo, hi = ss.cp_interval(135, n_ca)
+    put("path_sens_ci_lo", lo)
+    put("path_sens_ci_hi", hi)
+    put("path_power_sens_eighty", ss.power_lower_above(n_ca, 0.90, 0.80))
+    for target in (0.90, 0.95):
+        for misses in (0, 1, 2):
+            put(f"cert_n_{int(target * 100)}_{misses}", min_positives(target, misses))
 
 
 def write_numbers(out: Path):
@@ -442,7 +490,7 @@ def main(argv=None):
     args = p.parse_args(argv)
     args.out.mkdir(parents=True, exist_ok=True)
     datasets(args.processed, args.out)
-    loso(args.results, args.out, 50 if args.fast else args.n_boot)
+    ranges(loso(args.results, args.out, 50 if args.fast else args.n_boot))
     calibration(args.results, args.out, m_local=3 if args.fast else 50)
     robustness(args.results, args.out)
     ablation(args.results, args.out)
@@ -450,6 +498,7 @@ def main(argv=None):
     video(args.results, args.out)
     certify(args.results, args.out)
     runtime(args.results, args.out)
+    pathway()
     write_numbers(args.out)
     print(f"wrote {len(NUM)} numbers and tables to {args.out}")
 

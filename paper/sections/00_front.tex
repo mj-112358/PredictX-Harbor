@@ -1,0 +1,12 @@
+\twocolumn[{%
+\begin{center}
+{\LARGE\bfseries SweepScreen: an AI pipeline for reading handheld\\[3pt]
+whole-breast ultrasound sweeps in community breast screening\par}
+\vspace{10pt}
+{\large Pranay Sadani \qquad Mrityunjay Gupta\par}
+\vspace{12pt}
+\end{center}
+\begin{abstract}
+\noindent Most women in India are never screened for breast cancer. Clinical breast examination (CBE) by health workers is the national standard of care, mammography reaches about one woman in a hundred, and most cancers are found at an advanced stage. Handheld ultrasound probes are now cheap enough for community use, but reading a sweep needs a sonologist. We describe SweepScreen, a CPU-only software pipeline that reads a health worker's handheld sweep of both breasts and returns one result per woman: \textsc{normal}, \textsc{recall} or \textsc{unreadable}. The system comprises a data layer that unifies \NTotalSites{} public breast-ultrasound datasets from five countries under one schema with perceptual-hash deduplication and group-level splits; preprocessing that removes scanner overlays and simulates handheld-probe degradations; a quality and coverage gate; a lesion detector built as a light convolutional head on frozen DINOv2 ViT-S/14 patch tokens; a malignancy head; temporal persistence aggregation from frames to breasts to the woman; and a safety layer that calibrates scores and certifies the operating threshold at a new site with exact binomial and conformal bounds. In leave-one-site-out evaluation, lesion detection reaches an average precision (IoU $\ge$ 0.5) of \NRangeApfivezeroMin--\NRangeApfivezeroMax{} and lesion sensitivity at one false positive per frame of \NRangeFrocOneMin--\NRangeFrocOneMax; malignancy AUROC on held-out sites is \NRangeMalAurocGtMin--\NRangeMalAurocGtMax. On \NVidN{} held-out video clips, five-frame persistence detects \NVidWfiveDet{} of clips while flagging \NVidWfiveFp{} of lesion-free frames. The full pipeline runs at \NRtEndToEndFramesPerSecond{} frames per second on a \NRtThreads-thread CPU. Code, trained models, a FastAPI service with a health-worker web interface, and a script that regenerates every number in this paper are released.
+\end{abstract}
+\vspace{8pt}}]

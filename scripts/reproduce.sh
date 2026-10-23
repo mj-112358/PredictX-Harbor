@@ -18,5 +18,6 @@ python -m experiments.train_final                       # deployable model -> mo
 python -m experiments.run_runtime                       # CPU timings with the registered model
 python -m experiments.report                            # tables, figures, numbers.json, macros.tex
 python -m pytest -q
+python scripts/check_paper_numbers.py                   # every number macro used in the paper was generated
 (cd paper && pdflatex -interaction=nonstopmode main.tex >/dev/null && pdflatex -interaction=nonstopmode main.tex >/dev/null)
 echo "done: paper/main.pdf"

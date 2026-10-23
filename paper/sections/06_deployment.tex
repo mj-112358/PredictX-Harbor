@@ -1,0 +1,23 @@
+\section{Deployment and runtime}\label{sec:deploy}
+\para{Service.} The deployed model is fitted on all five datasets with the same training function and stored as a single bundle (quality gate, detector head and calibrator, malignancy head, operating threshold, aggregation settings). Its version is the first 12 hex digits of the bundle's SHA-256, a JSON model card sits next to it, and \code{models/registry.json} marks the current version. A FastAPI service exposes \code{POST /analyze/image} (one frame: lesion probability, boxes in original pixel coordinates, suspicion score, quality, an annotated image and a heatmap overlay) and \code{POST /analyze/sweep} (left and right sweeps as video or image files: the per-woman decision, reasons, per-breast scores and coverage, and the key frame of each breast). Videos are decoded with OpenCV and subsampled to at most 15 frames per second. Every request is appended to a JSON-lines inference log with a request identifier, timestamp, model version, SHA-256 of each uploaded file, latency and the result. The woman identifier is stored only as a hash.
+
+\para{Health-worker interface.} A single-page web interface served by the same process takes a woman identifier and the two sweeps, and shows the decision as a large coloured label with the action to take (continue routine screening, refer to the diagnostic centre, or repeat the sweep of the named breast). For \textsc{recall} it shows the key frame with the detected box. The page works on a phone screen and in dark mode.
+
+\para{Packaging.} A container image (\code{Dockerfile}) installs the CPU build of PyTorch and the pinned requirements and runs the service as an unprivileged user with a health check; model bundles, encoder weights and logs are mounted volumes.
+
+\begin{table}[t]
+\caption{CPU runtime per frame (median, milliseconds; \NRtThreads{} threads).}
+\label{tab:runtime}
+\centering\footnotesize
+\begin{tabular}{lr}
+\toprule
+Stage & ms\\
+\midrule
+\tablebody{generated/tab_runtime.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\para{Runtime.} Table~\ref{tab:runtime} gives per-stage CPU times. The encoder dominates: \NRtEncoderBatchoneMs{} ms per frame at batch size 1 and \NRtEncoderBatchonesixMsPerFrame{} ms per frame at batch size 16. End to end the pipeline processes \NRtEndToEndFramesPerSecond{} frames per second, so a woman's two 20-second sweeps, decoded at 15 frames per second, are read in \NRtSweepSeconds{} seconds. The model bundle is \NRtBundleMb{} MB, the encoder weights \NRtEncoderWeightsMb{} MB, and peak memory \NRtPeakRssMb{} MB.
+
+\para{Reproducibility.} \code{scripts/reproduce.sh} verifies the input manifest, rebuilds the record table and feature stores, runs every experiment, trains and registers the deployed model, measures runtime, regenerates every table, figure and number in this paper (\code{paper/generated}), runs the test suite and builds the PDF. The test suite covers each module, including loaders on files laid out like each dataset, deduplication and split disjointness, preprocessing geometry, quality-gate separation, detector learning on synthetic tokens, the decision rules, the coverage of the certification procedures by simulation, the service routes and the inference log, and a smoke run of every experiment script.

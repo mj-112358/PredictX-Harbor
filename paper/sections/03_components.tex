@@ -1,0 +1,39 @@
+\section{Components}\label{sec:components}
+
+\subsection{Data layer}\label{sec:datalayer}
+\para{Unified schema.} Each loader (\code{sweepscreen/data/loaders}) maps one dataset's files to records with a common schema: image or frame path, image-level class (normal, benign, malignant), lesion boxes, mask paths, patient identifier, lesion and video identifiers, frame index, device, age, BI-RADS category and free-form metadata. Boxes are derived from masks as one box per 8-connected component. Loaders match spreadsheet columns by normalised name and raise a layout error, rather than guessing, when files do not match the documented structure. For BreastVid, the corrections published by the dataset authors (one duplicate video removed, two videos relabelled and grouped with the same patient) are applied in the loader.
+
+\para{Deduplication and groups.} Public breast-ultrasound datasets contain repeated views of the same lesion and, in BUSI, duplicated images \cite{busicritique}. Every still image and every tenth video frame is hashed with a 64-bit DCT perceptual hash after overlay removal and cropping. Pairs within \NDedupMaxHamming{} Hamming bits are linked, as are records sharing a patient or video identifier. The connected components of this graph are \emph{groups}, and every split is made at group level. Clusters whose images disagree on benign versus malignant are flagged and excluded from training (\NDiscordantRecords{} records). Groups that span two datasets (\NCrossSiteRecords{} records) are removed from the training side of a leave-one-site-out fold.
+
+\para{Splits and manifest.} \code{splits.leave\_one\_site\_out} holds out each dataset in turn, and \code{splits.group\_kfold} gives stratified grouped folds within a dataset. A manifest records the SHA-256 of every raw file and pretrained weight; \code{manifest verify} fails if any input changed.
+
+\subsection{Preprocessing}
+Exported frames contain scanner text, scale bars and sometimes calipers drawn over the image. Coloured pixels and small saturated components are marked as annotations and inpainted with the Telea method \cite{telea2004}. The field of view is the largest bright connected region after a morphological opening that removes text strokes. Intensities are windowed to the 1st--99th percentile, which absorbs gain differences between scanners. The crop is letterboxed to $224\times224$, and box coordinates are carried through every transform.
+
+\para{Handheld-probe degradations.} Seven degradations reproduce what low-cost probes and inexperienced operators add to an image, each at three graded levels (Table~\ref{tab:robustness}): multiplicative Rayleigh speckle, Gaussian blur, resolution loss (down- and up-sampling), JPEG compression, gain change, shallow depth setting (removal of the deepest rows, with boxes clipped), and partial probe contact (a dark lateral wedge). They serve two purposes: training augmentation (one degraded copy of every still image, seeded by image content so the copy is reproducible) and the robustness evaluation.
+
+\subsection{Q: quality and coverage gate}
+The gate computes 14 interpretable features per cropped frame: intensity percentiles and entropy; dark and saturated fractions; Laplacian variance and gradient energy (blur, missing speckle texture); the width of dark lateral bands relative to the well-coupled columns (partial contact); and the depth at which the row profile reaches the noise floor (penetration). A gradient-boosted classifier separates real frames from synthetic failures generated from the same frames: probe in air, contact over less than half the face, under- and over-gain, motion blur, and reverberation-only frames. The adequacy threshold passes 97\% of training frames. A breast is readable when it has at least 30 adequate frames and an adequate fraction of at least 0.6. Without probe tracking, coverage is measured by this adequate-frame count over a fixed-duration sweep protocol.
+
+\subsection{D: lesion detector}
+\para{Encoder.} DINOv2 ViT-S/14 \cite{dinov2} (22M parameters), frozen, receives the greyscale frame replicated to three channels and returns a CLS token and a $16\times16$ grid of 384-dimensional patch tokens. Freezing the encoder lets all features be computed once and cached, so the trainable heads fit on a CPU in minutes.
+
+\para{Patch head.} A three-layer convolutional head ($1\times1$ projection to 128 channels, $3\times3$ context convolution, $1\times1$ output) predicts a lesion logit per patch. The target is the fraction of the patch covered by the lesion mask (the box where no mask exists), trained with soft binary cross-entropy, a positive-class weight capped at 10, AdamW and early stopping on 20\% of training groups.
+
+\para{Frame probability, boxes and heatmap.} A logistic calibrator on three statistics of the probability map (maximum, mean of the top four patches, fraction above 0.5), fitted on the early-stopping groups, gives the frame lesion probability. Boxes are connected components of the bilinearly up-sampled map above 0.5, scored by their peak. The up-sampled map is the heatmap shown to the health worker.
+
+\subsection{M: malignancy head}
+For a detected lesion, the head concatenates the CLS token, the mean of the patch tokens inside the box, and age with a missing-value indicator (age is recorded only in BrEaST). It applies standardisation and an L2-regularised logistic regression whose strength is chosen by stratified grouped cross-validation on log loss. It is trained on the reference boxes and evaluated with both reference and detected boxes. In the screening decision, \textsc{recall} is triggered by lesion presence, not by the malignancy score. The suspicion score ranks recalled women and is reported with each recall.
+
+\subsection{A: temporal aggregation}
+Single-frame detections in a sweep are noisy. The aggregator averages frame lesion probabilities over a sliding window of $w$ consecutive \emph{adequate} frames, and a frame rejected by Q breaks the run. A lesion must therefore be seen in $w$ consecutive usable frames to score highly. The breast score is the maximum persistent score; the woman is \textsc{recall} if either breast reaches the operating threshold (a detected lesion is reported even if the other breast is unreadable), \textsc{unreadable} if a breast fails the coverage rule, and \textsc{normal} otherwise.
+
+\subsection{Safety layer: calibration and threshold certification}\label{sec:certify}
+\para{Calibration.} Logistic (Platt) recalibration \cite{platt1999} of the score can be refitted on a small local sample. Calibration slope, calibration-in-the-large intercept and expected calibration error are reported per site.
+
+\para{Certified threshold.} A threshold tuned on the training sites does not keep its sensitivity at a new site. Given the scores of $n$ locally confirmed positives, the system sets the threshold with a stated guarantee:
+\begin{itemize}\itemsep1pt
+\item \emph{Exact binomial}: the highest threshold whose one-sided 95\% Clopper--Pearson lower bound \cite{clopper1934} on sensitivity is at least the target $\tau$. If the local positives are representative, the site's sensitivity at that threshold is at least $\tau$ with probability 0.95. Certification needs at least \NCertNNinefiveZero{} positives for $\tau=0.95$ with no miss among them, \NCertNNinefiveOne{} with one miss and \NCertNNinefiveTwo{} with two (\NCertNNinezeroZero, \NCertNNinezeroOne{} and \NCertNNinezeroTwo{} for $\tau=0.90$).
+\item \emph{Split conformal} \cite{vovk2005,angelopoulos2023}: the $\lfloor (n+1)(1-\tau)\rfloor$-th smallest positive score, which guarantees that a new exchangeable positive scores above the threshold with probability at least $\tau$, on average over calibration sets.
+\item \emph{Naive transfer}: the threshold reaching $\tau$ on the training sites' validation positives, with no local data.
+\end{itemize}

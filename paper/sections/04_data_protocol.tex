@@ -1,0 +1,34 @@
+\section{Datasets and evaluation protocol}\label{sec:data}
+\begin{table*}[t]
+\caption{Datasets after loading. Lesion frames: frames that show a lesion. Metadata: per-case fields available beyond image and label.}
+\label{tab:datasets}
+\centering\footnotesize
+\begin{tabular}{llrrrrrrrl}
+\toprule
+Site & Country & Records & Patients & Normal & Benign & Malignant & Lesion frames & Boxes & Metadata\\
+\midrule
+\tablebody{generated/tab_datasets.tex}
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\para{Datasets.} Five public datasets are used (Table~\ref{tab:datasets}): BUSI (Egypt) \cite{busi}, BUS-BRA (Brazil) \cite{busbra}, BrEaST (Poland) \cite{breast}, UDIAT Dataset B (Spain) \cite{udiat} and BreastVid (China) \cite{breastvid}. The first four are still images with lesion masks; BreastVid contains \NBreastVidVideos{} lesion-centred video clips with per-frame boxes, including frames before the lesion appears and after it disappears. Normal (lesion-free) still images are available only in BUSI and BrEaST; lesion-free frames inside BreastVid clips provide a second source of negatives. In total the system is trained and evaluated on \NTotalRecords{} records.
+
+\begin{table}[t]
+\caption{Perceptual-hash deduplication per site: clusters of two or more near-identical images, records in such clusters, records in label-discordant clusters (excluded from training), and records linked across sites.}
+\label{tab:dedup}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lrrrrr}
+\toprule
+Site & Records & Clusters & In clusters & Discordant & Cross-site\\
+\midrule
+\tablebody{generated/tab_dedup.tex}
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\para{Protocol.} The primary evaluation is leave-one-site-out (LOSO): each dataset is held out in turn, and the detector, malignancy head, quality gate and operating threshold are fitted on the others. As a reference for the size of the site shift, the same components are also evaluated by five-fold grouped cross-validation within each dataset (\emph{internal}). Confidence intervals are 95\% percentile intervals from 2{,}000 bootstrap resamples of groups. Reporting follows TRIPOD+AI \cite{tripodai}.
+
+\para{Metrics.} \emph{Detection}: frame-level AUROC for lesion versus lesion-free frames and sensitivity at 95\% specificity (where a site has lesion-free frames); FROC sensitivity at 0.5 and 1 false positive per frame (hit: IoU $\ge 0.3$) and average precision at IoU $\ge 0.5$ \cite{voc}. \emph{Malignancy}: AUROC among lesion frames with the reference box and with the detected box. \emph{Calibration}: slope, intercept and ECE. \emph{Robustness}: change in lesion sensitivity at the fold's operating threshold under each degradation. \emph{Quality gate}: pass rate on held-out real frames and rejection rate on held-out synthetic failures. \emph{Aggregation}: clip detection rate and lesion-free frame flag rate on BreastVid as a function of the persistence window. \emph{Certification}: the fraction of 200 random local samples for which the certified threshold meets the target on the rest of the site.

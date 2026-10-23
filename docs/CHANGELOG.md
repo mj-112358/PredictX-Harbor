@@ -2,6 +2,36 @@
 
 Running log of what changed in the project and why. Newest first.
 
+## 2026-10-23: SweepScreen pipeline built end to end; systems paper drafted
+
+* Author redirected the work: stop the field-study and protocol work, build the complete pipeline,
+  and write a technical systems paper. `docs/protocol.md` and `docs/niche_decision.md` are kept as
+  planning history; the field-study design moved to a short appendix of the paper ("deployment
+  pathway").
+* Added `docs/data_request.md`: the exact datasets (BUSI, BUS-BRA, BrEaST, UDIAT B, BreastVid; BUS-UCLM
+  recommended) and weights (DINOv2 ViT-S/14). TabPFN is no longer used: the malignancy head is a
+  logistic regression.
+* Built `sweepscreen/`:
+  * data layer: five loaders, schema, pHash dedup and groups, LOSO and grouped splits, manifest;
+  * preprocessing: overlay inpainting, FOV crop, normalisation, letterbox, seven handheld
+    degradations;
+  * quality gate, frozen encoder, patch-level detector, malignancy head;
+  * temporal aggregation;
+  * calibration and exact-binomial / conformal threshold certification;
+  * evaluation metrics (FROC, AP, bootstrap);
+  * a shared training path used by every fold and by the deployed model, and the inference pipeline.
+* Built `experiments/`: features (clean + augmented), LOSO/internal, augmentation ablation, video
+  aggregation, robustness, quality gate, certification, runtime, final training with registry,
+  and a report generator that writes every table, figure and number macro.
+* Built `service/`: FastAPI, health-worker web page, JSONL inference log, `Dockerfile`.
+* Added `scripts/reproduce.sh` and `scripts/check_paper_numbers.py`.
+* Tests: 60+ covering every module, the service, and a smoke run of every experiment script on
+  synthetic fixture files laid out like each dataset (fixtures are never used for results).
+* Paper (`paper/`) rewritten as a systems paper. Results are macros only; it compiles against
+  fixture outputs in a scratch directory. Real numbers are produced when the data are present.
+* Not yet done, and blocked: no dataset or encoder weight could be downloaded in this environment,
+  so no real result exists yet. The Docker image could not be built here (no Docker daemon).
+
 ## 2026-10-22: Author decisions D1–D6 applied (protocol v0.11, memo v3); project renamed SweepScreen
 
 * **Renamed to SweepScreen** (working name; trademark check pending). The five-disease PredictX-HARBOR

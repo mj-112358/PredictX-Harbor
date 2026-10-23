@@ -1,0 +1,160 @@
+\section{Results}\label{sec:results}
+
+\subsection{Lesion detection and malignancy on held-out sites}
+\begin{table*}[t]
+\caption{Leave-one-site-out results. Detection AUROC and sensitivity at 95\% specificity are frame-level, lesion versus lesion-free frames (-- where a site has no lesion-free frames). FROC: lesion sensitivity at 0.5 and 1 false positive per frame. AP50: average precision at IoU $\ge 0.5$. Malignancy AUROC among lesion frames with the reference box and with the detected box. 95\% group-bootstrap intervals in parentheses.}
+\label{tab:loso}
+\centering\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccccc}
+\toprule
+Held-out site & Detection AUROC & Sens.@Spec.95 & FROC@0.5 & FROC@1 & AP50 & Malignancy AUROC (ref.\ box) & Malignancy AUROC (det.\ box)\\
+\midrule
+\tablebody{generated/tab_loso.tex}
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+Table~\ref{tab:loso} reports each component on a dataset it never saw in training. Average precision ranges from \NRangeApfivezeroMin{} to \NRangeApfivezeroMax{} and lesion sensitivity at one false positive per frame from \NRangeFrocOneMin{} to \NRangeFrocOneMax. On sites with lesion-free frames, frame-level detection AUROC ranges from \NRangeDetAurocMin{} to \NRangeDetAurocMax. Malignancy AUROC ranges from \NRangeMalAurocGtMin{} to \NRangeMalAurocGtMax{} with the reference box and from \NRangeMalAurocDetMin{} to \NRangeMalAurocDetMax{} with the detector's own box. Figure~\ref{fig:froc} shows the FROC curves.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{generated/fig_froc.pdf}
+\caption{FROC curves per held-out site (leave-one-site-out).}
+\label{fig:froc}
+\end{figure}
+
+\begin{table}[t]
+\caption{Site shift: within-site cross-validation (internal) versus leave-one-site-out (LOSO).}
+\label{tab:shift}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccc}
+\toprule
+& \multicolumn{2}{c}{AP50} & \multicolumn{2}{c}{Malignancy AUROC}\\
+Site & Internal & LOSO & Internal & LOSO\\
+\midrule
+\tablebody{generated/tab_shift.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\para{Site shift.} Table~\ref{tab:shift} compares each site's internal cross-validation with its held-out result. Moving to an unseen site changes average precision by \NShiftMeanApDrop{} and malignancy AUROC by \NShiftMeanMalDrop{} on average (internal minus LOSO). This gap is what the safety layer is designed to absorb.
+
+\subsection{Calibration}
+\begin{table}[t]
+\caption{Malignancy-score calibration on each held-out site before and after Platt recalibration on \NCalLocalCases{} local lesions (median over 50 random local samples, evaluated on the remaining lesions).}
+\label{tab:calibration}
+\centering\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{lrcccccc}
+\toprule
+& & \multicolumn{3}{c}{LOSO} & \multicolumn{3}{c}{Recalibrated}\\
+Site & $n$ & Slope & Int. & ECE & Slope & Int. & ECE\\
+\midrule
+\tablebody{generated/tab_calibration.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:calibration} and Figure~\ref{fig:reliability} report calibration of the malignancy score on held-out sites and the effect of refitting the calibrator on a small local sample.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{generated/fig_reliability.pdf}
+\caption{Reliability of the malignancy score on held-out sites (eight equal-count bins).}
+\label{fig:reliability}
+\end{figure}
+
+\subsection{Robustness to handheld-probe degradations}
+\begin{table}[t]
+\caption{Change in lesion sensitivity at the operating threshold and in malignancy AUROC under each degradation, averaged over held-out still-image sites, and the fraction of degraded frames that the quality gate flags.}
+\label{tab:robustness}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrccc}
+\toprule
+Degradation & Level & $\Delta$ sens. & $\Delta$ AUROC & Flagged by Q\\
+\midrule
+\tablebody{generated/tab_robustness.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:robustness} and Figure~\ref{fig:robustness} show how each degradation affects the detector and how often the quality gate catches it. The largest loss of sensitivity occurs under \NRobWorstDegradation{} ($\Delta$ = \NRobWorstDsens).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{generated/fig_robustness.pdf}
+\caption{Change in lesion sensitivity under graded degradations (mean over held-out sites).}
+\label{fig:robustness}
+\end{figure}
+
+\begin{table}[t]
+\caption{Augmentation ablation per held-out site: AP50 on clean images and mean change in lesion sensitivity under all degradations, for detectors trained without and with handheld-degradation augmentation.}
+\label{tab:ablation}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccc}
+\toprule
+& \multicolumn{2}{c}{AP50 (clean)} & \multicolumn{2}{c}{Mean $\Delta$ sens.}\\
+Site & No aug. & Aug. & No aug. & Aug.\\
+\midrule
+\tablebody{generated/tab_ablation.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\para{Augmentation.} Table~\ref{tab:ablation} compares detectors trained with and without the degraded training copies.
+
+\subsection{Quality gate}
+\begin{table}[t]
+\caption{Quality gate on held-out sites: pass rate on real frames and rejection rate on synthetic failures of each mode.}
+\label{tab:quality}
+\centering\footnotesize
+\setlength{\tabcolsep}{2pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccccc}
+\toprule
+Site & Pass & Blank & Contact & Under & Over & Blur & Reverb.\\
+\midrule
+\tablebody{generated/tab_quality.tex}
+\bottomrule
+\end{tabular}}
+\end{table}
+
+On held-out sites the gate passes \NQMinPass--\NQMaxPass{} of real frames and rejects at least \NQMinReject{} of every synthetic failure mode (Table~\ref{tab:quality}).
+
+\subsection{Temporal aggregation on video}
+\begin{table}[t]
+\caption{Persistence aggregation on \NVidN{} BreastVid clips (detector trained without BreastVid). Clips detected, fraction of lesion-free frames flagged, and median frames from lesion onset to first detection.}
+\label{tab:video}
+\centering\footnotesize
+\begin{tabular}{rccc}
+\toprule
+Window & Clips detected & Lesion-free flagged & Frames to detection\\
+\midrule
+\tablebody{generated/tab_video.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:video} and Figure~\ref{fig:video} show the effect of the persistence window. Without persistence ($w=1$), \NVidWoneDet{} of clips are detected and \NVidWoneFp{} of lesion-free frames are flagged; with $w=5$, the figures are \NVidWfiveDet{} and \NVidWfiveFp. A clip-level malignancy score (mean suspicion over detected frames) separates malignant from benign clips with AUROC \NVidMalAurocDet{} using detected boxes (\NVidMalAurocGt{} with reference boxes).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{generated/fig_video.pdf}
+\caption{Clip detection rate and lesion-free frame flag rate against the persistence window.}
+\label{fig:video}
+\end{figure}
+
+\subsection{Threshold certification at a new site}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{generated/fig_certify.pdf}
+\caption{Fraction of local samples for which the certified threshold reaches sensitivity 0.95 on the rest of the held-out site, averaged over sites, against the number of local positives. Dashed: naive transfer of the training-site threshold.}
+\label{fig:certify}
+\end{figure}
+
+For a target sensitivity of 0.95, the naive transferred threshold meets the target on a held-out site in \NCertNaiveNinefiveCoverage{} of cases on average, the exact binomial threshold in \NCertBinomialNinefiveCoverage{} and the conformal threshold in \NCertConformalNinefiveCoverage{} of local samples (Figure~\ref{fig:certify}; per-site results in Table~\ref{tab:certify}, Appendix~\ref{app:certify}).
