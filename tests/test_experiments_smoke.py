@@ -30,11 +30,14 @@ def test_all_experiments_and_report(workspace):
     run_quality.main(common)
     run_certify.main(common)
     run_robustness.main(common + ["--sites", "BUSI"])
+    abl = [a if a != str(w / "res") else str(w / "res" / "ablation_noaug") for a in common]
+    run_loso.main(abl + ["--no-aug", "--no-internal", "--sites", "BUSI"])
+    run_robustness.main(abl + ["--sites", "BUSI"])
     train_final.main(common + ["--models-dir", str(w / "models")])
     reg = json.loads((w / "models" / "registry.json").read_text())
     assert reg[-1]["current"] and (w / "models" / reg[-1]["file"]).exists()
     run_runtime.main(common + ["--models-dir", str(w / "models"), "--threads", "1"])
     report.main(common + ["--out", str(w / "gen")])
     for name in ("tab_datasets.tex", "tab_loso.tex", "tab_video.tex", "tab_quality.tex", "tab_certify.tex",
-                 "tab_runtime.tex", "tab_robustness.tex", "macros.tex", "numbers.json", "fig_froc.pdf"):
+                 "tab_runtime.tex", "tab_robustness.tex", "tab_ablation.tex", "macros.tex", "numbers.json", "fig_froc.pdf"):
         assert (w / "gen" / name).exists(), name

@@ -1,0 +1,10 @@
+.git
+.venv
+legacy
+data
+results
+paper
+docs
+tests
+logs
+**/__pycache__

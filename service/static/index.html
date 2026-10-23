@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SweepScreen</title>
+<style>
+  :root { --surface:#fcfcfb; --plane:#f9f9f7; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781; --line:#e1e0d9;
+          --accent:#2a78d6; --normal:#0ca30c; --recall:#d03b3b; --unread:#fab219; }
+  @media (prefers-color-scheme: dark) {
+    :root { --surface:#1a1a19; --plane:#0d0d0d; --ink:#f0efec; --ink2:#c3c2b7; --line:#2c2c2a; --accent:#3987e5; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--plane); color:var(--ink); font:16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 1.4rem; margin: 8px 0 4px; }
+  .sub { color: var(--ink2); margin: 0 0 16px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+  label { display:block; font-weight:600; margin: 12px 0 4px; }
+  .hint { color: var(--muted); font-size: .85rem; font-weight: 400; }
+  input[type=text], input[type=file] { width:100%; padding:10px; border:1px solid var(--line); border-radius:8px; background:var(--plane); color:var(--ink); font-size:1rem; }
+  .row { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+  button { margin-top:16px; width:100%; padding:14px; font-size:1.05rem; font-weight:600; border:0; border-radius:8px; background:var(--accent); color:#fff; cursor:pointer; }
+  button:disabled { opacity:.6; cursor:wait; }
+  .decision { font-size: 2rem; font-weight: 800; letter-spacing: .02em; padding: 14px; border-radius: 10px; text-align:center; color:#fff; }
+  .NORMAL { background: var(--normal); } .RECALL { background: var(--recall); } .UNREADABLE { background: var(--unread); color:#0b0b0b; }
+  .action { font-size: 1.05rem; margin: 12px 0 4px; }
+  ul { margin: 6px 0; padding-left: 20px; color: var(--ink2); }
+  .frames { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  @media (max-width: 560px) { .frames { grid-template-columns: 1fr; } }
+  .frames img { width:100%; border-radius:8px; border:1px solid var(--line); }
+  .meta { color: var(--muted); font-size: .8rem; margin-top: 10px; }
+  .err { color: var(--recall); font-weight:600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>SweepScreen</h1>
+  <p class="sub">Handheld breast ultrasound sweep reading</p>
+
+  <form class="card" id="form">
+    <label for="woman">Woman ID <span class="hint">(stored only as a hash in the log)</span></label>
+    <input type="text" id="woman" name="woman_id" autocomplete="off">
+    <div class="row">
+      <div>
+        <label for="left">Left breast sweep <span class="hint">video or images</span></label>
+        <input type="file" id="left" name="left" accept="video/*,image/*" multiple required>
+      </div>
+      <div>
+        <label for="right">Right breast sweep <span class="hint">video or images</span></label>
+        <input type="file" id="right" name="right" accept="video/*,image/*" multiple required>
+      </div>
+    </div>
+    <button type="submit" id="go">Analyse</button>
+  </form>
+
+  <section class="card" id="result" hidden>
+    <div class="decision" id="decision"></div>
+    <p class="action" id="action"></p>
+    <ul id="reasons"></ul>
+    <div class="frames" id="frames"></div>
+    <p class="meta" id="meta"></p>
+  </section>
+</main>
+<script>
+const ACTION = {
+  NORMAL: "No suspicious lesion found. Continue routine screening.",
+  RECALL: "Suspicious finding. Refer to the diagnostic centre for breast ultrasound and specialist review.",
+  UNREADABLE: "Scan not adequate. Re-apply gel and repeat the sweep of the breast(s) listed below.",
+};
+const form = document.getElementById("form"), go = document.getElementById("go");
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  go.disabled = true; go.textContent = "Analysing…";
+  const res = document.getElementById("result");
+  try {
+    const r = await fetch("/analyze/sweep", { method: "POST", body: new FormData(form) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.detail || r.statusText);
+    const d = document.getElementById("decision");
+    d.textContent = j.decision; d.className = "decision " + j.decision;
+    document.getElementById("action").textContent = ACTION[j.decision];
+    const ul = document.getElementById("reasons"); ul.innerHTML = "";
+    for (const reason of j.reasons) { const li = document.createElement("li"); li.textContent = reason; ul.appendChild(li); }
+    const fr = document.getElementById("frames"); fr.innerHTML = "";
+    for (const [side, k] of Object.entries(j.key_frames || {})) {
+      if (j.decision !== "RECALL" || k.score < j.threshold) continue;
+      const fig = document.createElement("figure"); fig.style.margin = "0";
+      const img = document.createElement("img"); img.src = "data:image/png;base64," + k.annotated_png;
+      img.alt = side + " breast, frame " + k.frame;
+      const cap = document.createElement("figcaption"); cap.className = "meta";
+      cap.textContent = side + " breast, frame " + k.frame + ", score " + k.score.toFixed(2);
+      fig.append(img, cap); fr.appendChild(fig);
+    }
+    document.getElementById("meta").textContent = "Model " + j.model_version;
+    res.hidden = false;
+  } catch (err) {
+    res.hidden = false;
+    document.getElementById("decision").textContent = "";
+    document.getElementById("decision").className = "";
+    document.getElementById("action").innerHTML = '<span class="err"></span>';
+    document.querySelector("#action .err").textContent = "Error: " + err.message;
+  } finally { go.disabled = false; go.textContent = "Analyse"; }
+});
+</script>
+</body>
+</html>

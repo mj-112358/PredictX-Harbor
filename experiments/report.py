@@ -277,6 +277,48 @@ def robustness(results: Path, out: Path):
     plt.close(fig)
 
 
+def _robustness_drop(results: Path) -> pd.DataFrame:
+    """Mean change in lesion sensitivity per degradation/level (pooled over sites) for one results folder."""
+    import joblib
+
+    rows = []
+    for f in sorted((results / "robustness").glob("*.jsonl")):
+        site = f.stem
+        rob = read_predictions(f)
+        base = read_predictions(results / "predictions" / f"loso_{site}.jsonl").set_index("uid").loc[rob.uid.unique()]
+        thr = joblib.load(results / "models" / f"loso_{site}.joblib").frame_threshold
+        b = float((base[base.lesion == 1].frame_prob >= thr).mean())
+        for (deg, lv), g in rob.groupby(["degradation", "level"]):
+            rows.append({"site": site, "degradation": deg, "level": lv,
+                         "d_sens": float((g[g.lesion == 1].frame_prob >= thr).mean()) - b})
+    return pd.DataFrame(rows)
+
+
+def ablation(results: Path, out: Path):
+    """Augmentation ablation: clean LOSO AP50 and mean sensitivity change under degradation, with vs without."""
+    other = results / "ablation_noaug"
+    if not (other / "predictions").exists():
+        return
+    lines = []
+    for site in ordered({p.stem[5:] for p in (other / "predictions").glob("loso_*.jsonl")}):
+        aps = []
+        for res in (results, other):
+            pr = read_predictions(res / "predictions" / f"loso_{site}.jsonl")
+            aps.append(average_precision([[(tuple(c[0]), c[1]) for c in cs] for cs in pr.candidates],
+                                         [[tuple(b) for b in gb] for gb in pr.gt_boxes], 0.5))
+        drops = []
+        for res in (results, other):
+            d = _robustness_drop(res) if (res / "robustness").exists() else pd.DataFrame()
+            d = d[d.site == site] if len(d) else d
+            drops.append(float(d.d_sens.mean()) if len(d) else float("nan"))
+        lines.append(f"{site} & {f3(aps[1])} & {f3(aps[0])} & {f3(drops[1])} & {f3(drops[0])} \\")
+        put(f"abl_{site}_ap_noaug", aps[1])
+        put(f"abl_{site}_ap_aug", aps[0])
+        put(f"abl_{site}_drop_noaug", drops[1])
+        put(f"abl_{site}_drop_aug", drops[0])
+    (out / "tab_ablation.tex").write_text("\n".join(lines) + "\n")
+
+
 # ---------------------------------------------------------------------------------------------- quality, video, certify, runtime
 def quality(results: Path, out: Path):
     p = results / "quality.json"
@@ -403,6 +445,7 @@ def main(argv=None):
     loso(args.results, args.out, 50 if args.fast else args.n_boot)
     calibration(args.results, args.out, m_local=3 if args.fast else 50)
     robustness(args.results, args.out)
+    ablation(args.results, args.out)
     quality(args.results, args.out)
     video(args.results, args.out)
     certify(args.results, args.out)

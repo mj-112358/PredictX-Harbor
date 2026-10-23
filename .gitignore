@@ -12,3 +12,16 @@ legacy/predictx-harbor/paper/*.bbl
 legacy/predictx-harbor/paper/*.blg
 legacy/predictx-harbor/paper/*.synctex.gz
 records/
+# SweepScreen data and generated artefacts (rebuilt by scripts/reproduce.sh)
+data/raw/
+data/extracted/
+data/processed/
+data/features/
+results/models/
+results/robustness/
+models/*.joblib
+models/pretrained/
+logs/
+paper/*.aux
+paper/*.log
+paper/*.out
