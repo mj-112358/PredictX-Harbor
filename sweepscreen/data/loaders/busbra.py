@@ -24,7 +24,7 @@ def _key(stem: str) -> str:
 
 def load(raw_dir: str, extracted_dir: str) -> List[Record]:
     root = prepare_root(raw_dir, extracted_dir)
-    table = find_table(root, ["ID", "Pathology"])
+    table = find_table([root, Path(raw_dir)], ["ID", "Case", "Pathology", "BIRADS"])
     c_id, c_path = find_column(table, "ID"), find_column(table, "Pathology")
     c_case = find_column(table, "Case", "Patient", required=False)
     c_birads = find_column(table, "BIRADS", "BI-RADS", required=False)

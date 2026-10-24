@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 
 from sweepscreen.data import dedup, manifest, splits
-from sweepscreen.data.loaders import breast, breastvid, busbra, busi, udiat
+from sweepscreen.data.loaders import breast, breastvid, busbra, busi, busuclm, udiat
 from sweepscreen.data.loaders.common import LayoutError
 from sweepscreen.data.schema import Record, boxes_from_mask, from_frame, to_frame
 
@@ -33,9 +33,27 @@ def test_busi_loader(busi_tree, tmp_path):
     recs = busi.load(str(busi_tree), str(tmp_path / "x"))
     assert len(recs) == 7
     assert sum(r.label == "normal" for r in recs) == 2
-    two = [r for r in recs if r.uid == "BUSI:benign_1"][0]
+    two = [r for r in recs if r.uid == "BUSI:benign_id_1"][0]
     assert len(two.mask_paths) == 2 and len(two.boxes) == 2
     assert all(not r.boxes for r in recs if r.label == "normal")
+
+
+def test_busi_original_layout(busi_original_tree, tmp_path):
+    recs = busi.load(str(busi_original_tree), str(tmp_path / "x"))
+    assert sorted(r.label for r in recs) == ["benign", "benign", "malignant", "normal"]
+
+
+def test_busuclm_loader(busuclm_tree, tmp_path):
+    recs = busuclm.load(str(busuclm_tree), str(tmp_path / "x"))
+    assert len(recs) == 3                                   # the Doppler image is excluded
+    assert {r.patient_id for r in recs} == {"BUS-UCLM:ALWI", "BUS-UCLM:BEMA"}
+    assert [len(r.boxes) for r in recs] == [1, 0, 1]
+    assert [r.label for r in recs] == ["benign", "normal", "malignant"]
+
+
+def test_breastvid_frames_without_annotation_entry_are_excluded(breastvid_tree, tmp_path):
+    recs = breastvid.load(str(breastvid_tree), str(tmp_path / "x"))
+    assert not any(r.image_path.endswith("00099.png") for r in recs)
 
 
 def test_busbra_loader_patient_ids(busbra_tree, tmp_path):

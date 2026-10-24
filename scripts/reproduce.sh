@@ -5,7 +5,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 export PYTHONWARNINGS=ignore OMP_NUM_THREADS="${OMP_NUM_THREADS:-4}"
 
-python -m sweepscreen.data.manifest build               # SHA-256 of every input file -> data/MANIFEST.sha256
+python scripts/download_data.py                         # fetch / verify every dataset and the encoder weights
+python -m sweepscreen.data.manifest build               # SHA-256 + licence of every input file -> data/MANIFEST.{sha256,json}
 python -m experiments.run_features --rebuild            # record table, dedup, clean + augmented feature stores
 python -m experiments.run_loso                          # leave-one-site-out + internal CV
 python -m experiments.run_loso --no-aug --no-internal --results results/ablation_noaug   # augmentation ablation

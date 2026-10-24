@@ -67,13 +67,17 @@ def find_column(frame: pd.DataFrame, *candidates: str, required: bool = True) ->
     return None
 
 
-def find_table(root: Path, must_have: Iterable[str]) -> pd.DataFrame:
-    """The first CSV/XLSX under ``root`` whose columns contain every name in ``must_have``."""
+def find_table(root, must_have: Iterable[str]) -> pd.DataFrame:
+    """The first CSV/XLSX under ``root`` (a path or a list of paths) whose columns contain every name in ``must_have``."""
     must_have = list(must_have)
+    roots = [Path(r) for r in (root if isinstance(root, (list, tuple)) else [root])]
     tried = []
-    for p in sorted(list(root.rglob("*.csv")) + list(root.rglob("*.xlsx")) + list(root.rglob("*.xls"))):
+    candidates = []
+    for r in roots:
+        candidates += sorted(list(r.rglob("*.csv")) + list(r.rglob("*.xlsx")) + list(r.rglob("*.xls")))
+    for p in candidates:
         try:
-            frame = pd.read_csv(p) if p.suffix == ".csv" else pd.read_excel(p)
+            frame = pd.read_csv(p, sep=None, engine="python", encoding="utf-8-sig") if p.suffix == ".csv" else pd.read_excel(p)
         except Exception as exc:  # pragma: no cover - unreadable side files
             tried.append(f"{p.name}: {exc}")
             continue

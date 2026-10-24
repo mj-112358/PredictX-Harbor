@@ -1,5 +1,10 @@
 # Data and model weights needed for SweepScreen
 
+> **Status 2026-10-24:** downloaded by `scripts/download_data.py`; provenance, licences and checksums are in
+> `data/SOURCES.json` and `data/MANIFEST.json`. BUSI is taken from the curated release (Zenodo 19047974,
+> 450 images); the Mendeley record `k8t3gnx9h6` listed below turned out to hold the supplementary files of the
+> BUSI critique, not the images. BreastVid is a 7-Zip archive. UDIAT is pending the signed request.
+
 Put each item, exactly as downloaded (zips are fine), under `data/raw/<folder>/`. The loaders read
 these layouts directly, and `python -m sweepscreen.data.manifest build` records a SHA-256 for every
 file.

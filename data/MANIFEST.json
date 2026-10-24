@@ -1,0 +1,119 @@
+{
+ "files": [
+  {
+   "file": "data/raw/breast/BrEaST-Lesions-USG-clinical-data-Dec-15-2023.xlsx",
+   "sha256": "89a8874496a6f1f93960390b963f7369b90f7e72ee08a738f2d17e37f5eff8bf",
+   "bytes": 40173,
+   "source": "breast",
+   "licence": "CC BY 4.0",
+   "citation": "Pawłowska et al., Sci Data 11:148 (2024); TCIA Breast-Lesions-USG, doi:10.7937/9WKK-Q141",
+   "url": "https://www.cancerimagingarchive.net/wp-content/uploads/BrEaST-Lesions-USG-clinical-data-Dec-15-2023.xlsx",
+   "checksum": "no published checksum (SHA-256 recorded on first download)"
+  },
+  {
+   "file": "data/raw/breast/BrEaST-Lesions_USG-images_and_masks-Dec-15-2023.zip",
+   "sha256": "c32e49cdfa54042e065582d0cb35978b5fc5e5b5e461b33bf773fb50cfdad355",
+   "bytes": 69862076,
+   "source": "breast",
+   "licence": "CC BY 4.0",
+   "citation": "Pawłowska et al., Sci Data 11:148 (2024); TCIA Breast-Lesions-USG, doi:10.7937/9WKK-Q141",
+   "url": "https://www.cancerimagingarchive.net/wp-content/uploads/BrEaST-Lesions_USG-images_and_masks-Dec-15-2023.zip",
+   "checksum": "no published checksum (SHA-256 recorded on first download)"
+  },
+  {
+   "file": "data/raw/breastvid/miccai_buv.7z",
+   "sha256": "e5153b6b5920d615c870ef1de591fd3f182a650c5d7cd011b9237fa9805af3b9",
+   "bytes": 4206824798,
+   "source": "breastvid",
+   "licence": "Non-commercial research and education use only (CVA-Net README)",
+   "citation": "Lin et al., MICCAI 2022, pp. 614-623; github.com/jhl-Det/CVA-Net",
+   "url": "gdrive:1LVXK34OJhC2LkqqyMmVFnXsXQavvZdeF",
+   "checksum": "no published checksum (SHA-256 recorded on first download)"
+  },
+  {
+   "file": "data/raw/busbra/BUSBRA.zip",
+   "sha256": "ba3e6ed19cc37c682d8d39e25435bbf8a555a12cb7e641b5f2117685c95580ff",
+   "bytes": 133917740,
+   "source": "busbra",
+   "licence": "CC BY 4.0",
+   "citation": "Gómez-Flores et al., Med Phys 51:3110-3123 (2024); Zenodo 8231412",
+   "url": "https://zenodo.org/records/8231412/files/BUSBRA.zip?download=1",
+   "checksum": "verified against published md5"
+  },
+  {
+   "file": "data/raw/busi/Curated BUSI.zip",
+   "sha256": "5480a6b444b7a5e43b908d4e551a176006116ea72acd6e7d63e5619d2db8272d",
+   "bytes": 57126277,
+   "source": "busi",
+   "licence": "CC BY 4.0",
+   "citation": "Al-Dhabyani et al., Data in Brief 28:104863 (2020); curated release: Aumente-Maestro et al., Zenodo 19047974 (2025)",
+   "url": "https://zenodo.org/records/19047974/files/Curated%20BUSI.zip?download=1",
+   "checksum": "verified against published md5"
+  },
+  {
+   "file": "data/raw/busi_audit/dataset_comment_list.csv",
+   "sha256": "e3c2abc0ce027401dc717bf8a7ec76442e30c3cda2df32a0bc8aa197ff1c74a4",
+   "bytes": 19376,
+   "source": "busi_audit",
+   "licence": "CC BY 4.0",
+   "citation": "Supplementary files of the letter to the editor on BUSI (Mendeley Data k8t3gnx9h6 v1)",
+   "url": "https://data.mendeley.com/public-files/datasets/k8t3gnx9h6/files/41d7e047-07b3-4a4a-b89f-b9b70f6e9285/file_downloaded",
+   "checksum": "verified against published sha256"
+  },
+  {
+   "file": "data/raw/busuclm/7fvgj4jsp7-3.zip",
+   "sha256": "7cb15270f1a2c920b4cd89122acc5dd399eae0fe545893a44596676225ac313e",
+   "bytes": 336713241,
+   "source": "busuclm",
+   "licence": "CC BY 4.0",
+   "citation": "Vallez et al., Sci Data (2025); Mendeley Data 7fvgj4jsp7 v3",
+   "url": "https://data.mendeley.com/public-api/zip/7fvgj4jsp7/download/3",
+   "checksum": "no published checksum (SHA-256 recorded on first download)"
+  },
+  {
+   "file": "models/pretrained/dinov2-small/config.json",
+   "sha256": "1809f83e3bdb1609a501a610ad4a742f4fd8ae44d72ca4aa0df52d1f2ac8628d",
+   "bytes": 547,
+   "source": "dinov2-small",
+   "licence": "Apache-2.0",
+   "citation": "Oquab et al., DINOv2 (TMLR 2024); huggingface.co/facebook/dinov2-small@ed25f3a31f01632728cabb09d1542f84ab7b0056",
+   "url": "https://huggingface.co/facebook/dinov2-small/resolve/ed25f3a31f01632728cabb09d1542f84ab7b0056/config.json",
+   "checksum": "no published checksum (SHA-256 recorded on first download)"
+  },
+  {
+   "file": "models/pretrained/dinov2-small/model.safetensors",
+   "sha256": "ae1e99fcefd534ed978cdeb8326f08030c96e28b7a81ffcbc98a857c84d14be1",
+   "bytes": 88249960,
+   "source": "dinov2-small",
+   "licence": "Apache-2.0",
+   "citation": "Oquab et al., DINOv2 (TMLR 2024); huggingface.co/facebook/dinov2-small@ed25f3a31f01632728cabb09d1542f84ab7b0056",
+   "url": "https://huggingface.co/facebook/dinov2-small/resolve/ed25f3a31f01632728cabb09d1542f84ab7b0056/model.safetensors",
+   "checksum": "verified against published sha256"
+  },
+  {
+   "file": "models/pretrained/dinov2-small/preprocessor_config.json",
+   "sha256": "14e780d86fa1861f8751f868d7f45425b5feb55c38ca26f152ca5097ab30f828",
+   "bytes": 436,
+   "source": "dinov2-small",
+   "licence": "Apache-2.0",
+   "citation": "Oquab et al., DINOv2 (TMLR 2024); huggingface.co/facebook/dinov2-small@ed25f3a31f01632728cabb09d1542f84ab7b0056",
+   "url": "https://huggingface.co/facebook/dinov2-small/resolve/ed25f3a31f01632728cabb09d1542f84ab7b0056/preprocessor_config.json",
+   "checksum": "no published checksum (SHA-256 recorded on first download)"
+  }
+ ],
+ "licences": {
+  "CC BY 4.0": [
+   "breast",
+   "busbra",
+   "busi",
+   "busi_audit",
+   "busuclm"
+  ],
+  "Non-commercial research and education use only (CVA-Net README)": [
+   "breastvid"
+  ],
+  "Apache-2.0": [
+   "dinov2-small"
+  ]
+ }
+}

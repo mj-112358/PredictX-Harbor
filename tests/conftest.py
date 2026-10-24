@@ -45,16 +45,47 @@ def rng():
 
 @pytest.fixture
 def busi_tree(tmp_path, rng):
-    root = tmp_path / "busi" / "Dataset_BUSI_with_GT"
+    """Curated BUSI layout: flat images/ and masks/ folders, <class>_id_<n>.png."""
+    root = tmp_path / "busi" / "Curated BUSI"
     for label, n in (("benign", 3), ("malignant", 2), ("normal", 2)):
+        for i in range(1, n + 1):
+            img, mask = synthetic_frame(rng, lesion=label != "normal")
+            _write(root / "images" / f"{label}_id_{i}.png", img)
+            _write(root / "masks" / f"{label}_id_{i}_mask.png", mask * 255)
+    _, m2 = synthetic_frame(rng, center=(200, 150), radius=(12, 10))
+    _write(root / "masks" / "benign_id_1_mask_1.png", m2 * 255)
+    return tmp_path / "busi"
+
+
+@pytest.fixture
+def busi_original_tree(tmp_path, rng):
+    """Original BUSI layout: class folders, '<class> (N).png'."""
+    root = tmp_path / "busi_orig" / "Dataset_BUSI_with_GT"
+    for label, n in (("benign", 2), ("malignant", 1), ("normal", 1)):
         for i in range(1, n + 1):
             img, mask = synthetic_frame(rng, lesion=label != "normal")
             _write(root / label / f"{label} ({i}).png", img)
             _write(root / label / f"{label} ({i})_mask.png", mask * 255)
-    # second-lesion mask on one benign image
-    _, m2 = synthetic_frame(rng, center=(200, 150), radius=(12, 10))
-    _write(root / "benign" / "benign (1)_mask_1.png", m2 * 255)
-    return tmp_path / "busi"
+    return tmp_path / "busi_orig"
+
+
+@pytest.fixture
+def busuclm_tree(tmp_path, rng):
+    """BUS-UCLM layout: images/, RGB masks/ (green benign, red malignant), INFO.csv with a BOM."""
+    root = tmp_path / "busuclm" / "BUS-UCLM Breast ultrasound lesion segmentation dataset" / "BUS-UCLM"
+    rows = []
+    for i, (patient, label, doppler) in enumerate([("ALWI", "Benign", "No"), ("ALWI", "Normal", "No"),
+                                                   ("BEMA", "Malignant", "No"), ("BEMA", "Benign", "Yes")]):
+        img, mask = synthetic_frame(rng, lesion=label != "Normal")
+        name = f"{patient}_{i:03d}.png"
+        _write(root / "images" / name, img)
+        rgb = np.zeros(mask.shape + (3,), np.uint8)
+        rgb[mask > 0] = (0, 255, 0) if label == "Benign" else (0, 0, 255)
+        _write(root / "masks" / name, rgb)
+        rows.append({"Image": name, "Resolution": "260x200", "Label": label, "Doppler": doppler, "Marks": "No",
+                     "Combined": "No"})
+    (root / "INFO.csv").write_text("\ufeff" + pd.DataFrame(rows).to_csv(index=False, sep=";"), encoding="utf-8")
+    return tmp_path / "busuclm"
 
 
 @pytest.fixture
@@ -70,6 +101,9 @@ def busbra_tree(tmp_path, rng):
                      "Pathology": "malignant" if i > 4 else "benign", "BIRADS": 3 + (i > 4), "Device": "GE Logiq 7",
                      "Side": side})
     pd.DataFrame(rows).to_csv(root / "bus_data.csv", index=False)
+    # fold files sort before bus_data.csv and also have ID and Pathology columns
+    pd.DataFrame([{"ID": r["ID"], "Pathology": r["Pathology"], "kFold": 1} for r in rows]).to_csv(
+        root / "10-fold-cv.csv", index=False)
     return tmp_path / "busbra"
 
 
@@ -122,7 +156,9 @@ def breastvid_tree(tmp_path, rng):
                 ys, xs = np.nonzero(mask)
                 anns.append({"id": k, "image_id": k, "category_id": 1,
                              "bbox": [int(xs.min()), int(ys.min()), int(xs.max() - xs.min() + 1), int(ys.max() - ys.min() + 1)]})
+    _write(root / "rawframes" / "benign" / "vidA" / "00099.png", synthetic_frame(rng)[0])   # on disk, in no JSON
     coco = {"images": images, "annotations": anns, "categories": [{"id": 1, "name": "lesion"}]}
-    (root / "train.json").write_text(json.dumps(coco))
-    (root / "val.json").write_text(json.dumps({"images": [], "annotations": [], "categories": coco["categories"]}))
+    (root / "imagenet_vid_train_15frames.json").write_text(json.dumps(coco))
+    (root / "imagenet_vid_val.json").write_text(json.dumps({"images": [], "annotations": [],
+                                                            "categories": coco["categories"]}))
     return tmp_path / "breastvid"

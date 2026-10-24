@@ -6,6 +6,7 @@ BI-RADS category, verification method, diagnosis and classification (benign / ma
 """
 from __future__ import annotations
 
+from pathlib import Path
 from typing import List
 
 from ..schema import Record, boxes_from_mask
@@ -18,7 +19,7 @@ _META = ("Tissue_composition", "Signs", "Symptoms", "Shape", "Margin", "Echogeni
 
 def load(raw_dir: str, extracted_dir: str) -> List[Record]:
     root = prepare_root(raw_dir, extracted_dir)
-    table = find_table(root, ["Image_filename", "Classification"])
+    table = find_table([root, Path(raw_dir)], ["Image_filename", "Classification"])
     c_img, c_cls = find_column(table, "Image_filename"), find_column(table, "Classification")
     c_mask = find_column(table, "Mask_tumor_filename", "Mask_filename", required=False)
     c_case = find_column(table, "CaseID", "Case", required=False)

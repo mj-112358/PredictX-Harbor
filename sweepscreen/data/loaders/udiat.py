@@ -6,6 +6,7 @@ image name to lesion type (benign / malignant). Collected on a Siemens ACUSON Se
 """
 from __future__ import annotations
 
+from pathlib import Path
 from typing import List
 
 from ..schema import Record, boxes_from_mask
@@ -28,7 +29,7 @@ def _key(name) -> str:
 
 def load(raw_dir: str, extracted_dir: str) -> List[Record]:
     root = prepare_root(raw_dir, extracted_dir)
-    table = find_table(root, ["Type"])
+    table = find_table([root, Path(raw_dir)], ["Type"])
     c_type = find_column(table, "Type")
     c_name = find_column(table, "Image", "Name", "File", "ID")
     originals, gts = {}, {}
