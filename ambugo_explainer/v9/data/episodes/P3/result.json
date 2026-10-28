@@ -1,0 +1,239 @@
+{
+ "seed": 40,
+ "load": 0.95,
+ "missions": 1,
+ "policy": "P3",
+ "config": {
+  "step": 0.5,
+  "warmup": 1800,
+  "horizon": 7200,
+  "mission_end": 5400,
+  "epsilon": 0,
+  "harm_budget": 10000,
+  "headroom": 0.85,
+  "trigger": 30.0,
+  "hold": 60.0,
+  "sensor_period": 5,
+  "sensor_delay": 2,
+  "sensor_noise": true,
+  "base": "fixed",
+  "action_mode": "strong",
+  "progress_guard_s": 20,
+  "save_trace": true
+ },
+ "backend": "libsumo",
+ "sumo_version": "1.28.0",
+ "scenario_key": "v2_s40_x0.950_m1_w1800_h7200_e5400",
+ "schedule_sha256": "2ddd8c5cd8d2d686deede107c8bdbbbf04caf60c72913858942163517326d14a",
+ "n_ordinary": 5361,
+ "nominal_critical_X": 0.95,
+ "design_scale": 0.9615683105150867,
+ "ordinary_J_vehicle_s": 1722799.0,
+ "ordinary_completed": 5037,
+ "unfinished_ordinary": 324,
+ "source_waiting_end": 3,
+ "missions_completed": 1,
+ "mission_rows": [
+  {
+   "id": "a000",
+   "dispatch": 4064,
+   "origin": "BW1",
+   "arrival": 4316.5,
+   "insertion": 4064.5,
+   "travel_s": 252.5,
+   "censored": false
+  }
+ ],
+ "ambulance_mean_s": 252.5,
+ "ambulance_max_s": 252.5,
+ "route_changes": 2,
+ "progress_guard_fallbacks": 1,
+ "progress_guard_log": [
+  {
+   "ambulance": "a000",
+   "t": 4256,
+   "dispatch": 4064,
+   "delay_s": 20.48005143352154,
+   "executed_freeflow_progress_s": 171.51994856647846,
+   "threshold_s": 20
+  }
+ ],
+ "expired_priority_leases": 0,
+ "route_candidate_evaluations": 28,
+ "priority_request_ticks": 160,
+ "rejected_harm_ticks": 0,
+ "rejected_headroom_ticks": 0,
+ "rejected_benefit_ticks": 37,
+ "priority_phase_admissions": 4,
+ "guard_overrides": 0,
+ "signal_timing_violations": 0,
+ "completed_signal_intervals": 10298,
+ "max_service_age_s": 165,
+ "pedestrian_service_opportunities": 1049,
+ "sensor_availability": 0.9449152542372882,
+ "max_simultaneous_ambulances": 1,
+ "colliding_vehicle_events": 0,
+ "starting_teleport_events": 0,
+ "partition_identity_max_error": 0,
+ "residence_identity_error": 0.0,
+ "ordinary_individual_J_vehicle_s": 1722799.0,
+ "max_ordinary_in_system": 462,
+ "wall_time_s": 18.628074993999917,
+ "controller_wall_time_s": 0.7904191990028266,
+ "active_decision_ticks": 252,
+ "selected_action_counts": {
+  "(30.0, 60.0)": 7
+ },
+ "plan_examples": [
+  {
+   "t": 4065,
+   "ambulance": "a000",
+   "mode": "P3",
+   "edge": "E_BW1_J10",
+   "T": 247.9613854872216,
+   "global_min_T": 247.9613854872216,
+   "A": 3329.8343540919204,
+   "action": [
+    30.0,
+    60.0
+   ],
+   "route": [
+    "E_BW1_J10",
+    "E_J10_J11",
+    "E_J11_J21",
+    "E_J21_J22",
+    "E_J22_J23",
+    "E_J23_J13",
+    "E_J13_BE1"
+   ],
+   "candidate_count": 8
+  },
+  {
+   "t": 4091,
+   "ambulance": "a000",
+   "mode": "P3",
+   "edge": "E_J10_J11",
+   "T": 219.94171306653502,
+   "global_min_T": 219.94171306653502,
+   "A": 3042.217330810153,
+   "action": [
+    30.0,
+    60.0
+   ],
+   "route": [
+    "E_J10_J11",
+    "E_J11_J21",
+    "E_J21_J22",
+    "E_J22_J12",
+    "E_J12_J13",
+    "E_J13_BE1"
+   ],
+   "candidate_count": 8
+  },
+  {
+   "t": 4130,
+   "ambulance": "a000",
+   "mode": "P3",
+   "edge": "E_J11_J21",
+   "T": 187.35427535751407,
+   "global_min_T": 187.35427535751407,
+   "A": 3033.4556214704703,
+   "action": [
+    30.0,
+    60.0
+   ],
+   "route": [
+    "E_J11_J21",
+    "E_J21_J22",
+    "E_J22_J12",
+    "E_J12_J13",
+    "E_J13_BE1"
+   ],
+   "candidate_count": 4
+  },
+  {
+   "t": 4173,
+   "ambulance": "a000",
+   "mode": "P3",
+   "edge": "E_J21_J22",
+   "T": 146.10289291204927,
+   "global_min_T": 146.10289291204927,
+   "A": 972.2471089777548,
+   "action": [
+    30.0,
+    60.0
+   ],
+   "route": [
+    "E_J21_J22",
+    "E_J22_J12",
+    "E_J12_J13",
+    "E_J13_BE1"
+   ],
+   "candidate_count": 4
+  },
+  {
+   "t": 4212,
+   "ambulance": "a000",
+   "mode": "P3",
+   "edge": "E_J22_J12",
+   "T": 103.72087683927147,
+   "global_min_T": 103.72087683927147,
+   "A": 612.9988161779797,
+   "action": [
+    30.0,
+    60.0
+   ],
+   "route": [
+    "E_J22_J12",
+    "E_J12_J13",
+    "E_J13_BE1"
+   ],
+   "candidate_count": 2
+  },
+  {
+   "t": 4256,
+   "ambulance": "a000",
+   "mode": "P2",
+   "edge": "E_J12_J13",
+   "T": 59.070771970161054,
+   "global_min_T": 59.070771970161054,
+   "A": 442.41765936196487,
+   "action": [
+    30.0,
+    60.0
+   ],
+   "route": [
+    "E_J12_J13",
+    "E_J13_BE1"
+   ],
+   "candidate_count": 1
+  },
+  {
+   "t": 4292,
+   "ambulance": "a000",
+   "mode": "P2",
+   "edge": "E_J13_BE1",
+   "T": 24.415956488612863,
+   "global_min_T": 24.415956488612863,
+   "A": 0.0,
+   "action": [
+    30.0,
+    60.0
+   ],
+   "route": [
+    "E_J13_BE1"
+   ],
+   "candidate_count": 1
+  }
+ ],
+ "trace_file": "/tmp/claude-0/-home-user-PredictX-Harbor/cf74c462-b2f3-5e74-9a68-27dd353b61df/scratchpad/v9/ep/s40_x095_P3/runcase/v2_s40_x0.950_m1_w1800_h7200_e5400_P3_fixed_b10000_eps0_dt0.5_noise1_delay2_actionsstrong_pg20.npz",
+ "instrumentation": {
+  "window": [
+   3944,
+   5264
+  ],
+  "branch": null,
+  "wall_s": 18.73828148841858,
+  "frames": 2641
+ }
+}

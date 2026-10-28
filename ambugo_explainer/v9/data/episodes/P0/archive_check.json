@@ -1,0 +1,18 @@
+{
+ "schedule_sha256": true,
+ "n_ordinary": true,
+ "ordinary_J_vehicle_s": true,
+ "ordinary_completed": true,
+ "mission_rows": true,
+ "route_changes": true,
+ "progress_guard_fallbacks": true,
+ "priority_request_ticks": true,
+ "rejected_harm_ticks": true,
+ "rejected_headroom_ticks": true,
+ "rejected_benefit_ticks": true,
+ "priority_phase_admissions": true,
+ "guard_overrides": true,
+ "signal_timing_violations": true,
+ "expired_priority_leases": true,
+ "selected_action_counts": true
+}

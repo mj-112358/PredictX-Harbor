@@ -1,0 +1,1322 @@
+{
+ "n": 154,
+ "failed": 0,
+ "checks": [
+  {
+   "scene": "all",
+   "label": "instrumented P3 replay reproduces archived run on all 16 compared fields",
+   "shown": true,
+   "recomputed": true,
+   "source": "episodes/P3/archive_check.json",
+   "ok": true
+  },
+  {
+   "scene": "all",
+   "label": "P3 mission travel time equals archived record",
+   "shown": 252.5,
+   "recomputed": 252.5,
+   "source": "archive/records_s40_x095_m1.json",
+   "ok": true
+  },
+  {
+   "scene": "all",
+   "label": "instrumented P0 replay reproduces archived run on all 16 compared fields",
+   "shown": true,
+   "recomputed": true,
+   "source": "episodes/P0/archive_check.json",
+   "ok": true
+  },
+  {
+   "scene": "all",
+   "label": "P0 mission travel time equals archived record",
+   "shown": 572.0,
+   "recomputed": 572.0,
+   "source": "archive/records_s40_x095_m1.json",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "harm budget B",
+   "shown": 10000,
+   "recomputed": 10000.0,
+   "source": "episodes/P3/result.json config",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "epsilon",
+   "shown": 0,
+   "recomputed": 0.0,
+   "source": "episodes/P3/result.json config",
+   "ok": true
+  },
+  {
+   "scene": "network",
+   "label": "progress threshold gamma (s)",
+   "shown": 20,
+   "recomputed": 20.0,
+   "source": "episodes/P3/result.json config",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "selected policy model hash = frozen controller",
+   "shown": "471a22911a2de9773fcd839872b3ba1ec5e00412c0ecc79142503e72f41cecf2",
+   "recomputed": "471a22911a2de9773fcd839872b3ba1ec5e00412c0ecc79142503e72f41cecf2",
+   "source": "archive/selected_policy.json",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "action set = strong {(0,0),(30,60)}",
+   "shown": "strong",
+   "recomputed": "strong",
+   "source": "episodes/P3/result.json config",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "selected_policy.json harm budget",
+   "shown": 10000,
+   "recomputed": 10000.0,
+   "source": "archive/selected_policy.json",
+   "ok": true
+  },
+  {
+   "scene": "problem",
+   "label": "regular road links",
+   "shown": 59,
+   "recomputed": 59.0,
+   "source": "fixture/edges.csv",
+   "ok": true
+  },
+  {
+   "scene": "problem",
+   "label": "signalised junctions (J00..J33)",
+   "shown": 16,
+   "recomputed": 16.0,
+   "source": "fixture/edges.csv",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "first plan time",
+   "shown": 4065,
+   "recomputed": 4065.0,
+   "source": "episodes/P3/plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "route A forecast, normal signals",
+   "shown": 590.9,
+   "recomputed": 590.9398500376642,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "route A forecast, with request",
+   "shown": 250.8,
+   "recomputed": 250.75196728687192,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "route A forecast burden (veh\u00b7s, rounded)",
+   "shown": 2528,
+   "recomputed": 2527.9727621791453,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "route B forecast, normal signals",
+   "shown": 590.9,
+   "recomputed": 590.9398500376642,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "route B forecast, with request",
+   "shown": 259.8,
+   "recomputed": 259.78878602053874,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "route B forecast burden (veh\u00b7s, rounded)",
+   "shown": 2715,
+   "recomputed": 2714.877136870296,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "route C forecast, normal signals",
+   "shown": 616.9,
+   "recomputed": 616.9398500376642,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "route C forecast, with request",
+   "shown": 248.0,
+   "recomputed": 247.9613854872216,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "route C forecast burden (veh\u00b7s, rounded)",
+   "shown": 3330,
+   "recomputed": 3329.8343540919204,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "route D forecast, normal signals",
+   "shown": 590.9,
+   "recomputed": 590.9398500376642,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "route D forecast, with request",
+   "shown": 259.6,
+   "recomputed": 259.6017041460838,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "route D forecast burden (veh\u00b7s, rounded)",
+   "shown": 1402,
+   "recomputed": 1402.4143713013236,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "eligible pairs at epsilon = 0",
+   "shown": [
+    "C"
+   ],
+   "recomputed": [
+    "C"
+   ],
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "chosen route is C",
+   "shown": [
+    "E_BW1_J10",
+    "E_J10_J11",
+    "E_J11_J21",
+    "E_J21_J22",
+    "E_J22_J23",
+    "E_J23_J13",
+    "E_J13_BE1"
+   ],
+   "recomputed": [
+    "E_BW1_J10",
+    "E_J10_J11",
+    "E_J11_J21",
+    "E_J21_J22",
+    "E_J22_J23",
+    "E_J23_J13",
+    "E_J13_BE1"
+   ],
+   "source": "plans.json[0].chosen_route",
+   "ok": true
+  },
+  {
+   "scene": "routes",
+   "label": "C is the slowest without priority",
+   "shown": "C",
+   "recomputed": "C",
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "recheck",
+   "label": "route A forecast at 4091",
+   "shown": 219.9,
+   "recomputed": 219.94171306653502,
+   "source": "plans.json t=4091",
+   "ok": true
+  },
+  {
+   "scene": "recheck",
+   "label": "route C (incumbent) forecast at 4091",
+   "shown": 232.5,
+   "recomputed": 232.51859294451452,
+   "source": "plans.json t=4091",
+   "ok": true
+  },
+  {
+   "scene": "recheck",
+   "label": "gap (s)",
+   "shown": 12.6,
+   "recomputed": 12.576879877979508,
+   "source": "plans.json t=4091",
+   "ok": true
+  },
+  {
+   "scene": "recheck",
+   "label": "best route at 4091 is route A",
+   "shown": [
+    "E_J10_J11",
+    "E_J11_J21",
+    "E_J21_J22",
+    "E_J22_J12",
+    "E_J12_J13",
+    "E_J13_BE1"
+   ],
+   "recomputed": [
+    "E_J10_J11",
+    "E_J11_J21",
+    "E_J21_J22",
+    "E_J22_J12",
+    "E_J12_J13",
+    "E_J13_BE1"
+   ],
+   "source": "plans.json t=4091",
+   "ok": true
+  },
+  {
+   "scene": "recheck",
+   "label": "switched to A (chosen_route)",
+   "shown": [
+    "E_J10_J11",
+    "E_J11_J21",
+    "E_J21_J22",
+    "E_J22_J12",
+    "E_J12_J13",
+    "E_J13_BE1"
+   ],
+   "recomputed": [
+    "E_J10_J11",
+    "E_J11_J21",
+    "E_J21_J22",
+    "E_J22_J12",
+    "E_J12_J13",
+    "E_J13_BE1"
+   ],
+   "source": "plans.json t=4091",
+   "ok": true
+  },
+  {
+   "scene": "travel",
+   "label": "J10 admitted",
+   "shown": true,
+   "recomputed": true,
+   "source": "gates.json t=4065 J10",
+   "ok": true
+  },
+  {
+   "scene": "travel",
+   "label": "J10 forecast gain (s)",
+   "shown": 39,
+   "recomputed": 39.10734507507975,
+   "source": "gates.json t=4065 J10",
+   "ok": true
+  },
+  {
+   "scene": "travel",
+   "label": "J10 burden (veh\u00b7s)",
+   "shown": 227,
+   "recomputed": 226.5220506816812,
+   "source": "gates.json t=4065 J10",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "J11 admitted",
+   "shown": false,
+   "recomputed": false,
+   "source": "gates.json t=4091 J11",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "J11 forecast gain (s)",
+   "shown": 3.6,
+   "recomputed": 3.5779260194860996,
+   "source": "gates.json t=4091 J11",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "J11 gain fails the 5 s test",
+   "shown": true,
+   "recomputed": true,
+   "source": "gates.json t=4091 J11",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "J11 Eq.19 left side (s)",
+   "shown": 30.5,
+   "recomputed": 30.502113757607503,
+   "source": "gates.json t=4091 J11",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "J11 Eq.19 recomputed [h+d-\u03b4]+ + d + 2",
+   "shown": 30.502114,
+   "recomputed": 30.502114,
+   "source": "gates.json t=4091 J11",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "J11 downstream count (veh)",
+   "shown": 5,
+   "recomputed": 5.0,
+   "source": "gates.json t=4091 J11",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "J11 headroom cap = 0.85 K(E_J11_J21)",
+   "shown": 45.0,
+   "recomputed": 45.05,
+   "source": "fixture/edges.csv",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "J11 burden (veh\u00b7s)",
+   "shown": 306,
+   "recomputed": 305.7924839736752,
+   "source": "gates.json t=4091 J11",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "J11 pedestrian interval remaining (s)",
+   "shown": 5,
+   "recomputed": 5.0,
+   "source": "gates.json t=4091 J11",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "J11 signal mode at request",
+   "shown": "ped",
+   "recomputed": "ped",
+   "source": "gates.json t=4091 J11",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "ambulance ~27 s from stop line (free-flow)",
+   "shown": 27,
+   "recomputed": 27.4220739805139,
+   "source": "gates.json t=4091 J11",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "normal cycle reaches ambulance ~3.6 s after arrival",
+   "shown": 3.6,
+   "recomputed": 3.5779260194860996,
+   "source": "gates.json t=4091 J11",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "J21 admitted",
+   "shown": true,
+   "recomputed": true,
+   "source": "gates.json t=4132 J21",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "D = min(60, max(5, 30 + d\u0302))",
+   "shown": 44.2,
+   "recomputed": 44.194547148486485,
+   "source": "gates.json t=4132 J21",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "logged D equals formula",
+   "shown": 44.194547148,
+   "recomputed": 44.194547148,
+   "source": "gates.json t=4132 J21",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "d\u0302 (s)",
+   "shown": 14.2,
+   "recomputed": 14.194547148486484,
+   "source": "gates.json t=4132 J21",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "own queue estimate q\u0302 (veh)",
+   "shown": 5.9,
+   "recomputed": 5.8961965078328475,
+   "source": "gates.json t=4132 J21",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "east: q\u0302\u00b7D recomputed = logged",
+   "shown": 341.99432,
+   "recomputed": 341.99432,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "east: \u03bbD\u00b2/(2max(1\u2212X,.05)) recomputed = logged",
+   "shown": 1019.685712,
+   "recomputed": 1019.685712,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "east: waiting term shown",
+   "shown": 342,
+   "recomputed": 341.99431963629024,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "east: arrivals term shown",
+   "shown": 1020,
+   "recomputed": 1019.6857123267042,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "south: q\u0302\u00b7D recomputed = logged",
+   "shown": 442.925179,
+   "recomputed": 442.925179,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "south: \u03bbD\u00b2/(2max(1\u2212X,.05)) recomputed = logged",
+   "shown": 1249.103495,
+   "recomputed": 1249.103495,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "south: waiting term shown",
+   "shown": 443,
+   "recomputed": 442.92517877496226,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "south: arrivals term shown",
+   "shown": 1249,
+   "recomputed": 1249.1034951382455,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "west: q\u0302\u00b7D recomputed = logged",
+   "shown": 33.679255,
+   "recomputed": 33.679255,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "west: \u03bbD\u00b2/(2max(1\u2212X,.05)) recomputed = logged",
+   "shown": 239.030767,
+   "recomputed": 239.030767,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "west: waiting term shown",
+   "shown": 34,
+   "recomputed": 33.679255424561525,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "west: arrivals term shown",
+   "shown": 239,
+   "recomputed": 239.03076693146517,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "east q\u0302 (veh)",
+   "shown": 7.7,
+   "recomputed": 7.738382712402165,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "east observed count",
+   "shown": 13,
+   "recomputed": 13.0,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "east \u03bb (veh/s)",
+   "shown": 0.14,
+   "recomputed": 0.13984824895983716,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "east X",
+   "shown": 0.87,
+   "recomputed": 0.8660637671918713,
+   "source": "gates.json arms",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "\u0108 = sum of arm terms",
+   "shown": 3326.418728,
+   "recomputed": 3326.418728,
+   "source": "gates.json t=4132 J21",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "\u0108 shown (veh\u00b7s)",
+   "shown": 3326,
+   "recomputed": 3326.418728232229,
+   "source": "gates.json t=4132 J21",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "gain (s)",
+   "shown": 43.4,
+   "recomputed": 43.42229652641333,
+   "source": "gates.json t=4132 J21",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "Eq.19 left side (s)",
+   "shown": 50.4,
+   "recomputed": 50.38909429697297,
+   "source": "gates.json t=4132 J21",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "Eq.19 recomputed",
+   "shown": 50.389094,
+   "recomputed": 50.389094,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "downstream count",
+   "shown": 8,
+   "recomputed": 8.0,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "headroom cap = 0.85 K(E_J21_J22)",
+   "shown": 112.2,
+   "recomputed": 112.2,
+   "source": "fixture/edges.csv",
+   "ok": true
+  },
+  {
+   "scene": "burden",
+   "label": "legal switch delay (s)",
+   "shown": 10,
+   "recomputed": 10.0,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "j21",
+   "label": "east green elapsed at 4132 (s)",
+   "shown": 3,
+   "recomputed": 3.0,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "j21",
+   "label": "east has green at 4132",
+   "shown": "E_J22_J21",
+   "recomputed": "E_J22_J21",
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "network",
+   "label": "J22 admitted",
+   "shown": true,
+   "recomputed": true,
+   "source": "gates.json t=4175 J22",
+   "ok": true
+  },
+  {
+   "scene": "network",
+   "label": "J22 gain (s)",
+   "shown": 89,
+   "recomputed": 88.66721279662463,
+   "source": "gates.json t=4175 J22",
+   "ok": true
+  },
+  {
+   "scene": "network",
+   "label": "J12 admitted",
+   "shown": true,
+   "recomputed": true,
+   "source": "gates.json t=4224 J12",
+   "ok": true
+  },
+  {
+   "scene": "network",
+   "label": "J12 gain (s)",
+   "shown": 87,
+   "recomputed": 86.71298421887931,
+   "source": "gates.json t=4224 J12",
+   "ok": true
+  },
+  {
+   "scene": "network",
+   "label": "J22 burden",
+   "shown": 348,
+   "recomputed": 347.9894372445948,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "network",
+   "label": "J12 burden",
+   "shown": 185,
+   "recomputed": 185.16679543041732,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "s1",
+   "label": "granted: east green ends (amber) at",
+   "shown": 4137,
+   "recomputed": 4137.0,
+   "source": "P3 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "s1",
+   "label": "granted: all-red at",
+   "shown": 4140,
+   "recomputed": 4140.0,
+   "source": "P3 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "s1",
+   "label": "granted: ambulance (north) green at",
+   "shown": 4142,
+   "recomputed": 4142.0,
+   "source": "P3 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "withheld: east keeps green until (amber at)",
+   "shown": 4158,
+   "recomputed": 4158.0,
+   "source": "P3_withholdJ21 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "withheld: ambulance (north) green at",
+   "shown": 4228,
+   "recomputed": 4228.0,
+   "source": "P3_withholdJ21 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "J11 pedestrian interval ends; north green at",
+   "shown": 4096,
+   "recomputed": 4096.0,
+   "source": "P3 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "J11 west (ambulance) green at",
+   "shown": 4122,
+   "recomputed": 4122.0,
+   "source": "P3 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P3: every amber lasts 3 s",
+   "shown": [
+    3
+   ],
+   "recomputed": [
+    3
+   ],
+   "source": "episodes/P3/signals.json",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P3: every all-red lasts 2 s",
+   "shown": [
+    2
+   ],
+   "recomputed": [
+    2
+   ],
+   "source": "episodes/P3/signals.json",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P3: every pedestrian interval lasts 25 s",
+   "shown": [
+    25
+   ],
+   "recomputed": [
+    25
+   ],
+   "source": "episodes/P3/signals.json",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P3: shortest green \u2265 8 s",
+   "shown": true,
+   "recomputed": true,
+   "source": "episodes/P3/signals.json (min 8 s)",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P3: no green\u2192green or amber\u2192(not all-red) transitions",
+   "shown": 0,
+   "recomputed": 0.0,
+   "source": "episodes/P3/signals.json",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P0: every amber lasts 3 s",
+   "shown": [
+    3
+   ],
+   "recomputed": [
+    3
+   ],
+   "source": "episodes/P0/signals.json",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P0: every all-red lasts 2 s",
+   "shown": [
+    2
+   ],
+   "recomputed": [
+    2
+   ],
+   "source": "episodes/P0/signals.json",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P0: every pedestrian interval lasts 25 s",
+   "shown": [
+    25
+   ],
+   "recomputed": [
+    25
+   ],
+   "source": "episodes/P0/signals.json",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P0: shortest green \u2265 8 s",
+   "shown": true,
+   "recomputed": true,
+   "source": "episodes/P0/signals.json (min 11 s)",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P0: no green\u2192green or amber\u2192(not all-red) transitions",
+   "shown": 0,
+   "recomputed": 0.0,
+   "source": "episodes/P0/signals.json",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P3_withholdJ21: every amber lasts 3 s",
+   "shown": [
+    3
+   ],
+   "recomputed": [
+    3
+   ],
+   "source": "episodes/P3_withholdJ21/signals.json",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P3_withholdJ21: every all-red lasts 2 s",
+   "shown": [
+    2
+   ],
+   "recomputed": [
+    2
+   ],
+   "source": "episodes/P3_withholdJ21/signals.json",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P3_withholdJ21: every pedestrian interval lasts 25 s",
+   "shown": [
+    25
+   ],
+   "recomputed": [
+    25
+   ],
+   "source": "episodes/P3_withholdJ21/signals.json",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P3_withholdJ21: shortest green \u2265 8 s",
+   "shown": true,
+   "recomputed": true,
+   "source": "episodes/P3_withholdJ21/signals.json (min 8 s)",
+   "ok": true
+  },
+  {
+   "scene": "cycle",
+   "label": "P3_withholdJ21: no green\u2192green or amber\u2192(not all-red) transitions",
+   "shown": 0,
+   "recomputed": 0.0,
+   "source": "episodes/P3_withholdJ21/signals.json",
+   "ok": true
+  },
+  {
+   "scene": "s1",
+   "label": "granted: ambulance leaves J21 north approach at about",
+   "shown": 4171,
+   "recomputed": 4171.0,
+   "source": "P3 trajectories.npz",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "withheld: ambulance leaves J21 north approach at about",
+   "shown": 4242,
+   "recomputed": 4242.0,
+   "source": "P3_withholdJ21 trajectories.npz",
+   "ok": true
+  },
+  {
+   "scene": "recheck",
+   "label": "ambulance enters E_J10_J11 at",
+   "shown": 4091,
+   "recomputed": 4091.0,
+   "source": "P3 trajectories.npz",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "stopped veh\u00b7s east, priority granted",
+   "shown": 1775,
+   "recomputed": 1775.0,
+   "source": "P3 trajectories.npz (5 s samples)",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "stopped veh\u00b7s east, normal cycle",
+   "shown": 670,
+   "recomputed": 670.0,
+   "source": "P3_withholdJ21 trajectories.npz (5 s samples)",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "stopped veh\u00b7s south, priority granted",
+   "shown": 1080,
+   "recomputed": 1080.0,
+   "source": "P3 trajectories.npz (5 s samples)",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "stopped veh\u00b7s south, normal cycle",
+   "shown": 530,
+   "recomputed": 530.0,
+   "source": "P3_withholdJ21 trajectories.npz (5 s samples)",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "stopped veh\u00b7s west, priority granted",
+   "shown": 110,
+   "recomputed": 110.0,
+   "source": "P3 trajectories.npz (5 s samples)",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "stopped veh\u00b7s west, normal cycle",
+   "shown": 615,
+   "recomputed": 615.0,
+   "source": "P3_withholdJ21 trajectories.npz (5 s samples)",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "stopped veh\u00b7s north, priority granted",
+   "shown": 90,
+   "recomputed": 90.0,
+   "source": "P3 trajectories.npz (5 s samples)",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "stopped veh\u00b7s north, normal cycle",
+   "shown": 605,
+   "recomputed": 605.0,
+   "source": "P3_withholdJ21 trajectories.npz (5 s samples)",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "most vehicles on one J21 approach at once (either replay)",
+   "shown": 19,
+   "recomputed": 19.0,
+   "source": "trajectories.npz",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "smallest J21 approach storage (veh)",
+   "shown": 53,
+   "recomputed": 53.0,
+   "source": "fixture/edges.csv",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "largest J21 approach storage (veh)",
+   "shown": 132,
+   "recomputed": 132.0,
+   "source": "fixture/edges.csv",
+   "ok": true
+  },
+  {
+   "scene": "compare",
+   "label": "no approach reached its storage",
+   "shown": true,
+   "recomputed": true,
+   "source": "trajectories.npz + edges.csv",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "A (positive spatial exposure), granted \u2212 withheld, 4132\u20134400 (veh\u00b7s)",
+   "shown": 5992,
+   "recomputed": 5992.0,
+   "source": "trace.npz (Eq. 23 quadrature)",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "signed residence change, same window (veh\u00b7s)",
+   "shown": -74,
+   "recomputed": -74.0,
+   "source": "trace.npz",
+   "ok": true
+  },
+  {
+   "scene": "network",
+   "label": "J22\u2192J23 link carries extra occupancy (two junctions away)",
+   "shown": true,
+   "recomputed": "True",
+   "source": "trace.npz",
+   "ok": true
+  },
+  {
+   "scene": "network",
+   "label": "J23\u2192J22 link carries extra occupancy",
+   "shown": true,
+   "recomputed": "True",
+   "source": "trace.npz",
+   "ok": true
+  },
+  {
+   "scene": "network",
+   "label": "one escalation in this episode",
+   "shown": 1,
+   "recomputed": 1.0,
+   "source": "result.json progress_guard_log",
+   "ok": true
+  },
+  {
+   "scene": "network",
+   "label": "escalation time",
+   "shown": 4256,
+   "recomputed": 4256.0,
+   "source": "result.json progress_guard_log",
+   "ok": true
+  },
+  {
+   "scene": "network",
+   "label": "deficit at escalation (s)",
+   "shown": 20.5,
+   "recomputed": 20.48005143352154,
+   "source": "result.json progress_guard_log",
+   "ok": true
+  },
+  {
+   "scene": "network",
+   "label": "Eq.21 recomputed t \u2212 d \u2212 P",
+   "shown": 20.480051434,
+   "recomputed": 20.480051434,
+   "source": "result.json progress_guard_log",
+   "ok": true
+  },
+  {
+   "scene": "network",
+   "label": "J13 request at 4260 is in escalated (P2) mode",
+   "shown": "P2",
+   "recomputed": "P2",
+   "source": "gates.json t=4260 J13",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "JSEL arrival (s)",
+   "shown": 4316.5,
+   "recomputed": 4316.5,
+   "source": "result.json",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "JSEL travel (s)",
+   "shown": 252.5,
+   "recomputed": 252.5,
+   "source": "result.json",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "J21-withheld travel (s)",
+   "shown": 323.5,
+   "recomputed": 323.5,
+   "source": "P3_withholdJ21/result.json",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "S0 travel (s)",
+   "shown": 572.0,
+   "recomputed": 572.0,
+   "source": "P0/result.json",
+   "ok": true
+  },
+  {
+   "scene": "problem",
+   "label": "dispatch time",
+   "shown": 4064,
+   "recomputed": 4064.0,
+   "source": "result.json",
+   "ok": true
+  },
+  {
+   "scene": "problem",
+   "label": "origin",
+   "shown": "BW1",
+   "recomputed": "BW1",
+   "source": "result.json",
+   "ok": true
+  },
+  {
+   "scene": "all",
+   "label": "same ordinary demand schedule in P3, P0 and the branch",
+   "shown": true,
+   "recomputed": true,
+   "source": "result.json schedule_sha256",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "S0 balanced mean (s)",
+   "shown": 401.57,
+   "recomputed": 401.57222222222225,
+   "source": "archive/sumo_analysis_aggregate.json",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "JFAST balanced mean (s)",
+   "shown": 211.19,
+   "recomputed": 211.18530092592593,
+   "source": "archive/sumo_analysis_aggregate.json",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "JSEL balanced mean (s)",
+   "shown": 222.29,
+   "recomputed": 222.28744212962965,
+   "source": "archive/sumo_analysis_aggregate.json",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "JSEL 44.6% below S0",
+   "shown": 44.6,
+   "recomputed": 44.645712569576055,
+   "source": "archive",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "JSEL \u2212 JFAST ambulance time (s) mean",
+   "shown": 11.1,
+   "recomputed": 11.102141203703704,
+   "source": "archive/sumo_analysis_aggregate.json",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "JSEL \u2212 JFAST ambulance time (s) 95% CI low",
+   "shown": 9.47,
+   "recomputed": 9.467473958333333,
+   "source": "archive",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "JSEL \u2212 JFAST ambulance time (s) 95% CI high",
+   "shown": 12.94,
+   "recomputed": 12.938781828703705,
+   "source": "archive",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "positive spatial exposure (veh\u00b7h) mean",
+   "shown": -3.84,
+   "recomputed": -3.8436773405349793,
+   "source": "archive/sumo_analysis_aggregate.json",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "positive individual residence (veh\u00b7h) mean",
+   "shown": -1.64,
+   "recomputed": -1.6399762088477365,
+   "source": "archive/sumo_analysis_aggregate.json",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "runs in the main grid",
+   "shown": 1728,
+   "recomputed": 1728.0,
+   "source": "archive/sumo_main_records.json",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "archived JSEL runs in the main grid",
+   "shown": 432,
+   "recomputed": 432.0,
+   "source": "archive/sumo_main_records.json",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "JSEL refusals on burden (ticks, all runs)",
+   "shown": 0,
+   "recomputed": 0.0,
+   "source": "archive/sumo_main_records.json",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "JSEL refusals on downstream space (ticks, all runs)",
+   "shown": 0,
+   "recomputed": 0.0,
+   "source": "archive/sumo_main_records.json",
+   "ok": true
+  },
+  {
+   "scene": "refuse",
+   "label": "JSEL refusals on gain/feasibility (ticks) > 0",
+   "shown": true,
+   "recomputed": true,
+   "source": "archive/sumo_main_records.json",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "JSEL mission evaluations",
+   "shown": 2160,
+   "recomputed": 2160.0,
+   "source": "archive/sumo_main_records.json",
+   "ok": true
+  },
+  {
+   "scene": "result",
+   "label": "JSEL escalated share (%)",
+   "shown": 51.6,
+   "recomputed": 51.574074074074076,
+   "source": "archive/sumo_main_records.json",
+   "ok": true
+  }
+ ]
+}
