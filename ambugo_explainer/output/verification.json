@@ -1,0 +1,216 @@
+{
+  "all_pass": true,
+  "checks": {
+    "eq20_reproduces_log_all_events": {
+      "pass": true,
+      "value": "max abs error 1.14e-13 veh*s"
+    },
+    "eq19_reproduces_log_all_events": {
+      "pass": true,
+      "value": null
+    },
+    "refused_785_to_791": {
+      "pass": true,
+      "value": null
+    },
+    "admitted_792": {
+      "pass": true,
+      "value": null
+    },
+    "burden_785": {
+      "pass": true,
+      "value": 1044.5
+    },
+    "burden_787": {
+      "pass": true,
+      "value": 1184.4
+    },
+    "burden_792": {
+      "pass": true,
+      "value": 913.3
+    },
+    "De_785_38.3": {
+      "pass": true,
+      "value": 38.32
+    },
+    "benefit_785_72.6": {
+      "pass": true,
+      "value": null
+    },
+    "switch_delay_785_11_to_791_5": {
+      "pass": true,
+      "value": null
+    },
+    "SW_qhat_6.37_to_9.37_at_787": {
+      "pass": true,
+      "value": null
+    },
+    "NW_qhat_1.94_to_0.94_at_792": {
+      "pass": true,
+      "value": null
+    },
+    "SW_qhat_9.37_to_8.37_at_792": {
+      "pass": true,
+      "value": null
+    },
+    "own_qhat_4.78_to_2.78_dhat_10.52_to_6.12": {
+      "pass": true,
+      "value": null
+    },
+    "true_counts_unchanged_785_vs_792": {
+      "pass": true,
+      "value": [
+        2,
+        2,
+        8,
+        0
+      ]
+    },
+    "free_flow_eta_785_3.0": {
+      "pass": true,
+      "value": null
+    },
+    "ped_reservation_771.5_to_796.5": {
+      "pass": true,
+      "value": null
+    },
+    "SE_green_796.5": {
+      "pass": true,
+      "value": null
+    },
+    "conflicting_greens_shifted_52s_every_cycle": {
+      "pass": true,
+      "value": {
+        "NW": [
+          52.0,
+          52.0,
+          52.0
+        ],
+        "SW": [
+          52.0,
+          52.0,
+          52.0
+        ],
+        "NE": [
+          52.0,
+          52.0
+        ]
+      }
+    },
+    "SE_served_72s_earlier": {
+      "pass": true,
+      "value": 868.5
+    },
+    "cycle_length_124s": {
+      "pass": true,
+      "value": [
+        770.5,
+        894.5,
+        1018.5
+      ]
+    },
+    "inserted_block_51s": {
+      "pass": true,
+      "value": 21.0
+    },
+    "realised_conflicting_extra_by_880_is_842.5": {
+      "pass": true,
+      "value": 842.5
+    },
+    "SE_fewer_stopped_by_851": {
+      "pass": true,
+      "value": -217.0
+    },
+    "Da_851_matches_log_20.26": {
+      "pass": true,
+      "value": 20.2636
+    },
+    "Pa_851_matches_log_70.74": {
+      "pass": true,
+      "value": null
+    },
+    "escalation_flag_from_851.5": {
+      "pass": true,
+      "value": null
+    },
+    "Da_rises_24_to_48_at_J2": {
+      "pass": true,
+      "value": null
+    },
+    "a001_escalated_704": {
+      "pass": true,
+      "value": null
+    },
+    "J2_a001_green_955.5": {
+      "pass": true,
+      "value": null
+    },
+    "J2_NW1_green_981.5_NW2_994.5": {
+      "pass": true,
+      "value": null
+    },
+    "J2_switch_delay_971_10s": {
+      "pass": true,
+      "value": null
+    },
+    "J2_logged_burden_36.5_to_168.5": {
+      "pass": true,
+      "value": [
+        36.489654074135714,
+        168.5104711740712
+      ]
+    },
+    "NW2_length_6.71m": {
+      "pass": true,
+      "value": null
+    },
+    "reroute_gap_10.04_gt_10": {
+      "pass": true,
+      "value": 10.0409
+    },
+    "a002_travel_323.5_vs_516.5": {
+      "pass": true,
+      "value": null
+    },
+    "no_requests_after_arrival": {
+      "pass": true,
+      "value": null
+    },
+    "route_B_306.97_vs_500.24": {
+      "pass": true,
+      "value": null
+    },
+    "network_stopped_diff_760_1125_+307": {
+      "pass": true,
+      "value": 307.0
+    },
+    "network_stopped_pct_5.2": {
+      "pass": true,
+      "value": 5.2
+    },
+    "network_stopped_matches_original_graph_data": {
+      "pass": true,
+      "value": null
+    },
+    "A_ge_max_dJ_0": {
+      "pass": true,
+      "value": null
+    },
+    "414_vehicles_seed_19": {
+      "pass": true,
+      "value": null
+    },
+    "dispatches_600_660_760": {
+      "pass": true,
+      "value": null
+    },
+    "budget_B_1000": {
+      "pass": true,
+      "value": null
+    },
+    "seven_signals": {
+      "pass": true,
+      "value": null
+    }
+  }
+}
