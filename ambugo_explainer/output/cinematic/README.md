@@ -15,19 +15,29 @@ One intersection (PCL Chowk), one ambulance (a002), one decision. The simulated 
 Its speed is a smooth, monotone time-warp, so events keep their recorded order and the clock never jumps.
 The clock in the corner always shows the simulation time and the current replay speed.
 
-| Video | Sim | Stage | On screen |
+| Video | Sim | Stage | Headline / subline |
 |---|---|---|---|
-| 0.0–2.5 | 777–785 | — | Ambulance on its recorded track; pedestrian countdown at the junction. *An ambulance approaches* |
-| 2.5–4.0 | 785–786 | 01 PREDICT | NW / SW / NE approaches light up with their forecast contributions (175 · 501 · 368); the gauge fills. *Predict the cost* |
-| 4.0–5.5 | 786–787 | 02 DECIDE | Gauge passes the fixed budget tick: **1,045 / 1,000**, coral overflow arc, PRIORITY WITHHELD; dashed coral request line from the ambulance to its stop line. *Over budget* |
-| 5.5–7.05 | 787–792 | 02 DECIDE | Logged re-checks: 1,184, still withheld. *Re-checked every second* |
-| 7.05–8.0 | 792–793 | 02 DECIDE | **913 / 1,000**, PRIORITY APPROVED, request line turns emerald. *Within budget: the estimate changed, the physical queues did not* |
-| 8.0–9.7 | 793–796.5 | 03 ACT | Pedestrian ring counts down to 0 while the ambulance is stopped. *Pedestrian phase protected* |
-| 9.7–10.5 | 796.5–797.6 | 03 ACT | SE stop line turns green with a pulse. *Green at first legal moment* |
-| 10.5–12.4 | 797.6–804 | 03 ACT | Ambulance accelerates through; card shows both runs' green phases: **72 s earlier**. *Ambulance through* |
-| 12.4–14.9 | 804–840 | 04 TRADE-OFF | Conflicting approaches and their queued cars tinted; timeline arrows NW/SW/NE: **+52 s later**. *Other approaches wait longer* |
-| 14.9–17.4 | 840–880 | 04 TRADE-OFF | Same gauge, now MEASURED: extra stopped vehicle-seconds grows to **843**, with ticks for FORECAST 913 and BUDGET; OBSERVED, NOT FORECAST. *The cost, measured* |
-| 17.4–20.0 | 880 (hold) | — | Card clears; hero view, route trace leaving frame. **Predict. Constrain. Prioritize.** |
+| 0.00-2.50 | 777.0-785.0 | - | Ambulance approaching PCL Chowk / Recorded traffic simulation on the Mohali road network |
+| 2.50-4.00 | 785.0-786.0 | FORECAST | Forecasting the cost of priority / Expected additional delay to the three conflicting approaches |
+| 4.00-5.50 | 786.0-787.0 | DECISION | Forecast exceeds the budget / 1,045 > 1,000 vehicle-seconds: request withheld |
+| 5.50-7.05 | 787.0-792.1 | DECISION | Re-evaluated each second / Updated sensor counts give 1,184 vehicle-seconds: still withheld |
+| 7.05-8.00 | 792.1-793.0 | DECISION | Forecast within the budget / 913 vehicle-seconds: request admitted. The estimate changed, not the queues |
+| 8.00-9.70 | 793.0-796.5 | ACTUATION | Pedestrian interval completes first / An admitted request cannot shorten a pedestrian phase |
+| 9.70-10.50 | 796.5-797.6 | ACTUATION | Green at the earliest legal time / Signal changes at 796.5 s |
+| 10.50-12.40 | 797.6-804.0 | ACTUATION | Ambulance clears the junction / Served 72 s earlier than in the no-priority run |
+| 12.40-14.40 | 804.0-832.0 | CONSEQUENCES | Effect on the conflicting approaches / Their next green phases begin 52 s later |
+| 14.40-16.30 | 832.0-862.0 | CONSEQUENCES | Effect on adjacent roads / Vehicles present on each road, relative to the no-priority run |
+| 16.30-17.90 | 862.0-880.0 | CONSEQUENCES | Observed cost / Additional stopped time on the NW, SW and NE approaches, 785 to 880 s |
+| 17.90-20.00 | 880.0-880.0 | - | Priority, granted within a forecast budget |
+
+Card sequence: forecast gauge (2.6-10.5 s), signal-service timeline (10.5-14.4 s), adjacent-roads table (14.4-16.3 s), observed-cost gauge (16.3-18.5 s).
+
+## Revision 2 (this version)
+
+* Headlines rewritten in plain academic register (e.g. *Forecast exceeds the budget*, *Pedestrian interval completes first*, *Priority, granted within a forecast budget*); stage labels FORECAST / DECISION / ACTUATION / CONSEQUENCES.
+* Vehicles drawn ~40 % larger; ambulance marker ~50 % larger with a solid halo.
+* New beat *Effect on adjacent roads*: seven roads around PCL Chowk (four approaches, three exits) coloured and labelled by vehicles present, AmbuGo minus no priority (red more, blue fewer), with a matching table in the card. Shows one signal change altering conditions on several roads at once.
+* Glow reduced to a single pass.
 
 ## What changed and why it reads better
 
