@@ -1,0 +1,34 @@
+AmbuGo 20 s cinematic - voiceover cue sheet
+(video time -> what is on screen; suggested line in quotes; sim = recorded simulation clock)
+
+ 0.00- 2.50 s  sim  777.0- 785.0 s  [--]  An ambulance approaches
+      "An ambulance is approaching PCL Chowk, where the light is held red for a pedestrian crossing."
+ 2.50- 4.00 s  sim  785.0- 786.0 s  [01 PREDICT]  Predict the cost
+      "Before asking for a green, AmbuGo forecasts how much extra waiting priority would impose on the other three approaches."
+ 4.00- 5.50 s  sim  786.0- 787.0 s  [02 DECIDE]  Over budget
+      "The forecast, about 1,045 vehicle-seconds, is over the 1,000 budget, so priority is withheld."
+ 5.50- 7.05 s  sim  787.0- 792.1 s  [02 DECIDE]  Re-checked every second
+      "It re-checks every second as new, delayed sensor counts arrive. Still over budget."
+ 7.05- 8.00 s  sim  792.1- 793.0 s  [02 DECIDE]  Within budget
+      "A new count sample drops the estimate to 913. Within budget, so priority is approved. The queues themselves didn't change; the estimate did."
+ 8.00- 9.70 s  sim  793.0- 796.5 s  [03 ACT]  Pedestrian phase protected
+      "Approval doesn't cut the pedestrian crossing short. The signal waits for it to finish."
+ 9.70-10.50 s  sim  796.5- 797.6 s  [03 ACT]  Green at first legal moment
+      "At the first legal moment, the ambulance gets green."
+10.50-12.40 s  sim  797.6- 804.0 s  [03 ACT]  Ambulance through
+      "The ambulance is served 72 seconds earlier than it would be without priority."
+12.40-14.90 s  sim  804.0- 840.0 s  [04 TRADE-OFF]  Other approaches wait longer
+      "The cost: the other three approaches now get their greens 52 seconds later."
+14.90-17.40 s  sim  840.0- 880.0 s  [04 TRADE-OFF]  The cost, measured
+      "Measured afterwards, those drivers lost about 843 extra vehicle-seconds of stopped time, set against the 913 that was forecast at decision time."
+17.40-20.00 s  sim  880.0- 880.0 s  [--]  Predict. Constrain. Prioritize.
+      "AmbuGo doesn't just turn lights green. It predicts the cost, checks it against a budget, and only then intervenes."
+
+Exact event times in the video:
+   2.50 s  first forecast logged (785 s)
+   5.50 s  new sample, 1,184 (787 s)
+   6.90 s  admitted, 913 (792 s)
+   9.70 s  SE green (796.5 s)
+  11.87 s  ambulance crosses stop line (801.5 s)
+  15.37 s  NW green, 52 s late (847.5 s)
+  17.40 s  measurement window ends (880 s)
