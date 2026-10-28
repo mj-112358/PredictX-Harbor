@@ -162,6 +162,9 @@ def beat_at(v):
 
 # ------------------------------------------------------------- canvas
 class Cv:
+    """2x supersampled RGBA layer. Semi-transparent primitives are drawn on a small tile and
+    alpha-composited, so fading elements blend correctly instead of overwriting what is below."""
+
     def __init__(self, w, h):
         self.w, self.h = w, h
         self.im = Image.new("RGBA", (w * SS, h * SS), (0, 0, 0, 0))
@@ -170,43 +173,76 @@ class Cv:
     def P(self, p):
         return (p[0] * SS, p[1] * SS)
 
+    def _draw(self, cols, box, fn):
+        """box in 1x coords; fn(draw, ox, oy) draws with pixel offset (ox, oy)."""
+        alphas = [c[3] for c in cols if c is not None and len(c) == 4]
+        if alphas and max(alphas) == 0:
+            return
+        if not alphas or min(alphas) >= 250:
+            fn(self.d, 0, 0)
+            return
+        x0, y0, x1, y1 = box
+        X0, Y0 = int(max(0, x0 * SS - 4)), int(max(0, y0 * SS - 4))
+        X1, Y1 = int(min(self.w * SS, x1 * SS + 4)), int(min(self.h * SS, y1 * SS + 4))
+        if X1 <= X0 or Y1 <= Y0:
+            return
+        tile = Image.new("RGBA", (X1 - X0, Y1 - Y0), (0, 0, 0, 0))
+        fn(ImageDraw.Draw(tile), X0, Y0)
+        self.im.alpha_composite(tile, (X0, Y0))
+
+    @staticmethod
+    def _bbox(pts, pad):
+        xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+        return (min(xs) - pad, min(ys) - pad, max(xs) + pad, max(ys) + pad)
+
     def line(self, pts, c, w):
-        if len(pts) > 1:
-            self.d.line([self.P(p) for p in pts], fill=c, width=max(1, int(round(w * SS))), joint="curve")
+        if len(pts) < 2:
+            return
+        pw = max(1, int(round(w * SS)))
+        self._draw([c], self._bbox(pts, w), lambda d, ox, oy: d.line([(p[0] * SS - ox, p[1] * SS - oy) for p in pts],
+                                                                      fill=c, width=pw, joint="curve"))
 
     def poly(self, pts, fill=None, outline=None, w=1):
-        self.d.polygon([self.P(p) for p in pts], fill=fill, outline=outline, width=int(w * SS) if outline else 0)
+        self._draw([fill, outline], self._bbox(pts, w + 1), lambda d, ox, oy: d.polygon(
+            [(p[0] * SS - ox, p[1] * SS - oy) for p in pts], fill=fill, outline=outline, width=int(w * SS) if outline else 0))
 
     def circle(self, p, r, fill=None, outline=None, w=1):
         x, y = p
-        self.d.ellipse(((x - r) * SS, (y - r) * SS, (x + r) * SS, (y + r) * SS), fill=fill, outline=outline,
-                       width=max(1, int(w * SS)) if outline else 0)
+        self._draw([fill, outline], (x - r - w, y - r - w, x + r + w, y + r + w), lambda d, ox, oy: d.ellipse(
+            ((x - r) * SS - ox, (y - r) * SS - oy, (x + r) * SS - ox, (y + r) * SS - oy), fill=fill, outline=outline,
+            width=max(1, int(w * SS)) if outline else 0))
 
     def rect(self, b, fill=None, outline=None, w=1, r=0):
         x0, y0, x1, y1 = b
-        bb = (min(x0, x1) * SS, min(y0, y1) * SS, max(x0, x1) * SS, max(y0, y1) * SS)
-        self.d.rounded_rectangle(bb, int(r * SS), fill=fill, outline=outline, width=max(1, int(w * SS)) if outline else 0)
+        x0, x1, y0, y1 = min(x0, x1), max(x0, x1), min(y0, y1), max(y0, y1)
+        self._draw([fill, outline], (x0 - w, y0 - w, x1 + w, y1 + w), lambda d, ox, oy: d.rounded_rectangle(
+            (x0 * SS - ox, y0 * SS - oy, x1 * SS - ox, y1 * SS - oy), int(r * SS), fill=fill, outline=outline,
+            width=max(1, int(w * SS)) if outline else 0))
 
     def arc(self, c, r, a0, a1, col, w):
         x, y = c
         if a1 - a0 < .05:
             return
-        self.d.arc(((x - r) * SS, (y - r) * SS, (x + r) * SS, (y + r) * SS), a0, a1, fill=col, width=int(w * SS))
+        self._draw([col], (x - r - w, y - r - w, x + r + w, y + r + w), lambda d, ox, oy: d.arc(
+            ((x - r) * SS - ox, (y - r) * SS - oy, (x + r) * SS - ox, (y + r) * SS - oy), a0, a1, fill=col, width=int(w * SS)))
 
     def text(self, p, s, font, col, anchor="la", track=0.0):
-        if not track:
-            self.d.text(self.P(p), s, font=font, fill=col, anchor=anchor)
+        if not s:
             return
-        # letter-spaced caps
+        if not track:
+            bb = self.d.textbbox(self.P(p), s, font=font, anchor=anchor)
+            box = (bb[0] / SS, bb[1] / SS, bb[2] / SS, bb[3] / SS)
+            self._draw([col], box, lambda d, ox, oy: d.text((p[0] * SS - ox, p[1] * SS - oy), s, font=font, fill=col, anchor=anchor))
+            return
         widths = [self.d.textlength(ch, font=font) for ch in s]
         total = sum(widths) + track * SS * (len(s) - 1)
-        x, y = p[0] * SS, p[1] * SS
+        x = p[0] * SS
         if anchor[0] == "m":
             x -= total / 2
         elif anchor[0] == "r":
             x -= total
         for ch, wch in zip(s, widths):
-            self.d.text((x, y), ch, font=font, fill=col, anchor="l" + anchor[1])
+            self.text(((x) / SS, p[1]), ch, font, col, "l" + anchor[1])
             x += wch + track * SS
 
     def tw(self, s, font, track=0.0):
@@ -473,7 +509,7 @@ class Film:
             if e in app_idx and tint > 0:
                 col = mix(SLATE, mix(app_idx[e], IVORY, .25), tint)
             body = [tuple(c0 + u * x + n * y) for x, y in [(-L / 2, -B / 2), (L / 2, -B / 2), (L / 2, B / 2), (-L / 2, B / 2)]]
-            cv.poly(body, fill=rgba(col, .97), outline=rgba((12, 16, 26), .9), w=1.2)
+            cv.poly(body, fill=rgba(col), outline=rgba((12, 16, 26)), w=1.2)
             if sp < 0.1:
                 for kk in (-1, 1):
                     cv.circle(tuple(c0 - u * L * .46 + n * B * .3 * kk), max(1.4, B * .16), fill=rgba(CORAL, .9))

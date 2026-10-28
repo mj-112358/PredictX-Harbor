@@ -1,3 +1,22 @@
+# AmbuGo 30-second explainer (current)
+
+`AmbuGo_30s_Explainer.mp4`: 1920x1080, 30 fps, 900 frames, 30.0 s. Built by `python src/explainer30.py` (about 4 min on 4 cores); numbers checked by `python src/verify30.py` (17/17) and `python src/cine_verify.py` (20/20).
+
+The film follows the controller's decision procedure in order, with a step indicator at the top:
+
+| Video | Sim | Step | Headline | Map | Card |
+|---|---|---|---|---|---|
+| 0.0-4.5 | 761-767 | ROUTES | Candidate routes are scored | 4 candidate routes, colour-coded, hospital marked | route table: with / without priority |
+| 4.5-8.0 | 767-785 | CONDITIONS | Conditions at the junction are measured | approach lanes coloured; queue estimate on each | inputs table: queue, arrivals/h, loading, signal, ambulance ETA |
+| 8.0-12.8 | 785-786 | OPTIONS | Each option is forecast before it is used | forecast cost drawn on each conflicting road (red = over budget) | two options side by side: priority now vs keep cycle, against the budget |
+| 12.8-17.6 | 786-794 | RE-EVALUATION | The decision is re-evaluated every second | same bands, turn green when the forecast drops to 913 | bar per second 785-792 s vs budget; what changed |
+| 17.6-22.0 | 794-804 | ACTUATION | The signal changes at the earliest legal time | pedestrian countdown, green pulse, ambulance passes | signal timelines, countdown, 72 s earlier / 52 s later |
+| 22.0-26.5 | 804-869 | EFFECTS | Measured effect on the surrounding roads | roads coloured by measured change (red more, blue fewer) | per-road change table |
+| 26.5-30.0 | 869-880 | - | Priority is granted only within a forecast budget | trail leaves frame; approaches tinted | observed cost gauge, forecast 913 tick |
+
+Note on inputs: the controller uses fixed historical arrival rates and nominal loading per approach. Time of day is not a separate input in this simulated episode, so the film does not claim it.
+
+---
 # AmbuGo — 20-second cinematic cut
 
 `AmbuGo_20s_Cinematic.mp4`: 1920×1080, 30 fps, 600 frames, exactly 20.0 s, H.264 (CRF 16), about 4.7 MB, no audio.

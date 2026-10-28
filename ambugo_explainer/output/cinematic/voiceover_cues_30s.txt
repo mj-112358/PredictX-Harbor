@@ -1,0 +1,27 @@
+AmbuGo 30 s explainer: voiceover cue sheet
+(video time, simulation time, step, headline, suggested narration)
+
+  0.0-  4.5 s  sim  761.0- 767.4 s  [1 ROUTES]  Candidate routes are scored
+      "At dispatch, AmbuGo forecasts each candidate route to the hospital, with and without signal priority, and selects the fastest pair: route B, about 307 seconds with priority against 500 without."
+  4.5-  8.0 s  sim  767.4- 785.0 s  [2 CONDITIONS]  Conditions at the junction are measured
+      "As the ambulance nears PCL Chowk, the controller reads the junction: queue estimates on each approach from delayed sensor counts, historical arrival rates and loading, and the current signal state, here a pedestrian interval."
+  8.0- 12.8 s  sim  785.0- 786.4 s  [3 OPTIONS]  Each option is forecast before it is used
+      "It then forecasts each option. A priority green now would save the ambulance about 73 seconds, but the forecast delay to the other three approaches is 1,045 vehicle-seconds, above the budget of 1,000. Keeping the normal cycle imposes nothing, so priority is withheld."
+ 12.8- 17.6 s  sim  786.4- 794.0 s  [4 RE-EVALUATION]  The decision is re-evaluated every second
+      "The test is repeated every second. When a new count sample lowers the estimate to 913 vehicle-seconds, within the budget, priority is admitted. The physical queues have not changed; only the estimate has."
+ 17.6- 22.0 s  sim  794.0- 804.5 s  [5 ACTUATION]  The signal changes at the earliest legal time
+      "The pedestrian interval already in progress completes, and the ambulance receives green at the earliest legal time, 72 seconds earlier than it would without priority. The other approaches' next greens move 52 seconds later."
+ 22.0- 26.5 s  sim  804.5- 869.1 s  [6 EFFECTS]  Measured effect on the surrounding roads
+      "The effect is measured across the surrounding roads: queues lengthen on the conflicting approaches, and fewer vehicles flow onto the exits than in the same traffic without priority."
+ 26.5- 30.0 s  sim  869.1- 880.0 s  [--]  Priority is granted only within a forecast budget
+      "In total, the conflicting approaches accumulate 843 additional stopped vehicle-seconds, against the 913 forecast. Priority is granted only when its forecast cost stays within the budget."
+
+Exact event times in the video:
+   0.00 s  route decision logged (761 s)
+   8.00 s  first forecast, 1,045 (785 s)
+  13.40 s  new sample, 1,184 (787 s)
+  15.90 s  admitted, 913 (792 s)
+  19.17 s  SE green (796.5 s)
+  21.33 s  ambulance crosses stop line (801.5 s)
+  25.03 s  NW green, 52 s late (847.5 s)
+  27.60 s  measurement window ends (880 s)
