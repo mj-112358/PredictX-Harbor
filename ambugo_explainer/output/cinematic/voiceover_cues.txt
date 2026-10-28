@@ -3,34 +3,22 @@ AmbuGo 20 s cinematic: voiceover cue sheet
 
  0.00- 2.50 s  sim  777.0- 785.0 s  [--]  Ambulance approaching PCL Chowk
       "An ambulance approaches PCL Chowk while the junction is held in a pedestrian interval."
- 2.50- 4.00 s  sim  785.0- 786.0 s  [01 FORECAST]  Forecasting the cost of priority
-      "Before requesting priority, the controller forecasts the additional delay that a priority green would impose on the three conflicting approaches."
- 4.00- 5.50 s  sim  786.0- 787.0 s  [02 DECISION]  Forecast exceeds the budget
-      "The forecast, 1,045 vehicle-seconds, exceeds the budget of 1,000, so the request is withheld."
- 5.50- 7.05 s  sim  787.0- 792.1 s  [02 DECISION]  Re-evaluated each second
-      "The test is repeated each second with delayed, noisy sensor counts; the forecast remains above budget."
- 7.05- 8.00 s  sim  792.1- 793.0 s  [02 DECISION]  Forecast within the budget
-      "A new count sample lowers the estimate to 913 vehicle-seconds, and the request is admitted. The physical queues are unchanged; only the estimate has moved."
- 8.00- 9.70 s  sim  793.0- 796.5 s  [03 ACTUATION]  Pedestrian interval completes first
-      "Admission does not shorten the pedestrian interval already in progress."
- 9.70-10.50 s  sim  796.5- 797.6 s  [03 ACTUATION]  Green at the earliest legal time
-      "The ambulance receives green at the earliest legal time, 796.5 seconds."
-10.50-12.40 s  sim  797.6- 804.0 s  [03 ACTUATION]  Ambulance clears the junction
-      "It is served 72 seconds earlier than in the matched run without priority."
-12.40-14.40 s  sim  804.0- 832.0 s  [04 CONSEQUENCES]  Effect on the conflicting approaches
-      "The cost falls on the other approaches: their next green phases begin 52 seconds later."
-14.40-16.30 s  sim  832.0- 862.0 s  [04 CONSEQUENCES]  Effect on adjacent roads
-      "The change propagates to adjacent roads: queues lengthen on the SW and NE approaches, while fewer vehicles are released onto the exits."
-16.30-17.90 s  sim  862.0- 880.0 s  [04 CONSEQUENCES]  Observed cost
-      "Measured in the replay, the three conflicting approaches accumulate 843 additional stopped vehicle-seconds by 880 seconds, against a forecast of 913."
-17.90-20.00 s  sim  880.0- 880.0 s  [--]  Priority, granted within a forecast budget
-      "AmbuGo grants signal priority only when its forecast cost to other traffic remains within a set budget."
+ 2.50- 6.90 s  sim  785.0- 792.0 s  [01 FORECAST]  Forecast exceeds the budget
+      "Before requesting priority, the controller forecasts the additional delay a priority green would impose on the three conflicting approaches. At 1,045, and then 1,184 vehicle-seconds, the forecast exceeds the budget of 1,000, so the request is withheld and re-evaluated each second."
+ 6.90- 9.60 s  sim  792.0- 796.6 s  [02 DECISION]  Forecast within the budget
+      "A new sensor sample lowers the estimate to 913 vehicle-seconds and the request is admitted; the physical queues are unchanged. The pedestrian interval already in progress is allowed to finish."
+ 9.60-12.60 s  sim  796.6- 804.5 s  [03 ACTUATION]  Green at the earliest legal time
+      "The ambulance receives green at the earliest legal time, 72 seconds earlier than in the matched run without priority. The other three approaches now receive their next green 52 seconds later."
+12.60-16.60 s  sim  804.5- 862.0 s  [04 CONSEQUENCES]  Effect on adjacent roads
+      "That change propagates to the adjacent roads: queues lengthen on the conflicting approaches, while the exits carry fewer vehicles than they otherwise would."
+16.60-20.00 s  sim  862.0- 880.0 s  [--]  Priority, granted within a forecast budget
+      "Measured in the replay, the conflicting approaches accumulate 843 additional stopped vehicle-seconds, against a forecast of 913. Priority is granted only within a forecast budget."
 
 Exact event times in the video:
-   2.50 s  first forecast logged (785 s)
-   5.50 s  new sample, 1,184 (787 s)
+   2.50 s  first forecast, 1,045 (785 s)
+   4.90 s  new sample, 1,184 (787 s)
    6.90 s  admitted, 913 (792 s)
-   9.70 s  SE green (796.5 s)
-  11.90 s  ambulance crosses stop line (801.5 s)
-  15.37 s  NW green, 52 s late (847.5 s)
-  17.90 s  measurement window ends (880 s)
+   9.53 s  SE green (796.5 s)
+  11.87 s  ambulance crosses stop line (801.5 s)
+  15.67 s  NW green, 52 s late (847.5 s)
+  18.20 s  measurement window ends (880 s)

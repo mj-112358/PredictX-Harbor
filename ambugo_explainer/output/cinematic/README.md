@@ -17,20 +17,19 @@ The clock in the corner always shows the simulation time and the current replay 
 
 | Video | Sim | Stage | Headline / subline |
 |---|---|---|---|
-| 0.00-2.50 | 777.0-785.0 | - | Ambulance approaching PCL Chowk / Recorded traffic simulation on the Mohali road network |
-| 2.50-4.00 | 785.0-786.0 | FORECAST | Forecasting the cost of priority / Expected additional delay to the three conflicting approaches |
-| 4.00-5.50 | 786.0-787.0 | DECISION | Forecast exceeds the budget / 1,045 > 1,000 vehicle-seconds: request withheld |
-| 5.50-7.05 | 787.0-792.1 | DECISION | Re-evaluated each second / Updated sensor counts give 1,184 vehicle-seconds: still withheld |
-| 7.05-8.00 | 792.1-793.0 | DECISION | Forecast within the budget / 913 vehicle-seconds: request admitted. The estimate changed, not the queues |
-| 8.00-9.70 | 793.0-796.5 | ACTUATION | Pedestrian interval completes first / An admitted request cannot shorten a pedestrian phase |
-| 9.70-10.50 | 796.5-797.6 | ACTUATION | Green at the earliest legal time / Signal changes at 796.5 s |
-| 10.50-12.40 | 797.6-804.0 | ACTUATION | Ambulance clears the junction / Served 72 s earlier than in the no-priority run |
-| 12.40-14.40 | 804.0-832.0 | CONSEQUENCES | Effect on the conflicting approaches / Their next green phases begin 52 s later |
-| 14.40-16.30 | 832.0-862.0 | CONSEQUENCES | Effect on adjacent roads / Vehicles present on each road, relative to the no-priority run |
-| 16.30-17.90 | 862.0-880.0 | CONSEQUENCES | Observed cost / Additional stopped time on the NW, SW and NE approaches, 785 to 880 s |
-| 17.90-20.00 | 880.0-880.0 | - | Priority, granted within a forecast budget |
+| 0.0-2.5 | 777.0-785.0 | - | Ambulance approaching PCL Chowk / Recorded traffic simulation on the Mohali road network |
+| 2.5-6.9 | 785.0-792.0 | FORECAST | Forecast exceeds the budget / Expected delay to the other approaches is above 1,000 vehicle-seconds: request withheld |
+| 6.9-9.6 | 792.0-796.6 | DECISION | Forecast within the budget / 913 vehicle-seconds: request admitted; the pedestrian interval completes first |
+| 9.6-12.6 | 796.6-804.5 | ACTUATION | Green at the earliest legal time / The ambulance is served 72 s earlier than in the no-priority run |
+| 12.6-16.6 | 804.5-862.0 | CONSEQUENCES | Effect on adjacent roads / Conflicting approaches wait 52 s longer; traffic shifts across the junction |
+| 16.6-20.0 | 862.0-880.0 | - | Priority, granted within a forecast budget / Observed cost: 843 additional stopped vehicle-seconds, against a forecast of 913 |
 
-Card sequence: forecast gauge (2.6-10.5 s), signal-service timeline (10.5-14.4 s), adjacent-roads table (14.4-16.3 s), observed-cost gauge (16.3-18.5 s).
+Card sequence: forecast gauge (2.7-9.6 s), signal-service timeline (9.6-12.6 s), adjacent-roads table (12.6-16.6 s), observed-cost gauge (16.6-20 s).
+
+## Revision 3 (this version)
+
+* Real Google Maps imagery with place and road names, lightly desaturated; headline, clock and card sit on dark panels above it. The vector-road overlay was removed.
+* Six headlines instead of twelve; each stays 2.5-4.4 s, with 0.5-0.6 s cross-fades. The card changes four times.
 
 ## Revision 2 (this version)
 

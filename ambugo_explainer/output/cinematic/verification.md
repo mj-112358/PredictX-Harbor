@@ -21,9 +21,9 @@ Every number or factual claim on screen, its source, units, window, and whether 
 | 843 veh·s measured, OBSERVED NOT FORECAST | 842.5 (shown rounded half-up) | PASS | observed, cumulative | edge_halts (speed < 0.1 m/s) on NW, SW, NE, P3 minus P0, x 0.5 s | veh·s | 785-880 s |
 | Forecast tick 913 on the measured gauge | 913.3 | PASS | forecast | data/control_explanations.json `events[a002]` | veh·s | t = 792 s |
 | Clock never runs backwards; events keep recorded order | min dSIM/frame = -0.0000 | PASS | render | src/cinematic.py KNOTS (monotone PCHIP) | s | all frames |
-| Peak replay speed (shown in the clock) | 16.9x | PASS | render | src/cinematic.py | - | trade-off beat |
+| Peak replay speed (shown in the clock) | 17.7x | PASS | render | src/cinematic.py | - | trade-off beat |
 | Request admitted at video time | 6.90 s | PASS | render | KNOTS | s | sim 792.0 s |
-| Green at video time | 9.70 s | PASS | render | KNOTS | s | sim 796.5 s |
+| Green at video time | 9.53 s | PASS | render | KNOTS | s | sim 796.5 s |
 
 **20/20 pass.**
 

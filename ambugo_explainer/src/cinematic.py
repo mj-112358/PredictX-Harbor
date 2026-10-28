@@ -40,14 +40,14 @@ ROAD_EDGE = (70, 84, 106)
 IVORY = (240, 236, 226)
 MUTED = (150, 160, 178)
 DIM = (96, 108, 128)
-CYAN = (56, 214, 255)
-EMERALD = (46, 204, 140)
+CYAN = (0, 140, 230)
+EMERALD = (20, 170, 110)
 CORAL = (255, 106, 92)
 AMBER_SIG = (255, 191, 71)
 VIOLET = (167, 139, 250)
 AMBER = (245, 166, 35)
 TEAL = (45, 212, 191)
-SLATE = (120, 134, 156)
+SLATE = (74, 86, 106)
 APP = {"172380615#1": VIOLET, "172382686#4": AMBER, "172660580#0": TEAL}
 APP_NAME = {"172380615#1": "NW", "172382686#4": "SW", "172660580#0": "NE", "335061218": "SE"}
 
@@ -95,8 +95,8 @@ def mix(a, b, u):
 # ----------------------------------------------------------- time warp
 # Video-second -> simulation-second knots. Monotone cubic (PCHIP) keeps the replay
 # speed continuous: no jerks, never reverses, and every event keeps its recorded order.
-KNOTS = [(0.0, 777.0), (2.5, 785.0), (4.0, 786.0), (5.5, 787.0), (6.7, 791.9), (6.9, 792.0), (8.0, 793.0),
-         (9.7, 796.5), (10.5, 797.6), (12.4, 804.0), (14.4, 832.0), (16.3, 862.0), (17.9, 880.0), (20.0, 880.0)]
+KNOTS = [(0.0, 777.0), (2.5, 785.0), (4.6, 786.6), (4.9, 787.0), (6.6, 791.8), (6.9, 792.0), (8.6, 795.3),
+         (9.6, 796.6), (10.4, 797.8), (12.6, 804.5), (16.6, 862.0), (18.2, 880.0), (20.0, 880.0)]
 
 
 def pchip(xs, ys):
@@ -133,17 +133,11 @@ STAGES = ["FORECAST", "DECISION", "ACTUATION", "CONSEQUENCES"]
 # (start, end, stage index or None, headline, subline)
 BEATS = [
     (0.0, 2.5, None, "Ambulance approaching PCL Chowk", "Recorded traffic simulation on the Mohali road network"),
-    (2.5, 4.0, 0, "Forecasting the cost of priority", "Expected additional delay to the three conflicting approaches"),
-    (4.0, 5.5, 1, "Forecast exceeds the budget", "1,045 > 1,000 vehicle-seconds: request withheld"),
-    (5.5, 7.05, 1, "Re-evaluated each second", "Updated sensor counts give 1,184 vehicle-seconds: still withheld"),
-    (7.05, 8.0, 1, "Forecast within the budget", "913 vehicle-seconds: request admitted. The estimate changed, not the queues"),
-    (8.0, 9.7, 2, "Pedestrian interval completes first", "An admitted request cannot shorten a pedestrian phase"),
-    (9.7, 10.5, 2, "Green at the earliest legal time", "Signal changes at 796.5 s"),
-    (10.5, 12.4, 2, "Ambulance clears the junction", "Served 72 s earlier than in the no-priority run"),
-    (12.4, 14.4, 3, "Effect on the conflicting approaches", "Their next green phases begin 52 s later"),
-    (14.4, 16.3, 3, "Effect on adjacent roads", "Vehicles present on each road, relative to the no-priority run"),
-    (16.3, 17.9, 3, "Observed cost", "Additional stopped time on the NW, SW and NE approaches, 785 to 880 s"),
-    (17.9, 20.0, None, "Priority, granted within a forecast budget", ""),
+    (2.5, 6.9, 0, "Forecast exceeds the budget", "Expected delay to the other approaches is above 1,000 vehicle-seconds: request withheld"),
+    (6.9, 9.6, 1, "Forecast within the budget", "913 vehicle-seconds: request admitted; the pedestrian interval completes first"),
+    (9.6, 12.6, 2, "Green at the earliest legal time", "The ambulance is served 72 s earlier than in the no-priority run"),
+    (12.6, 16.6, 3, "Effect on adjacent roads", "Conflicting approaches wait 52 s longer; traffic shifts across the junction"),
+    (16.6, 20.0, None, "Priority, granted within a forecast budget", "Observed cost: 843 additional stopped vehicle-seconds, against a forecast of 913"),
 ]
 
 # Roads around PCL Chowk, ordered outward from the junction (approaches reversed).
@@ -250,8 +244,8 @@ class Film:
         c_pass = np.array([J[0] + 52, J[1] + 2, W / (2 * s0)])
         c_wide = np.array([J[0] + 30, J[1] - 32, W / (2 * 3.3)])
         c_adj = np.array([J[0] + 10, J[1] - 20, W / (2 * 2.9)])
-        keys = [(0, c_open), (2.6, c_hero), (10.4, c_hero), (12.0, c_pass), (12.6, c_pass), (14.0, c_wide), (14.4, c_wide),
-                (15.2, c_adj), (16.2, c_adj), (17.0, c_wide), (20, c_wide)]
+        keys = [(0, c_open), (2.8, c_hero), (9.6, c_hero), (11.6, c_pass), (12.4, c_pass), (14.0, c_adj), (16.4, c_adj),
+                (18.0, c_wide), (20, c_wide)]
         for (a, ca), (b, cb) in zip(keys, keys[1:]):
             if a <= v <= b:
                 u = ease((v - a) / (b - a))
@@ -270,16 +264,9 @@ class Film:
         key = tuple(np.round(cam, 1))
         if key in self.bg_cache:
             return self.bg_cache[key].copy()
-        raw = self.base.render(cam)   # desaturated Google capture, full frame
-        g = ImageOps.grayscale(raw).filter(ImageFilter.GaussianBlur(3.2))
-        # map luminance into a narrow navy band: geography stays, labels sink into the ground
-        lut_r = [int(BG0[0] + (BG1[0] - BG0[0]) * (v / 255) ** 2.4) for v in range(256)]
-        lut_g = [int(BG0[1] + (BG1[1] - BG0[1]) * (v / 255) ** 2.4) for v in range(256)]
-        lut_b = [int(BG0[2] + (BG1[2] - BG0[2]) * (v / 255) ** 2.4) for v in range(256)]
-        img = Image.merge("RGB", (g.point(lut_r), g.point(lut_g), g.point(lut_b)))
-        # vignette
-        vg = Image.radial_gradient("L").resize((W, H)).point(lambda x: int(min(255, x * 1.15)))
-        img = Image.composite(Image.new("RGB", (W, H), BG0), img, vg.point(lambda x: int(x * .55)))
+        raw = self.base.render(cam)   # Google Maps capture (labels kept), lightly desaturated
+        img = Image.blend(raw, ImageOps.grayscale(raw).convert("RGB"), .25)
+        img = Image.blend(img, Image.new("RGB", (W, H), (236, 238, 242)), .10)
         if len(self.bg_cache) > 4:
             self.bg_cache.pop(next(iter(self.bg_cache)))
         self.bg_cache[key] = img.copy()
@@ -293,7 +280,6 @@ class Film:
         img = self.backdrop(cam).convert("RGBA")
         glow = Cv(W, H)
         cv = Cv(W, H)
-        self.roads(cv, cam)
         self.approaches(cv, glow, cam, v, t)
         self.route_layer(cv, glow, cam, v, t)
         self.adjacent(cv, cam, v, t)
@@ -306,7 +292,6 @@ class Film:
         g = glow.down().filter(ImageFilter.GaussianBlur(9))
         img = Image.alpha_composite(img, g)
         img = Image.alpha_composite(img, cv.down())
-        img = Image.alpha_composite(img, self.scrim())
         ui = Cv(W, H)
         self.chrome(ui, v, t)
         self.card(ui, v, t, img)
@@ -351,7 +336,7 @@ class Film:
 
     # --------------------------------------------------------- approaches
     def app_strength(self, v):
-        return max(win(v, 2.6, 5.4, .5, .6) * .9, win(v, 12.4, 14.6, .6, .4), win(v, 16.2, 18.2, .4, .6) * .8)
+        return max(win(v, 2.7, 6.8, .7, .7) * .9, win(v, 16.6, 20, .8, 0) * .7)
 
     def approaches(self, cv, glow, cam, v, t):
         a = self.app_strength(v)
@@ -367,7 +352,7 @@ class Film:
             cv.line(pts, rgba(col, k * a), max(6, 3.7 * s * 1.1))
             glow.line(pts, rgba(col, (.8 if v < 10 else .45) * a), 16)
         # forecast contributions as chips at the approaches (PREDICT / DECIDE only)
-        c = win(v, 2.9, 5.4, .4, .5)
+        c = win(v, 3.0, 6.8, .6, .6)
         if c > 0:
             for ap in e785["conflicting_approaches"]:
                 edge = ap["edge"]
@@ -403,7 +388,7 @@ class Film:
         return np.array(pts)
 
     def adjacent(self, cv, cam, v, t):
-        a = win(v, 14.4, 16.4, .5, .4)
+        a = win(v, 12.7, 16.8, .8, .7)
         if a <= 0:
             return
         s = W / (2 * cam[2])
@@ -526,11 +511,11 @@ class Film:
 
     def exit_marker(self, cv, cam, v, t):
         """Closing shot: where the ambulance went (its recorded trail leaves the frame)."""
-        a = win(v, 18.0, 20, .5, 0)
+        a = win(v, 17.0, 20, .8, 0)
         if a <= 0:
             return
         q = self.S(self.trail[np.isfinite(self.trail).all(1)], cam)
-        inside = q[(q[:, 0] > 40) & (q[:, 0] < W - 40) & (q[:, 1] > 40) & (q[:, 1] < H - 40)]
+        inside = q[(q[:, 0] > 40) & (q[:, 0] < 1250) & (q[:, 1] > 300) & (q[:, 1] < H - 120)]
         if not len(inside):
             return
         p = inside[-1]
@@ -550,7 +535,7 @@ class Film:
         if e is None:
             return
         col = CORAL if e["reason"] == "burden_budget_exceeded" else EMERALD
-        a = win(v, 2.7, 12.0, .4, .5)
+        a = win(v, 2.8, 11.6, .6, .6)
         p = self.S(ep.exy[ep.amb_app], cam)[-1]
         d = p - amb
         L = np.linalg.norm(d)
@@ -568,7 +553,7 @@ class Film:
         ep = self.ep
         if not (771.5 <= t < 796.5):
             return
-        a = win(v, 7.6, 9.75, .3, .15) if v > 7 else win(v, 0.2, 2.4, .4, .3) * .6
+        a = win(v, 7.4, 9.75, .6, .2) if v > 7 else win(v, 0.3, 2.4, .6, .4) * .7
         if a <= 0:
             return
         c = self.S(ep.J1xy, cam)
@@ -582,12 +567,15 @@ class Film:
 
     # ------------------------------------------------------------- chrome
     def chrome(self, ui, v, t):
-        # top scrim for legibility
         b = beat_at(v)
+        # headline panel
+        hw = max(ui.tw(b[3], F("h", 50)), ui.tw(b[4], F("m", 24)), 760) + 72
+        ui.rect((36, 26, 36 + hw, 222), fill=rgba((16, 23, 36), .9), outline=rgba((70, 84, 106), .7), w=1.2, r=20)
+        ui.rect((36, H - 92, 700, H - 14), fill=rgba((16, 23, 36), .88), r=16)
         x = 64
         for i, s in enumerate(STAGES):
             active = b[2] == i
-            done = b[2] is not None and i < b[2] or v >= 17.9
+            done = b[2] is not None and i < b[2] or v >= 16.6
             col = IVORY if active else (MUTED if done else DIM)
             lab = f"0{i + 1}  {s}"
             fnt = F("mono" if not active else "monob", 17)
@@ -607,22 +595,17 @@ class Film:
 
     def headline(self, ui, v):
         b = beat_at(v)
-        a = win(v, b[0], b[1], .3 if b[0] > 0 else 0, .25 if b[1] < DUR else 0)
-        dy = (1 - ease((v - b[0]) / .35)) * 14
-        if v >= 17.9:
-            a = win(v, 17.9, 20, .5, 0)
-            ui.text((64, 150 + dy), b[3], F("h", 60), rgba(IVORY, a), "ls")
-            ui.text((66, 196 + dy), "AmbuGo  ·  burden-aware selective signal priority", F("m", 26), rgba(MUTED, a), "ls")
-            return
-        ui.text((64, 150 + dy), b[3], F("h", 54), rgba(IVORY, a), "ls")
+        a = win(v, b[0], b[1], .55 if b[0] > 0 else 0, .45 if b[1] < DUR else 0)
+        dy = (1 - ease((v - b[0]) / .6)) * 10
+        ui.text((64, 150 + dy), b[3], F("h", 50), rgba(IVORY, a), "ls")
         if b[4]:
-            ui.text((66, 192 + dy), b[4], F("m", 26), rgba(MUTED, a), "ls")
+            ui.text((66, 190 + dy), b[4], F("m", 24), rgba(MUTED, a), "ls")
 
     # --------------------------------------------------------------- card
     CARD = (1336, 236, 1856, 836)
 
     def card_alpha(self, v):
-        return win(v, 2.6, 18.5, .45, .6)
+        return win(v, 2.7, 20, .6, 0)
 
     def card_shadow(self, v):
         a = self.card_alpha(v)
@@ -639,16 +622,16 @@ class Film:
         if a <= 0:
             return
         x0, y0, x1, y1 = self.CARD
-        ui.rect((x0, y0, x1, y1), fill=rgba((16, 23, 36), .9 * a), outline=rgba((70, 84, 106), .8 * a), w=1.2, r=24)
+        ui.rect((x0, y0, x1, y1), fill=rgba((16, 23, 36), .97 * a), outline=rgba((70, 84, 106), .8 * a), w=1.2, r=24)
         cx = (x0 + x1) / 2
-        if v < 10.5:
-            self.gauge_forecast(ui, v, t, a, cx)
-        elif v < 14.4:
-            self.timeline_card(ui, v, t, a * win(v, 10.5, 14.4, .45, .4))
-        elif v < 16.3:
-            self.adjacent_card(ui, v, t, a * win(v, 14.4, 16.3, .4, .4))
+        if v < 9.6:
+            self.gauge_forecast(ui, v, t, a * win(v, 0, 9.6, 0, .5), cx)
+        elif v < 12.6:
+            self.timeline_card(ui, v, t, a * win(v, 9.6, 12.6, .6, .5))
+        elif v < 16.6:
+            self.adjacent_card(ui, v, t, a * win(v, 12.6, 16.6, .6, .5))
         else:
-            self.gauge_measured(ui, v, t, a * win(v, 16.3, 20, .4, 0))
+            self.gauge_measured(ui, v, t, a * win(v, 16.6, 20, .6, 0))
         if v < 10.5 and v > 10.05:
             pass
 
@@ -688,8 +671,8 @@ class Film:
             vals = [(x["edge"], x["burden_proxy_veh_s"]) for x in e["conflicting_approaches"]]
             # glide between consecutive logged values over 0.35 video-s, exact once settled
             if prev is not None and prev["reason"] != "" and e["t"] in (787, 792):
-                vstart = {787: 5.5, 792: 6.9}[e["t"]]
-                u = ease((v - vstart) / .2)
+                vstart = {787: 4.9, 792: 6.9}[e["t"]]
+                u = ease((v - vstart) / .45)
                 pv = dict((x["edge"], x["burden_proxy_veh_s"]) for x in prev["conflicting_approaches"])
                 vals = [(ed, pv[ed] * (1 - u) + val * u) for ed, val in vals]
             vals = [(ed, val * grow) for ed, val in vals]
@@ -720,7 +703,7 @@ class Film:
             ok = not over
             pill = "PRIORITY APPROVED" if ok else "PRIORITY WITHHELD"
             pc = EMERALD if ok else CORAL
-            ui.rect((x0 + 40, y1 - 92, x1 - 40, y1 - 40), fill=rgba(pc, .14 * a), outline=rgba(pc, a), w=2, r=26)
+            ui.rect((x0 + 40, y1 - 92, x1 - 40, y1 - 40), fill=rgba(mix((16, 23, 36), pc, .2), .97 * a), outline=rgba(pc, a), w=2, r=26)
             ui.text((cx, y1 - 66), pill, F("b", 22), rgba(pc, a), "mm", track=2.5)
         else:
             ui.text((cx, y1 - 66), "AWAITING REQUEST", F("mono", 18), rgba(DIM, a), "mm", track=2.5)
@@ -753,30 +736,25 @@ class Film:
         x0, y0, x1, y1 = self.CARD
         cx = (x0 + x1) / 2
         L, R = x0 + 36, x1 - 36
-        trade = v >= 12.4
         ui.text((L, y0 + 46), "SIGNAL SERVICE", F("monob", 17), rgba(CYAN, a), "lm", track=3)
         ui.text((L, y0 + 76), "green phases at PCL Chowk, both runs", F("m", 20), rgba(MUTED, a), "lm")
-        hi = set(APP) if trade else {"335061218"}
         y = y0 + 150
-        sc, rows = self.mini_rows(ui, a, L, R, y, hi)
+        sc, rows = self.mini_rows(ui, a, L, R, y, {"335061218", *APP})
         X = lambda s: L + (s - 776) * sc
-        # now-cursor
         if 776 <= t <= 905:
             ui.line([(X(t), y - 8), (X(t), y + 136)], rgba(IVORY, .7 * a), 1.5)
-        if not trade:
-            p0, p3 = 868.5, 796.5
-            b = ease((v - 10.8) / .5)
-            ui.line([(X(p0), y + 34), (X(p0), y + 63), (X(p3), y + 63), (X(p3), y + 88)], rgba(CYAN, a * b), 2.5)
-            ui.poly([(X(p3), y + 95), (X(p3) - 6, y + 84), (X(p3) + 6, y + 84)], fill=rgba(CYAN, a * b))
-            big, sub, col = "72 s earlier", "SE green for the ambulance vs no priority", CYAN
-        else:
-            b = ease((v - 12.6) / .5)
-            for p0, p3, ed in [(795.5, 847.5, "172380615#1"), (812.5, 864.5, "172382686#4"), (839.5, 891.5, "172660580#0")]:
-                ui.line([(X(p0), y + 34), (X(p3), y + 88)], rgba(APP[ed], a * b), 2.5)
-                ui.poly([(X(p3), y + 95), (X(p3) - 6, y + 84), (X(p3) + 6, y + 84)], fill=rgba(APP[ed], a * b))
-            big, sub, col = "+52 s later", "next green for NW, SW and NE", CORAL
-        ui.text((L, y1 - 210), big, F("h", 64), rgba(col, a * b), "ls")
-        ui.text((L, y1 - 168), sub, F("m", 22), rgba(MUTED, a * b), "ls")
+        b = ease((v - 10.0) / .6)
+        p0, p3 = 868.5, 796.5
+        ui.line([(X(p0), y + 34), (X(p0), y + 63), (X(p3), y + 63), (X(p3), y + 88)], rgba(CYAN, a * b), 2.5)
+        ui.poly([(X(p3), y + 95), (X(p3) - 6, y + 84), (X(p3) + 6, y + 84)], fill=rgba(CYAN, a * b))
+        ui.text((L, y1 - 236), "SE  72 s earlier", F("h", 44), rgba((90, 190, 255), a * b), "ls")
+        ui.text((L, y1 - 204), "green for the ambulance", F("m", 20), rgba(MUTED, a * b), "ls")
+        c = ease((v - 11.0) / .6)
+        for q0, q3, ed in [(795.5, 847.5, "172380615#1"), (812.5, 864.5, "172382686#4"), (839.5, 891.5, "172660580#0")]:
+            ui.line([(X(q0), y + 34), (X(q3), y + 88)], rgba(APP[ed], a * c), 2.5)
+            ui.poly([(X(q3), y + 95), (X(q3) - 6, y + 84), (X(q3) + 6, y + 84)], fill=rgba(APP[ed], a * c))
+        ui.text((L, y1 - 140), "NW, SW, NE  52 s later", F("h", 44), rgba(CORAL, a * c), "ls")
+        ui.text((L, y1 - 108), "their next green phases", F("m", 20), rgba(MUTED, a * c), "ls")
         ui.text((L, y1 - 60), "776 s", F("mono", 14), rgba(DIM, a), "lm")
         ui.text((R, y1 - 60), "905 s", F("mono", 14), rgba(DIM, a), "rm")
         ui.text((cx, y1 - 60), "recorded signal states", F("mono", 14), rgba(DIM, a), "mm")
@@ -812,7 +790,7 @@ class Film:
         self.gauge_base(ui, a, cx, cy, [(913.3, "FORECAST 913", CYAN, False), (1000, "BUDGET", IVORY, True)])
         k = ep.k(t)
         val = sum(ep.app_extra[e][k] for e in ep.conf)
-        val = max(0.0, val) * ease_out((v - 16.35) / .5)
+        val = max(0.0, val) * ease_out((v - 16.7) / .8)
         ui.arc((cx, cy), self.G_R, self.g_ang(0), self.g_ang(val), rgba(CORAL, a), 22)
         ui.text((cx, cy - 6), f"{math.floor(val + .5):,d}", F("monob", 76), rgba(CORAL, a), "ms")
         ui.text((cx, cy + 32), "vehicle-seconds", F("mono", 22), rgba(MUTED, a), "mm")
@@ -894,9 +872,9 @@ def main():
         return
     if a.contact:
         film = Film()
-        contact(film, [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20], OUT / "contact_sheet.jpg")
+        contact(film, [0, 2, 4, 6, 7.5, 9, 10.5, 12, 14, 16, 18, 20], OUT / "contact_sheet.jpg")
         contact(film, [2.45, 2.6, 3.9, 4.1, 5.45, 5.6, 6.85, 7.1, 7.95, 8.1, 9.65, 9.8, 10.45, 10.6, 12.35, 12.5,
-                       14.35, 14.5, 16.25, 16.4, 17.85, 18.0], OUT / "contact_transitions.jpg")
+                       12.55, 12.7, 16.55, 16.7, 18.0, 19.0], OUT / "contact_transitions.jpg")
         print(OUT / "contact_sheet.jpg")
         return
     if a.draft:
