@@ -22,7 +22,7 @@ The clock in the corner always shows the simulation time and the current replay 
 | 6.9-9.6 | 792.0-796.6 | DECISION | Forecast within the budget / 913 vehicle-seconds: request admitted; the pedestrian interval completes first |
 | 9.6-12.6 | 796.6-804.5 | ACTUATION | Green at the earliest legal time / The ambulance is served 72 s earlier than in the no-priority run |
 | 12.6-16.6 | 804.5-862.0 | CONSEQUENCES | Effect on adjacent roads / Conflicting approaches wait 52 s longer; traffic shifts across the junction |
-| 16.6-20.0 | 862.0-880.0 | - | Priority, granted within a forecast budget / Observed cost: 843 additional stopped vehicle-seconds, against a forecast of 913 |
+| 16.6-20.0 | 862.0-880.0 | - | Priority, granted within a forecast budget / Observed additional stopped time on the conflicting approaches, against the forecast of 913 |
 
 Card sequence: forecast gauge (2.7-9.6 s), signal-service timeline (9.6-12.6 s), adjacent-roads table (12.6-16.6 s), observed-cost gauge (16.6-20 s).
 

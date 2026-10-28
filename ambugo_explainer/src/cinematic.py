@@ -137,7 +137,7 @@ BEATS = [
     (6.9, 9.6, 1, "Forecast within the budget", "913 vehicle-seconds: request admitted; the pedestrian interval completes first"),
     (9.6, 12.6, 2, "Green at the earliest legal time", "The ambulance is served 72 s earlier than in the no-priority run"),
     (12.6, 16.6, 3, "Effect on adjacent roads", "Conflicting approaches wait 52 s longer; traffic shifts across the junction"),
-    (16.6, 20.0, None, "Priority, granted within a forecast budget", "Observed cost: 843 additional stopped vehicle-seconds, against a forecast of 913"),
+    (16.6, 20.0, None, "Priority, granted within a forecast budget", "Observed additional stopped time on the conflicting approaches, against the forecast of 913"),
 ]
 
 # Roads around PCL Chowk, ordered outward from the junction (approaches reversed).
