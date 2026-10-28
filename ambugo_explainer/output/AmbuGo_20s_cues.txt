@@ -1,10 +1,6 @@
-  0.0–  2.0 s   sim 761.0–761.0 s   Joint route + priority choice
-  2.0–  3.8 s   sim 761.5–785.0 s   Approaching PCL Chowk
-  3.8–  6.4 s   sim 785.0–791.6 s   Priority withheld: forecast burden > budget
-  6.4–  7.8 s   sim 792.0–792.0 s   Admitted: new estimate brings burden under B
-  7.8– 10.2 s   sim 792.0–804.0 s   Legal transition → ambulance green
- 10.2– 12.2 s   sim 804.0–804.0 s   One switched light shifts the whole cycle (+52 s)
- 12.2– 14.2 s   sim 804.0–851.0 s   Who pays: extra waiting per car vs no priority
- 14.2– 16.0 s   sim 851.0–1001.0 s   Progress deficit > 20 s → escalation; J2
- 16.0– 18.2 s   sim 1045.0–1100.0 s   Hospital re-route and arrival: 323.5 s vs 516.5 s
- 18.2– 20.0 s   sim 760.0–1125.0 s   Replay, whole network: where the cost went
+  0.0–  3.5 s   sim 776.0–785.0 s   Ambulance approaches PCL Chowk
+  3.5–  7.5 s   sim 785.0–791.9 s   Priority withheld: cost to other drivers is over budget
+  7.5–  9.1 s   sim 792.0–792.0 s   New sensor data: cost falls under budget, request admitted
+  9.1– 13.5 s   sim 792.0–803.0 s   Ambulance gets green at the earliest legal moment
+ 13.5– 15.5 s   sim 803.0–803.0 s   The other three approaches now wait 52 s longer
+ 15.5– 20.0 s   sim 803.0–850.0 s   Who pays: extra waiting per car vs no priority

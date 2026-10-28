@@ -42,38 +42,111 @@ def cam(c):
     return (c[0], c[1], c[2] * K) if isinstance(c, tuple) and len(c) == 3 else ("track", c[1] * K)
 
 
+def ov_focus(ml, c, colour="approach"):
+    """Single-junction view: coloured approach lanes, cars, signal heads, ambulance. No tags."""
+    if colour == "delta":
+        focus, *_ = ST.junction_scene(ml, c, heads=True, colour="delta", labels=True, bands=.5)
+    else:
+        focus, *_ = ST.junction_scene(ml, c, heads=True)
+    p = ST.draw_focus(ml, c, focus, .85)
+    if colour != "delta":
+        ST.request_badge(ml, c, p)
+
+
 def build(ep):
+    """One junction (PCL Chowk), about 70 s of simulated time, one camera."""
     J1 = ep.J1xy
-    c_close = cam((J1[0] - 38, J1[1] - 30, 178))
-    c_mid = cam((J1[0] - 25, J1[1] - 20, 260))
-    c_route = cam((8540650.0, 3594190.0, 2300.0))
-    c_netd = cam((8540650.0, 3594200.0, 2500.0))
-    c_hosp = cam((8541700.0, 3593275.0, 250.0))
-    c_j2 = cam((ep.J2xy[0], ep.J2xy[1], 260.0))
+    c_close = cam((J1[0] - 30, J1[1] - 30, 170))
+    c_mid = cam((J1[0] - 40, J1[1] - 30, 215))
     S = ST.Shot
-    # (key, header label, video s, sim range or frozen time, cameras, overlay, panel, virtual-clock seconds)
     beats = [
-        S("routes", "Joint route + priority choice", 2.0, 761.0, [(0, c_route)], ST.ov_routes, "routes", []),
-        S("approach", "Approaching PCL Chowk", 1.8, (761.5, 785.0), [(0, c_route), (.6, c_close)], ST.ov_approach, "speed", [], ramp=.15),
-        S("decide", "Priority withheld: forecast burden > budget", 2.6, (785.0, 791.6), [(0, c_close)],
-          lambda ml, c: ST.ov_decision(ml, c, True), "burden_live", [], ramp=.0),
-        S("admit", "Admitted: new estimate brings burden under B", 1.4, 792.0, [(0, c_close)],
-          lambda ml, c: ST.ov_decision(ml, c, True), "burden_prev", []),
-        S("transition", "Legal transition → ambulance green", 2.4, (792.0, 804.0), [(0, c_close)], ST.ov_transition, "gantt", [], ramp=.0),
-        S("shift", "One switched light shifts the whole cycle (+52 s)", 2.0, 804.0, [(0, c_close), (.5, c_mid)], ST.ov_shift, "gantt_preview", []),
-        S("consequence", "Who pays: extra waiting per car vs no priority", 2.0, (804.0, 851.0), [(0, c_close)], ST.ov_consequence, "approaches", [], ramp=.0),
-        S("escalate", "Progress deficit > 20 s → escalation; J2", 1.8, (851.0, 1001.0),
-          [(0, ("track", 650 * K)), (.55, c_j2)], ST.ov_j2, "speed", [], ramp=.0),
-        S("hospital", "Hospital re-route and arrival: 323.5 s vs 516.5 s", 2.2, (1045.0, 1100.0),
-          [(0, ("track", 500 * K)), (.4, c_hosp)], ST.ov_hospital, "hospital", [], ramp=.25),
-        S("netdelta", "Replay, whole network: where the cost went", 1.8, (760.0, 1125.0), [(0, c_netd)], ST.ov_network_delta, "network", [], ramp=.0),
+        S("approach", "Ambulance approaches PCL Chowk", 3.5, (776.0, 785.0), [(0, c_close)], ov_focus, "gauge", [], ramp=.0),
+        S("decide", "Priority withheld: cost to other drivers is over budget", 4.0, (785.0, 791.9), [(0, c_close)], ov_focus, "gauge", [], ramp=.0),
+        S("admit", "New sensor data: cost falls under budget, request admitted", 1.6, 792.0, [(0, c_close)], ov_focus, "gauge", []),
+        S("green", "Ambulance gets green at the earliest legal moment", 4.4, (792.0, 803.0), [(0, c_close)], ov_focus, "timeline", [], ramp=.0),
+        S("shift", "The other three approaches now wait 52 s longer", 2.0, 803.0, [(0, c_close)], ov_focus, "timeline_shift", []),
+        S("pay", "Who pays: extra waiting per car vs no priority", 4.5, (803.0, 850.0), [(0, c_close), (.3, c_mid)],
+          lambda ml, c: ov_focus(ml, c, "delta"), "cost", [], ramp=.0),
     ]
-    # virtual clock: the long film's timed reveals run to completion within each beat
-    virt = {"routes": 7.5, "shift": 12.0, "hospital": 2.0, "netdelta": 25.0}
     for b in beats:
-        b.virtual = virt.get(b.key)
-        b.chapter = b.chapter
+        b.virtual = None
     return beats
+
+
+def big_gauge(cv, c):
+    ep, t = c.ep, c.t
+    e = ep.event_at(t) if t >= 785 else None
+    cv.text((40, 30), "Forecast cost to other drivers if the ambulance gets priority now", 24, D.INK, "bold")
+    cv.text((40, 66), "waiting added to the NW, SW and NE approaches (vehicle-seconds) · budget B = 1000", 17, D.MUTED)
+    x0, x1, y0, y1 = 40, 1500, 120, 190
+    sc = (x1 - x0) / 1300
+    cv.rect((x0, y0, x1, y1), fill=(240, 242, 245), r=8)
+    total = 0.0
+    if e is not None:
+        x = x0
+        for a in e["conflicting_approaches"]:
+            w = a["burden_proxy_veh_s"] * sc
+            cv.rect((x, y0, x + w, y1), fill=D.APP_COL[a["edge"]])
+            cv.text((x + w / 2, (y0 + y1) / 2), ep.app_name[a["edge"]], 20, (255, 255, 255), "bold", anchor="mm")
+            x += w
+        total = e["raw_burden_proxy_veh_s"]
+    bx = x0 + 1000 * sc
+    cv.line([(bx, y0 - 16), (bx, y1 + 16)], D.INK, 5)
+    cv.text((bx, y1 + 22), "budget B = 1000", 18, D.INK, "bold", anchor="ma")
+    if e is None:
+        cv.text((x0 + 20, (y0 + y1) / 2), "not evaluated yet: ambulance outside its request horizon", 20, D.MUTED, "semibold", anchor="lm")
+        msg, col = "WAITING", D.MUTED
+    elif total > 1000:
+        msg, col = "WITHHELD", D.BAD
+    else:
+        msg, col = "ADMITTED", D.AMB
+    if e is not None:
+        cv.text((1880, 120), f"{total:,.0f}", 64, col, "bold", anchor="ra")
+        cv.text((1880, 196), "vehicle-seconds", 18, D.MUTED, anchor="ra")
+    cv.rect((1580, 240, 1880, 300), fill=D.alpha(col, .12), outline=col, width=3, r=10)
+    cv.text((1730, 270), msg, 28, col, "bold", anchor="mm")
+
+
+def simple_timeline(cv, c, shift=False):
+    import panels as PN
+    ep, t = c.ep, c.t
+    cv.text((40, 24), "Which approach has green at PCL Chowk", 24, D.INK, "bold")
+    x = 900
+    for col, s in [(D.AMB, "SE (ambulance)"), (D.NW_C, "NW"), (D.SW_C, "SW"), (D.NE_C, "NE"), ((196, 199, 204), "pedestrian")]:
+        PN.chip(cv, x, 30, col, 18, 18)
+        cv.text((x + 26, 28), s, 18, D.INK)
+        x += 60 + cv.tsize(s, 18)[0]
+    y0, y1 = 80, 300
+    ch = PN.gantt(cv, c, ep.J1, 770, 905, (40, y0, 1880, y1), reveal_t=None if shift else t, preview=False)
+    if shift:
+        gap = 40
+        rowh = (y1 - y0 - 30 - gap) / 2
+        g0, g1 = y0 + rowh, y0 + rowh + gap
+        a = D.fade(c.ls, .2, .8)
+        for p0, p3, col in [(795.5, 847.5, D.NW_C), (812.5, 864.5, D.SW_C), (839.5, 891.5, D.NE_C)]:
+            xa, xb = float(ch.X(p0)), float(ch.X(p3))
+            cv.arrow((xa, g1 - 1), (xb, g0 + 1), D.alpha(col, a), 4, 14)
+            cv.text((xb + 6, g0 + 4), "+52 s", 17, D.alpha(col, a), "bold")
+
+
+def cost_panel(cv, c):
+    ep, t = c.ep, c.t
+    k = ep.k(t)
+    extra = sum(ep.app_extra[e][k] for e in ep.conf)
+    cols = [(40, "Ambulance at this light", "served 72 s earlier", "than in the no-priority run", D.AMB),
+            (680, "Other three approaches", f"+{max(extra, 0):,.0f} veh·s", "extra waiting so far (measured)", D.BAD),
+            (1320, "Controller's forecast", "913 veh·s", "at admission (Eq. 20)", D.INK)]
+    for x, h, big, sub, col in cols:
+        cv.text((x, 40), h, 22, D.MUTED, "semibold")
+        cv.text((x, 90), big, 54, col, "bold")
+        cv.text((x, 170), sub, 19, D.MUTED)
+    cv.text((40, 250), "Car colour = its extra stopped time vs the same car without priority:", 18, D.INK, "semibold")
+    x0 = 700
+    for i in range(-40, 41, 2):
+        cv.rect((x0 + (i + 40) * 4, 248, x0 + (i + 42) * 4, 270), fill=D.diverging(i))
+    cv.text((x0, 278), "less", 15, D.MUTED)
+    cv.text((x0 + 164, 278), "same", 15, D.MUTED, anchor="ma")
+    cv.text((x0 + 328, 278), "more", 15, D.MUTED, anchor="ra")
 
 
 class ShortFilm(R.Film):
@@ -106,6 +179,21 @@ class ShortFilm(R.Film):
 
     def sidebar(self, img, c):
         pass
+
+    def bottom(self, img, c):
+        cv = D.Canvas(R.W, R.H - R.BOTTOM_Y, (255, 255, 255, 255))
+        cv.line([(0, 0), (R.W, 0)], D.RULE, 2)
+        p = c.shot.panel
+        if p == "gauge":
+            big_gauge(cv, c)
+        elif p == "timeline":
+            simple_timeline(cv, c)
+        elif p == "timeline_shift":
+            simple_timeline(cv, c, shift=True)
+        elif p == "cost":
+            cost_panel(cv, c)
+        im = cv.down()
+        img.paste(im, (0, R.BOTTOM_Y), im)
 
     def header(self, img, c):
         cv = D.Canvas(R.W, mapview.MY, (255, 255, 255, 255))
