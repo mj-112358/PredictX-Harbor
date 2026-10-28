@@ -1,0 +1,160 @@
+{
+  "duration_s": 624.0625,
+  "fps": 30,
+  "frames": 18722,
+  "chapters": [
+    {
+      "start_s": 0.0,
+      "end_s": 33.0,
+      "chapter": "AmbuGo \u2014 what this film shows",
+      "simulation_s": [
+        760.0,
+        760.0
+      ]
+    },
+    {
+      "start_s": 33.0,
+      "end_s": 73.19,
+      "chapter": "1 \u00b7 The network and the paired experiment",
+      "simulation_s": [
+        760.0,
+        760.0
+      ]
+    },
+    {
+      "start_s": 73.19,
+      "end_s": 116.5,
+      "chapter": "2 \u00b7 Choosing a route jointly with a priority action",
+      "simulation_s": [
+        761.0,
+        761.0
+      ]
+    },
+    {
+      "start_s": 116.5,
+      "end_s": 148.88,
+      "chapter": "3 \u00b7 Approaching PCL Chowk (junction J1)",
+      "simulation_s": [
+        761.5,
+        784.5
+      ]
+    },
+    {
+      "start_s": 148.88,
+      "end_s": 193.44,
+      "chapter": "4 \u00b7 The request is evaluated at t = 785 s",
+      "simulation_s": [
+        785.0,
+        785.0
+      ]
+    },
+    {
+      "start_s": 193.44,
+      "end_s": 222.69,
+      "chapter": "5 \u00b7 Withheld, re-checked every second",
+      "simulation_s": [
+        785.0,
+        791.99
+      ]
+    },
+    {
+      "start_s": 222.69,
+      "end_s": 265.69,
+      "chapter": "6 \u00b7 Admitted at t = 792 s",
+      "simulation_s": [
+        792.0,
+        792.0
+      ]
+    },
+    {
+      "start_s": 265.69,
+      "end_s": 301.69,
+      "chapter": "7 \u00b7 Legal transition and the ambulance's green",
+      "simulation_s": [
+        792.0,
+        804.0
+      ]
+    },
+    {
+      "start_s": 301.69,
+      "end_s": 339.69,
+      "chapter": "8 \u00b7 One switched light shifts the whole cycle",
+      "simulation_s": [
+        804.0,
+        804.0
+      ]
+    },
+    {
+      "start_s": 339.69,
+      "end_s": 379.25,
+      "chapter": "9 \u00b7 What the other approaches pay",
+      "simulation_s": [
+        804.0,
+        851.0
+      ]
+    },
+    {
+      "start_s": 379.25,
+      "end_s": 411.94,
+      "chapter": "10 \u00b7 Progress check and escalation  (t \u2248 851 s)",
+      "simulation_s": [
+        846.0,
+        853.0
+      ]
+    },
+    {
+      "start_s": 411.94,
+      "end_s": 438.38,
+      "chapter": "11 \u00b7 Along the corridor",
+      "simulation_s": [
+        853.0,
+        966.0
+      ]
+    },
+    {
+      "start_s": 438.38,
+      "end_s": 475.75,
+      "chapter": "12 \u00b7 Junction J2 \u2014 escalated requests",
+      "simulation_s": [
+        966.0,
+        1001.0
+      ]
+    },
+    {
+      "start_s": 475.75,
+      "end_s": 509.75,
+      "chapter": "13 \u00b7 Hospital approach, re-route and arrival",
+      "simulation_s": [
+        1001.0,
+        1090.0
+      ]
+    },
+    {
+      "start_s": 509.75,
+      "end_s": 550.88,
+      "chapter": "14 \u00b7 The whole network \u2014 where did the cost go?",
+      "simulation_s": [
+        760.0,
+        1125.0
+      ]
+    },
+    {
+      "start_s": 550.88,
+      "end_s": 579.5,
+      "chapter": "15 \u00b7 Back at PCL Chowk after arrival",
+      "simulation_s": [
+        1083.5,
+        1125.0
+      ]
+    },
+    {
+      "start_s": 579.5,
+      "end_s": 624.06,
+      "chapter": "16 \u00b7 Summary: mechanism, numbers and real-world deployment",
+      "simulation_s": [
+        1125.0,
+        1125.0
+      ]
+    }
+  ]
+}

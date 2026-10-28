@@ -1,0 +1,17 @@
+  0:00  AmbuGo — what this film shows
+  0:33  1 · The network and the paired experiment
+  1:13  2 · Choosing a route jointly with a priority action
+  1:56  3 · Approaching PCL Chowk (junction J1)
+  2:29  4 · The request is evaluated at t = 785 s
+  3:13  5 · Withheld, re-checked every second
+  3:43  6 · Admitted at t = 792 s
+  4:26  7 · Legal transition and the ambulance's green
+  5:02  8 · One switched light shifts the whole cycle
+  5:40  9 · What the other approaches pay
+  6:19  10 · Progress check and escalation  (t ≈ 851 s)
+  6:52  11 · Along the corridor
+  7:18  12 · Junction J2 — escalated requests
+  7:56  13 · Hospital approach, re-route and arrival
+  8:30  14 · The whole network — where did the cost go?
+  9:11  15 · Back at PCL Chowk after arrival
+  9:40  16 · Summary: mechanism, numbers and real-world deployment
