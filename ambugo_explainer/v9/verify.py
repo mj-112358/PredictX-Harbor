@@ -356,6 +356,45 @@ ne = sum(len(r["progress_guard_log"]) for r in p3)
 check("result", "JSEL mission evaluations", 2160, nm, "archive/sumo_main_records.json", 0)
 check("result", "JSEL escalated share (%)", 51.6, 100 * ne / nm, "archive/sumo_main_records.json", .05)
 
+# ------------------------------------------------------------------ short map film (mapfilm.py)
+P2 = J("episodes/P2/result.json")
+ac2 = J("episodes/P2/archive_check.json")
+check("short", f"instrumented P2 (JFAST) replay reproduces archived run on all {len(ac2)} fields", True, all(ac2.values()),
+      "episodes/P2/archive_check.json")
+check("short", "P2 mission time equals archived record", [r for r in arch if r["policy"] == "P2"][0]["mission_rows"][0]["travel_s"],
+      P2["mission_rows"][0]["travel_s"], "archive/records_s40_x095_m1.json", 0)
+s2 = sig("P2")
+check("short", "P2 and P3 signals identical up to the J11 decision (4091)", True,
+      all(sg[k] == s2.get(k) for k in sg if k[0] <= 4091), "P3/P2 signals.json")
+check("short", "JFAST: J11 ambulance (west) green at", 4096, first(s2, "J11", 4091, "green", "E_J10_J11"), "P2 signals.json", 0)
+check("short", "JFAST: J11 cross road (north) green at", 4160, first(s2, "J11", 4091, "green", "E_J01_J11"), "P2 signals.json", 0)
+check("short", "cross road green delayed by (s)", 64, first(s2, "J11", 4091, "green", "E_J01_J11") - first(sg, "J11", 4091, "green", "E_J01_J11"),
+      "P2/P3 signals.json", 0)
+la, lb = leave("P3", "E_J10_J11"), leave("P2", "E_J10_J11")
+check("short", "ambulance time saved at J11 under JFAST (s)", 11, la - lb, "P3/P2 trajectories.npz", 0)
+
+
+def stopped_half(name, e, t0, t1):
+    z, lanes, amb = traj(name)
+    tot = 0.0
+    for k, t in enumerate(z["t"]):
+        if t0 <= t <= t1:
+            lo, hi = z["offsets"][k:k + 2]
+            tot += float(((lanes[z["lane"][lo:hi]] == e) & (z["speed"][lo:hi] < .1) & (z["vehicle"][lo:hi] != amb)).sum()) * .5
+    return tot
+
+
+check("short", "cross-road stopped veh·s 4085–4200, AmbuGo", 79, stopped_half("P3", "E_J01_J11", 4085, 4200), "P3 trajectories (0.5 s)", .5)
+check("short", "cross-road stopped veh·s 4085–4200, JFAST", 463, stopped_half("P2", "E_J01_J11", 4085, 4200), "P2 trajectories (0.5 s)", .5)
+check("short", "'forty seconds later' (J21 decision − J11 decision, s)", 41, 4132 - 4091, "gates.json", 0)
+check("short", "J21 normal-cycle wait ~43 s", 43, gates[(4132, "J21")]["nominal_wait"], "gates.json", .5)
+check("short", "J11 normal-cycle wait shown (s)", 3.6, gates[(4091, "J11")]["nominal_wait"], "gates.json")
+check("short", "J11 room ahead cap shown (rounded)", 45, gates[(4091, "J11")]["headroom_cap"], "gates.json", .5)
+check("short", "J21 room ahead cap shown (rounded)", 112, gates[(4132, "J21")]["headroom_cap"], "gates.json", .5)
+for e, v in [("E_J22_J21", 1362), ("E_J31_J21", 1692), ("E_J20_J21", 273)]:
+    a = {x["edge"]: x for x in gates[(4132, "J21")]["arms"]}[e]
+    check("short", f"J21 {e} extra waiting shown (veh·s)", v, a["term_queue"] + a["term_arrival"], "gates.json", .5)
+
 # ------------------------------------------------------------------ report
 fails = [c for c in checks if not c["ok"]]
 out = HERE / "reports"

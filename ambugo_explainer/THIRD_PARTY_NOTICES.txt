@@ -32,3 +32,13 @@ NumPy, Pillow, Matplotlib, imageio-ffmpeg, SUMO/libsumo, sumolib, TraCI and
 NetworkX are third-party dependencies installed separately. Their upstream
 licenses apply. No platform-specific binary, private access key, account token,
 or local Python environment is included in this archive.
+
+GOOGLE MAPS (v9 short film)
+v9/data/maps/ holds two fixed captures of Google Maps (Mohali, Punjab) taken through the normal web
+interface; v9/data/maps/capture_manifest.json records URL, zoom, size, time and checksum. The film shows
+the text credit "Google Maps · Map data ©2026 Google" in every frame. Google and its providers retain all
+rights in this imagery.
+
+EB GARAMOND
+inputs/fonts/eb-garamond-*.ttf: EB Garamond by Georg Duffner and Octavio Pardo, SIL Open Font License 1.1
+(downloaded from Google Fonts).

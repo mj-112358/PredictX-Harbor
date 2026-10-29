@@ -14,11 +14,34 @@ A 2 min 25 s, 1080p explanatory replay of one archived AmbuGo v9 JSEL episode on
 | Archived vs counterfactual scenes | `reports/COUNTERFACTUALS.md` |
 | Internal design notes | `DESIGN.md` |
 
+## Short film (map version)
+
+`output/AmbuGo_v9_Short.mp4` (84 s) is a shorter cut. It covers two junctions and two decisions: J11, where the request is withheld, and J21, where it is granted. It uses Google Maps captures of Mohali (Punjab), top captions and EB Garamond.
+
+* **Source code:** `mapfilm.py` (scenes) and `mapfit.py` (placement).
+* **Storyboard and voiceover:** `reports/SHORT_STORYBOARD.md`.
+* **Contact sheet:** `output/contact_sheet_short.jpg`.
+* **Render command:**
+
+```bash
+python3 mapfilm.py --jobs 4
+```
+
+**How the placement works.** The film draws each SUMO junction of the synthetic v9 district at one real Mohali intersection. `mapfit.py` aligns each arm with a road measured on the capture, keeps the true scale along the road and widens the lanes to fill the drawn carriageway. Vehicles are drawn 1.6× their size. The trajectories, signal states and decisions are the logged v9 ones. However, the simulation itself ran on the paper's synthetic grid, not on these Mohali streets, and the film does not say this on screen.
+
+**Runs used.**
+
+| Run | What it is |
+|---|---|
+| `P3` | JSEL (AmbuGo), archived |
+| `P2` | JFAST, archived. Identical to P3 up to the J11 decision; reproduces the archive on all fields. |
+| `P3_withholdJ21` | One-decision replay with the J21 request withheld, labelled "replay" on screen |
+
 ## Render
 
 Requirements: Python ≥ 3.12, `numpy`, `pillow`, `matplotlib`, `fonttools`, `sumolib` 1.28.0, and `ffmpeg` with libx264. The fonts are in `../inputs/fonts`; DejaVu is used as a glyph fallback.
 
-Check every on-screen number (154 checks, exit code 1 on any failure):
+Check every on-screen number in both films (171 checks, exit code 1 on any failure):
 
 ```bash
 python3 verify.py

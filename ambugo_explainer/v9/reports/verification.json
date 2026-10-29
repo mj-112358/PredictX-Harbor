@@ -1,5 +1,5 @@
 {
- "n": 154,
+ "n": 171,
  "failed": 0,
  "checks": [
   {
@@ -1316,6 +1316,142 @@
    "shown": 51.6,
    "recomputed": 51.574074074074076,
    "source": "archive/sumo_main_records.json",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "instrumented P2 (JFAST) replay reproduces archived run on all 16 fields",
+   "shown": true,
+   "recomputed": true,
+   "source": "episodes/P2/archive_check.json",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "P2 mission time equals archived record",
+   "shown": 240.5,
+   "recomputed": 240.5,
+   "source": "archive/records_s40_x095_m1.json",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "P2 and P3 signals identical up to the J11 decision (4091)",
+   "shown": true,
+   "recomputed": true,
+   "source": "P3/P2 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "JFAST: J11 ambulance (west) green at",
+   "shown": 4096,
+   "recomputed": 4096.0,
+   "source": "P2 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "JFAST: J11 cross road (north) green at",
+   "shown": 4160,
+   "recomputed": 4160.0,
+   "source": "P2 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "cross road green delayed by (s)",
+   "shown": 64,
+   "recomputed": 64.0,
+   "source": "P2/P3 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "ambulance time saved at J11 under JFAST (s)",
+   "shown": 11,
+   "recomputed": 11.0,
+   "source": "P3/P2 trajectories.npz",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "cross-road stopped veh\u00b7s 4085\u20134200, AmbuGo",
+   "shown": 79,
+   "recomputed": 78.5,
+   "source": "P3 trajectories (0.5 s)",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "cross-road stopped veh\u00b7s 4085\u20134200, JFAST",
+   "shown": 463,
+   "recomputed": 462.5,
+   "source": "P2 trajectories (0.5 s)",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "'forty seconds later' (J21 decision \u2212 J11 decision, s)",
+   "shown": 41,
+   "recomputed": 41.0,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "J21 normal-cycle wait ~43 s",
+   "shown": 43,
+   "recomputed": 43.42229652641333,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "J11 normal-cycle wait shown (s)",
+   "shown": 3.6,
+   "recomputed": 3.5779260194860996,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "J11 room ahead cap shown (rounded)",
+   "shown": 45,
+   "recomputed": 45.05,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "J21 room ahead cap shown (rounded)",
+   "shown": 112,
+   "recomputed": 112.2,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "J21 E_J22_J21 extra waiting shown (veh\u00b7s)",
+   "shown": 1362,
+   "recomputed": 1361.6800319629945,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "J21 E_J31_J21 extra waiting shown (veh\u00b7s)",
+   "shown": 1692,
+   "recomputed": 1692.0286739132077,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "short",
+   "label": "J21 E_J20_J21 extra waiting shown (veh\u00b7s)",
+   "shown": 273,
+   "recomputed": 272.7100223560267,
+   "source": "gates.json",
    "ok": true
   }
  ]

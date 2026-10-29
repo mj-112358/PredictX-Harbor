@@ -1,0 +1,34 @@
+[
+ {
+  "file": "J21_mohali_3b2.png",
+  "used_for": "J21",
+  "source_url": "https://www.google.com/maps/@30.70747,76.71494,18z?hl=en",
+  "lat": 30.70747,
+  "lon": 76.71494,
+  "zoom": 18,
+  "viewport_css": [
+   1700,
+   1050
+  ],
+  "device_pixel_ratio": 2,
+  "captured_utc": "2026-10-29T10:03:23.631Z",
+  "metres_per_device_pixel": 0.2567232290296554,
+  "sha256": "475d8d2801adf767e5448b9b5c14ee7872f9de2ddedd8c95f4c552898a55d00e"
+ },
+ {
+  "file": "J11_mohali_sarovar.png",
+  "used_for": "J11",
+  "source_url": "https://www.google.com/maps/@30.70363,76.72697,18z?hl=en",
+  "lat": 30.70363,
+  "lon": 76.72697,
+  "zoom": 18,
+  "viewport_css": [
+   1700,
+   1050
+  ],
+  "device_pixel_ratio": 2,
+  "captured_utc": "2026-10-29T10:03:42.043Z",
+  "metres_per_device_pixel": 0.2567232290296554,
+  "sha256": "18a8c3273ff844f8815cebc2b64c8b91a037d0cdf59b290e59cb1045a04a9584"
+ }
+]
