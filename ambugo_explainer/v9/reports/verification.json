@@ -1,5 +1,5 @@
 {
- "n": 171,
+ "n": 189,
  "failed": 0,
  "checks": [
   {
@@ -1452,6 +1452,150 @@
    "shown": 273,
    "recomputed": 272.7100223560267,
    "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "cross road forecast extra waiting (veh\u00b7s)",
+   "shown": 179,
+   "recomputed": 179.3202014326501,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "south road forecast extra waiting (veh\u00b7s)",
+   "shown": 126,
+   "recomputed": 126.47228254102512,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "ambulance about 27 s away",
+   "shown": 27,
+   "recomputed": 27.4220739805139,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "P3: first green after 4091 for E_J01_J11",
+   "shown": 4096,
+   "recomputed": 4096.0,
+   "source": "P3 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "P3: first green after 4091 for E_J10_J11",
+   "shown": 4122,
+   "recomputed": 4122.0,
+   "source": "P3 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "P3: first green after 4091 for E_J21_J11",
+   "shown": 4144,
+   "recomputed": 4144.0,
+   "source": "P3 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "P2: first green after 4091 for E_J10_J11",
+   "shown": 4096,
+   "recomputed": 4096.0,
+   "source": "P2 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "P2: first green after 4091 for E_J21_J11",
+   "shown": 4122,
+   "recomputed": 4122.0,
+   "source": "P2 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "P2: first green after 4091 for E_J01_J11",
+   "shown": 4160,
+   "recomputed": 4160.0,
+   "source": "P2 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "E_J01_J11 stopped veh\u00b7s 4085\u20134200, no change",
+   "shown": 79,
+   "recomputed": 78.5,
+   "source": "P3 trajectories (0.5 s)",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "E_J01_J11 stopped veh\u00b7s 4085\u20134200, change (JFAST)",
+   "shown": 463,
+   "recomputed": 462.5,
+   "source": "P2 trajectories (0.5 s)",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "E_J21_J11 stopped veh\u00b7s 4085\u20134200, no change",
+   "shown": 242,
+   "recomputed": 241.5,
+   "source": "P3 trajectories (0.5 s)",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "E_J21_J11 stopped veh\u00b7s 4085\u20134200, change (JFAST)",
+   "shown": 195,
+   "recomputed": 195.0,
+   "source": "P2 trajectories (0.5 s)",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "E_J10_J11 stopped veh\u00b7s 4085\u20134200, no change",
+   "shown": 173,
+   "recomputed": 172.5,
+   "source": "P3 trajectories (0.5 s)",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "E_J10_J11 stopped veh\u00b7s 4085\u20134200, change (JFAST)",
+   "shown": 131,
+   "recomputed": 131.0,
+   "source": "P2 trajectories (0.5 s)",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "all three roads, no change",
+   "shown": 493,
+   "recomputed": 492.5,
+   "source": "P3 trajectories",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "all three roads, change",
+   "shown": 789,
+   "recomputed": 788.5,
+   "source": "P2 trajectories",
+   "ok": true
+  },
+  {
+   "scene": "short-J1",
+   "label": "difference (veh\u00b7s)",
+   "shown": 296,
+   "recomputed": 296.0,
+   "source": "P2/P3 trajectories",
    "ok": true
   }
  ]
