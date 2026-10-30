@@ -415,6 +415,12 @@ check("short-J1", "all three roads, no change", 493, tot3, "P3 trajectories", .5
 check("short-J1", "all three roads, change", 789, tot2, "P2 trajectories", .5)
 check("short-J1", "difference (veh·s)", 296, tot2 - tot3, "P2/P3 trajectories", 0)
 
+# ------------------------------------------------------------------ simple film (simplefilm.py)
+check("simple", "ambulance green sooner at J21 with the change (s)", 86,
+      first(sw, "J21", 4132, "green", "E_J11_J21") - first(sg, "J21", 4132, "green", "E_J11_J21"), "P3/WH signals.json", 0)
+check("simple", "J21 burden shown as 'about 3,300'", 3300, round(gates[(4132, "J21")]["burden"], -2), "gates.json", 0)
+check("simple", "J21 time saved shown (s)", 43, gates[(4132, "J21")]["benefit"], "gates.json", .5)
+
 # ------------------------------------------------------------------ report
 fails = [c for c in checks if not c["ok"]]
 out = HERE / "reports"

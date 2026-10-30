@@ -14,6 +14,19 @@ A 2 min 25 s, 1080p explanatory replay of one archived AmbuGo v9 JSEL episode on
 | Archived vs counterfactual scenes | `reports/COUNTERFACTUALS.md` |
 | Internal design notes | `DESIGN.md` |
 
+## Simple film (recommended cut)
+
+`output/AmbuGo_v9_Simple.mp4` (106 s) tells the same two-junction story as 19 single-focus beats. Each beat has one caption and at most one highlighted road, the ambulance or the junction. There are no split screens, panels or tables.
+
+* **Source code:** `simplefilm.py` (reuses `mapfilm.py` and `mapfit.py`).
+* **Storyboard and voiceover:** `reports/SIMPLE_STORYBOARD.md`.
+* **Contact sheet:** `output/contact_sheet_simple.jpg`.
+* **Render command:**
+
+```bash
+python3 simplefilm.py --jobs 4
+```
+
 ## Short film (map version)
 
 `output/AmbuGo_v9_Short.mp4` (96 s) is a shorter cut. It covers two junctions and two decisions: J11, where the request is withheld, and J21, where it is granted. For each, it shows what the choice does to every road there. It uses Google Maps captures of Mohali (Punjab), top captions and EB Garamond.
@@ -41,7 +54,7 @@ python3 mapfilm.py --jobs 4
 
 Requirements: Python ≥ 3.12, `numpy`, `pillow`, `matplotlib`, `fonttools`, `sumolib` 1.28.0, and `ffmpeg` with libx264. The fonts are in `../inputs/fonts`; DejaVu is used as a glyph fallback.
 
-Check every on-screen number in both films (189 checks, exit code 1 on any failure):
+Check every on-screen number in both films (192 checks, exit code 1 on any failure):
 
 ```bash
 python3 verify.py

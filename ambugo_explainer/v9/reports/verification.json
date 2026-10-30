@@ -1,5 +1,5 @@
 {
- "n": 189,
+ "n": 192,
  "failed": 0,
  "checks": [
   {
@@ -1596,6 +1596,30 @@
    "shown": 296,
    "recomputed": 296.0,
    "source": "P2/P3 trajectories",
+   "ok": true
+  },
+  {
+   "scene": "simple",
+   "label": "ambulance green sooner at J21 with the change (s)",
+   "shown": 86,
+   "recomputed": 86.0,
+   "source": "P3/WH signals.json",
+   "ok": true
+  },
+  {
+   "scene": "simple",
+   "label": "J21 burden shown as 'about 3,300'",
+   "shown": 3300,
+   "recomputed": 3300.0,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "simple",
+   "label": "J21 time saved shown (s)",
+   "shown": 43,
+   "recomputed": 43.42229652641333,
+   "source": "gates.json",
    "ok": true
   }
  ]
