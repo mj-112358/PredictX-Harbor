@@ -1,5 +1,5 @@
 {
- "n": 192,
+ "n": 214,
  "failed": 0,
  "checks": [
   {
@@ -1619,6 +1619,182 @@
    "label": "J21 time saved shown (s)",
    "shown": 43,
    "recomputed": 43.42229652641333,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route A with planned changes: forecast (s)",
+   "shown": 251,
+   "recomputed": 250.75196728687192,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route A: planned signal changes",
+   "shown": 5,
+   "recomputed": 5.0,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route A: forecast extra waiting (veh\u00b7s)",
+   "shown": 2528,
+   "recomputed": 2527.9727621791453,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route B with planned changes: forecast (s)",
+   "shown": 260,
+   "recomputed": 259.78878602053874,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route B: planned signal changes",
+   "shown": 6,
+   "recomputed": 6.0,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route B: forecast extra waiting (veh\u00b7s)",
+   "shown": 2715,
+   "recomputed": 2714.877136870296,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route C with planned changes: forecast (s)",
+   "shown": 248,
+   "recomputed": 247.9613854872216,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route C: planned signal changes",
+   "shown": 5,
+   "recomputed": 5.0,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route C: forecast extra waiting (veh\u00b7s)",
+   "shown": 3330,
+   "recomputed": 3329.8343540919204,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route D with planned changes: forecast (s)",
+   "shown": 260,
+   "recomputed": 259.6017041460838,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route D: planned signal changes",
+   "shown": 6,
+   "recomputed": 6.0,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route D: forecast extra waiting (veh\u00b7s)",
+   "shown": 1402,
+   "recomputed": 1402.4143713013236,
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "selection rule at epsilon=0: fastest plan; delay only breaks ties",
+   "shown": "C",
+   "recomputed": "C",
+   "source": "plans.json[0]",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route A at 4091: forecast (s)",
+   "shown": 220,
+   "recomputed": 219.94171306653502,
+   "source": "plans.json t=4091",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route A at 4091: extra waiting (veh\u00b7s)",
+   "shown": 3042,
+   "recomputed": 3042.217330810153,
+   "source": "plans.json t=4091",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route C at 4091: forecast (s)",
+   "shown": 233,
+   "recomputed": 232.51859294451452,
+   "source": "plans.json t=4091",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "route C at 4091: extra waiting (veh\u00b7s)",
+   "shown": 4126,
+   "recomputed": 4125.689035143363,
+   "source": "plans.json t=4091",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "J21 forecast made ~50 s ahead (free-flow ETA, s)",
+   "shown": 50,
+   "recomputed": 52.57770347358667,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "J11 asked ~30 s ahead (free-flow ETA, s)",
+   "shown": 30,
+   "recomputed": 27.4220739805139,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "east road busy (X, %)",
+   "shown": 87,
+   "recomputed": 86.60637671918712,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "east arrivals shown (cars/s)",
+   "shown": 0.14,
+   "recomputed": 0.13984824895983716,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "plan",
+   "label": "green lost D shown (s)",
+   "shown": 44,
+   "recomputed": 44.194547148486485,
    "source": "gates.json",
    "ok": true
   }

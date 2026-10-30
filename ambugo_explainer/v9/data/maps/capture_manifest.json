@@ -30,5 +30,20 @@
   "captured_utc": "2026-10-29T10:03:42.043Z",
   "metres_per_device_pixel": 0.2567232290296554,
   "sha256": "18a8c3273ff844f8815cebc2b64c8b91a037d0cdf59b290e59cb1045a04a9584"
+ },
+ {
+  "file": "wide_mohali_z15.png",
+  "used_for": "route-planning backdrop (blurred)",
+  "source_url": "https://www.google.com/maps/@30.7065,76.7245,15z?hl=en",
+  "lat": 30.7065,
+  "lon": 76.7245,
+  "zoom": 15,
+  "viewport_css": [
+   1700,
+   1050
+  ],
+  "device_pixel_ratio": 2,
+  "captured_utc": "2026-10-30T09:37:40.916Z",
+  "sha256": "288bc9b95813afbfb73449ffd062493694bd08328261bf63be77de1205123773"
  }
 ]

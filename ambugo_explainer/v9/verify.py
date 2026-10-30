@@ -421,6 +421,24 @@ check("simple", "ambulance green sooner at J21 with the change (s)", 86,
 check("simple", "J21 burden shown as 'about 3,300'", 3300, round(gates[(4132, "J21")]["burden"], -2), "gates.json", 0)
 check("simple", "J21 time saved shown (s)", 43, gates[(4132, "J21")]["benefit"], "gates.json", .5)
 
+# ------------------------------------------------------------------ plan film (planfilm.py)
+for n, eta, cnt, bur in [("A", 251, 5, 2528), ("B", 260, 6, 2715), ("C", 248, 5, 3330), ("D", 260, 6, 1402)]:
+    c = by[names[n]][True]
+    check("plan", f"route {n} with planned changes: forecast (s)", eta, c["eta"], "plans.json[0]", .5)
+    check("plan", f"route {n}: planned signal changes", cnt, c["admitted_junctions"], "plans.json[0]", 0)
+    check("plan", f"route {n}: forecast extra waiting (veh·s)", bur, c["burden"], "plans.json[0]", .5)
+check("plan", "selection rule at epsilon=0: fastest plan; delay only breaks ties", "C",
+      min("ABCD", key=lambda n: (by[names[n]][True]["eta"], by[names[n]][True]["burden"])), "plans.json[0]")
+check("plan", "route A at 4091: forecast (s)", 220, b1["eta"], "plans.json t=4091", .5)
+check("plan", "route A at 4091: extra waiting (veh·s)", 3042, b1["burden"], "plans.json t=4091", .5)
+check("plan", "route C at 4091: forecast (s)", 233, i1["eta"], "plans.json t=4091", .5)
+check("plan", "route C at 4091: extra waiting (veh·s)", 4126, i1["burden"], "plans.json t=4091", .5)
+check("plan", "J21 forecast made ~50 s ahead (free-flow ETA, s)", 50, gates[(4132, "J21")]["arrival"], "gates.json", 3)
+check("plan", "J11 asked ~30 s ahead (free-flow ETA, s)", 30, gates[(4091, "J11")]["arrival"], "gates.json", 3)
+check("plan", "east road busy (X, %)", 87, 100 * {x["edge"]: x for x in gates[(4132, "J21")]["arms"]}["E_J22_J21"]["X"], "gates.json", .5)
+check("plan", "east arrivals shown (cars/s)", 0.14, {x["edge"]: x for x in gates[(4132, "J21")]["arms"]}["E_J22_J21"]["lam"], "gates.json", .005)
+check("plan", "green lost D shown (s)", 44, gates[(4132, "J21")]["D"], "gates.json", .5)
+
 # ------------------------------------------------------------------ report
 fails = [c for c in checks if not c["ok"]]
 out = HERE / "reports"
