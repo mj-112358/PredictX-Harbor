@@ -16,7 +16,7 @@ A 2 min 25 s, 1080p explanatory replay of one archived AmbuGo v9 JSEL episode on
 
 ## Short film (map version)
 
-`output/AmbuGo_v9_Short.mp4` (84 s) is a shorter cut. It covers two junctions and two decisions: J11, where the request is withheld, and J21, where it is granted. It uses Google Maps captures of Mohali (Punjab), top captions and EB Garamond.
+`output/AmbuGo_v9_Short.mp4` (96 s) is a shorter cut. It covers two junctions and two decisions: J11, where the request is withheld, and J21, where it is granted. For each, it shows what the choice does to every road there. It uses Google Maps captures of Mohali (Punjab), top captions and EB Garamond.
 
 * **Source code:** `mapfilm.py` (scenes) and `mapfit.py` (placement).
 * **Storyboard and voiceover:** `reports/SHORT_STORYBOARD.md`.
@@ -41,7 +41,7 @@ python3 mapfilm.py --jobs 4
 
 Requirements: Python ≥ 3.12, `numpy`, `pillow`, `matplotlib`, `fonttools`, `sumolib` 1.28.0, and `ffmpeg` with libx264. The fonts are in `../inputs/fonts`; DejaVu is used as a glyph fallback.
 
-Check every on-screen number in both films (171 checks, exit code 1 on any failure):
+Check every on-screen number in both films (189 checks, exit code 1 on any failure):
 
 ```bash
 python3 verify.py

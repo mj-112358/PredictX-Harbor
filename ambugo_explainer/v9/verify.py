@@ -395,6 +395,26 @@ for e, v in [("E_J22_J21", 1362), ("E_J31_J21", 1692), ("E_J20_J21", 273)]:
     a = {x["edge"]: x for x in gates[(4132, "J21")]["arms"]}[e]
     check("short", f"J21 {e} extra waiting shown (veh·s)", v, a["term_queue"] + a["term_arrival"], "gates.json", .5)
 
+# ------------------------------------------------------------------ short film, junction 1 per-road effects
+gj = gates[(4091, "J11")]
+aj = {x["edge"]: x for x in gj["arms"]}
+check("short-J1", "cross road forecast extra waiting (veh·s)", 179, aj["E_J01_J11"]["term_queue"] + aj["E_J01_J11"]["term_arrival"], "gates.json", .5)
+check("short-J1", "south road forecast extra waiting (veh·s)", 126, aj["E_J21_J11"]["term_queue"] + aj["E_J21_J11"]["term_arrival"], "gates.json", .51)
+check("short-J1", "ambulance about 27 s away", 27, gj["arrival"], "gates.json", .5)
+for run_name, sg_, exp in [("P3", sg, {"E_J01_J11": 4096, "E_J10_J11": 4122, "E_J21_J11": 4144}),
+                           ("P2", s2, {"E_J10_J11": 4096, "E_J21_J11": 4122, "E_J01_J11": 4160})]:
+    for e, tg in exp.items():
+        check("short-J1", f"{run_name}: first green after 4091 for {e}", tg, first(sg_, "J11", 4091, "green", e), f"{run_name} signals.json", 0)
+tot3 = tot2 = 0
+for e, a3, a2 in [("E_J01_J11", 79, 463), ("E_J21_J11", 242, 195), ("E_J10_J11", 173, 131)]:
+    v3, v2 = stopped_half("P3", e, 4085, 4200), stopped_half("P2", e, 4085, 4200)
+    tot3 += v3; tot2 += v2
+    check("short-J1", f"{e} stopped veh·s 4085–4200, no change", a3, v3, "P3 trajectories (0.5 s)", .5)
+    check("short-J1", f"{e} stopped veh·s 4085–4200, change (JFAST)", a2, v2, "P2 trajectories (0.5 s)", .5)
+check("short-J1", "all three roads, no change", 493, tot3, "P3 trajectories", .5)
+check("short-J1", "all three roads, change", 789, tot2, "P2 trajectories", .5)
+check("short-J1", "difference (veh·s)", 296, tot2 - tot3, "P2/P3 trajectories", 0)
+
 # ------------------------------------------------------------------ report
 fails = [c for c in checks if not c["ok"]]
 out = HERE / "reports"

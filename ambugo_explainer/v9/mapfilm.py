@@ -76,10 +76,10 @@ class Film:
     def build(self):
         S = []
         S.append(dict(key="intro", j="J11", runs=("P3",), dur=7, sim=[(0, 4078), (1, 4091)], zoom=[(0, .95), (1, 1.25)],
-                      ov=self.ov_intro))
-        S.append(dict(key="j11", j="J11", runs=("P3",), dur=12, sim=[(0, 4091), (1, 4091)], zoom=[(0, 1.25), (1, 1.25)],
-                      ov=self.ov_j11))
-        S.append(dict(key="j11cmp", j="J11", runs=("P3", "P2"), dur=15, sim=[(0, 4091), (.05, 4091), (.82, 4170), (1, 4170)],
+                      shift=(330, 40), ov=self.ov_intro))
+        S.append(dict(key="j11", j="J11", runs=("P3",), dur=15, sim=[(0, 4091), (1, 4091)], zoom=[(0, 1.25), (1, 1.25)],
+                      shift=(330, 40), ov=self.ov_j11))
+        S.append(dict(key="j11cmp", j="J11", runs=("P3", "P2"), dur=24, sim=[(0, 4091), (.04, 4091), (.7, 4170), (1, 4170)],
                       zoom=[(0, 1.05), (1, 1.05)], ov=self.ov_j11cmp))
         S.append(dict(key="j21in", j="J21", runs=("P3",), dur=6, sim=[(0, 4118), (1, 4132)], zoom=[(0, .95), (1, 1.2)],
                       ov=self.ov_j21in))
@@ -102,9 +102,9 @@ class Film:
         return (interp(sc["sim"], b) - interp(sc["sim"], a)) / ((b - a) * sc["dur"])
 
     # ------------------------------------------------------------------ drawing
-    def pane(self, j, run_name, t, w, h, zoom, label=None, lab_col=None):
+    def pane(self, j, run_name, t, w, h, zoom, shift=(0, 0)):
         wp = self.warp[j]
-        cx, cy = wp.C
+        cx, cy = wp.C + np.array(shift, float) / zoom          # shift: where the junction sits, in output px
         sw, sh = w / zoom, h / zoom
         box = (int(cx - sw / 2), int(cy - sh / 2), int(cx - sw / 2) + int(sw), int(cy - sh / 2) + int(sh))
         bg = wp.img.crop(box).resize((w * SS, h * SS), Image.Resampling.BICUBIC).convert("RGBA")
@@ -245,7 +245,7 @@ class Film:
         v, to = panes[0]
         self.amb_tag(ui, v, to, "J11", "P3", t, "Ambulance", win(u, .3, 1, .1, 0))
 
-    def amb_tag(self, ui, v, to, j, run_name, t, text, a):
+    def amb_tag(self, ui, v, to, j, run_name, t, text, a, off_text=None):
         if a <= 0:
             return
         run = self.runs[run_name]
@@ -254,43 +254,151 @@ class Film:
             return
         p = to(self.warp[j](am[0])[0])
         f = G(600, 24)
+        lo, hi = np.array([150.0, 260.0]), np.array([v.w - 150.0, v.h - 110.0])
+        if not ((p >= lo) & (p <= hi)).all():                     # off-screen: pin the label to the edge, pointing at it
+            q = np.clip(p, lo, hi)
+            if off_text:
+                text = off_text
+            w = ui.tw(text, f) + 28
+            dvec = (p - q) / max(np.linalg.norm(p - q), 1e-9)
+            ui.line([tuple(q), tuple(q + dvec * 70)], rgba(AMB_BLUE, a), 3)
+            tip = q + dvec * 78
+            nrm = np.array([-dvec[1], dvec[0]])
+            ui.poly([tuple(tip), tuple(tip - dvec * 18 + nrm * 9), tuple(tip - dvec * 18 - nrm * 9)], fill=rgba(AMB_BLUE, a))
+            ui.rect((q[0] - w / 2, q[1] - 20, q[0] + w / 2, q[1] + 20), fill=(255, 255, 255, int(245 * a)), outline=rgba(AMB_BLUE, a), w=2, r=10)
+            ui.text((q[0], q[1]), text, f, rgba(AMB_BLUE, a), "mm")
+            return
         w = ui.tw(text, f) + 28
         x, y = p[0] - w / 2, p[1] - 92
         ui.line([(p[0], p[1] - 36), (p[0], y + 40)], rgba(AMB_BLUE, a), 2.5)
         ui.rect((x, y, x + w, y + 40), fill=(255, 255, 255, int(245 * a)), outline=rgba(AMB_BLUE, a), w=2, r=10)
         ui.text((p[0], y + 20), text, f, rgba(AMB_BLUE, a), "mm")
 
+    def forecast_tags(self, ui, to, j, g, roads, b, dist=55):
+        """Per-road estimate of extra waiting (Eq. 20 terms), drawn on each other road."""
+        if b <= 0:
+            return
+        arms = {x["edge"]: x for x in g["arms"]}
+        wp = self.warp[j]
+        for e, nm in roads:
+            A = arms[e]
+            c, d, half = self.net.stopline(e)
+            p = to(wp(c - d * dist)[0])
+            txt1, txt2 = nm, f"+{A['term_queue'] + A['term_arrival']:,.0f} veh·s"
+            f1, f2 = G(500, 22), G(700, 28)
+            w = max(ui.tw(txt1, f1), ui.tw(txt2, f2)) + 28
+            ui.rect((p[0] - w / 2, p[1] - 36, p[0] + w / 2, p[1] + 36), fill=(255, 255, 255, int(245 * b)),
+                    outline=(150, 70, 20, int(255 * b)), w=2, r=10)
+            ui.text((p[0], p[1] - 14), txt1, f1, MUTED + (int(255 * b),), "mm")
+            ui.text((p[0], p[1] + 14), txt2, f2, (150, 70, 20, int(255 * b)), "mm")
+
     def ov_j11(self, ui, u, t, panes):
         g = self.g[(4091, "J11")]
+        arms = {x["edge"]: x for x in g["arms"]}
+        cr = arms["E_J01_J11"]["term_queue"] + arms["E_J01_J11"]["term_arrival"]
+        so = arms["E_J21_J11"]["term_queue"] + arms["E_J21_J11"]["term_arrival"]
         self.captions(ui, u, [
-            (0, .5, ["At this junction the light would turn green for the ambulance only",
-                     f"about {g['nominal_wait']:.1f} seconds after it arrives, even without any change."]),
-            (.5, 1, ["Interrupting the cross traffic would save the ambulance less than the 5-second minimum,",
-                     "so AmbuGo leaves the signal on its normal cycle."])])
-        a = win(u, .08, 1, .05, 0)
+            (0, .33, ["At this junction the light would turn green for the ambulance only",
+                      f"about {g['nominal_wait']:.1f} seconds after it arrives, even without any change."]),
+            (.33, .68, ["If the light were changed anyway, AmbuGo estimates the cross road would wait",
+                        f"an extra {cr:,.0f} vehicle-seconds and the south road {so:,.0f}: about {g['burden']:,.0f} in total."]),
+            (.68, 1, ["That cost would buy the ambulance less than the 5-second minimum,",
+                      "so AmbuGo leaves the signal on its normal cycle."])])
+        v, to = panes[0]
+        self.forecast_tags(ui, to, "J11", g, [("E_J01_J11", "cross road"), ("E_J21_J11", "south road")], win(u, .3, 1, .05, 0),
+                           dist=32)
+        a = win(u, .06, 1, .05, 0)
         rows = [(False, "Time saved for the ambulance", f"{g['benefit']:.1f} s", "must be at least 5 s"),
                 (True, "Extra waiting caused for other traffic", f"{g['burden']:,.0f} veh·s", "limit 10,000 vehicle-seconds"),
                 (True, "Room on the road ahead", f"{g['headroom_obs']} of {g['headroom_cap']:.0f}", "vehicles, must stay below 85% of space"),
                 (True, "Possible within one 60 s priority hold", f"{g['feasible_lhs']:.1f} s", "must be at most 60 s")]
-        self.gate_panel(ui, rows, "No change: normal signal cycle", False, a, (1170, 250, 1890, 830), np.clip((u - .1) / .5, 0, 1))
-        v, to = panes[0]
-        self.amb_tag(ui, v, to, "J11", "P3", t, "Ambulance", 1)
+        self.gate_panel(ui, rows, "No change: normal signal cycle", False, a, (1170, 250, 1890, 830), np.clip((u - .08) / .62, 0, 1))
+        self.amb_tag(ui, v, to, "J11", "P3", t, "Ambulance", 1, off_text=f"Ambulance, about {g['arrival']:.0f} s away")
+
+    J11ROADS = [("E_J01_J11", "cross road"), ("E_J10_J11", "ambulance's road"), ("E_J21_J11", "south road")]
+
+    def first_green(self, run_name, j, e, t0=4091):
+        run = self.runs[run_name]
+        t = t0
+        while (t, j) in run.sig:
+            m, ed, el, rq = run.sig[(t, j)]
+            if m == "green" and ed == e:
+                return t
+            t += 1
+        return None
+
+    def green_order(self, ui, run_name, t, x0, a):
+        """Card at the foot of a pane: the order in which the three roads get green after 4,091 s."""
+        if a <= 0:
+            return
+        order = sorted((self.first_green(run_name, "J11", e), e, nm) for e, nm in self.J11ROADS)
+        run = self.runs[run_name]
+        mode, served, el, rq = run.signal("J11", t)
+        A = int(255 * a)
+        box = (x0 + 30, 880, x0 + 930, 1000)
+        ui.rect(box, fill=(255, 255, 255, int(245 * a)), outline=(218, 220, 224, A), w=1, r=12)
+        ui.text((box[0] + 20, box[1] + 24), "Order of green lights from now", G(600, 23), INK + (A,), "lm")
+        for i, (tg, e, nm) in enumerate(order):
+            x = box[0] + 20 + i * 296
+            on = mode == "green" and served == e
+            done = tg is not None and t >= tg and not on
+            col = (24, 128, 56) if on else (MUTED if done else INK)
+            ui.rect((x, box[1] + 50, x + 280, box[1] + 106), fill=rgba((24, 128, 56), (.14 if on else 0) * a),
+                    outline=rgba(col, a), w=2 if on else 1, r=10)
+            ui.text((x + 14, box[1] + 66), f"{i + 1}. {nm}", G(600, 22), rgba(AMB_BLUE if "ambulance" in nm else col, a), "lm")
+            ui.text((x + 14, box[1] + 92), f"green at {tg:,} s", G(400, 21, True), rgba(MUTED, a), "lm")
 
     def ov_j11cmp(self, ui, u, t, panes):
         self.side_label(ui, W / 4, "AmbuGo: signal not changed", OK)
         self.side_label(ui, 3 * W / 4, "Always-priority controller (JFAST)", (150, 70, 20))
+        card = win(u, .03, .72, .04, .04)
         for k, (name, (v, to)) in enumerate(zip(("P3", "P2"), panes)):
-            self.road_badges(ui, v, to, "J11", name, t, k * (W // 2 + 4))
-            self.amb_tag(ui, v, to, "J11", name, t, "Ambulance", 1, ) if False else None
+            if u < .74:
+                self.road_badges(ui, v, to, "J11", name, t, k * (W // 2 + 4))
+            self.green_order(ui, name, t, k * (W // 2 + 2), card)
         self.captions(ui, u, [
-            (0, .55, ["The same moment, the same traffic. On the right, a controller that always changes the light",
-                      "for the ambulance, as in the paper's aggressive comparison (JFAST)."]),
-            (.55, 1, ["Changing the light saves the ambulance 11 s here, but the cross road waits 64 s longer",
-                      "for its green: 463 instead of 79 vehicle-seconds of stopped time."])])
+            (0, .26, ["The same moment, the same traffic. Left: AmbuGo leaves the light alone.",
+                      "Right: a controller that always changes it for the ambulance (JFAST)."]),
+            (.26, .5, ["Changing the light reorders the greens: the ambulance's road goes first,",
+                       "the south road moves up, and the cross road is pushed to the back."]),
+            (.5, .74, ["So the cross road waits 64 s longer for its green, while the south road",
+                       "gets green 22 s sooner and the ambulance passes 11 s earlier."]),
+            (.74, 1, ["In total: 296 more vehicle-seconds of waiting, almost all on the cross road,",
+                      "to save the ambulance 11 seconds. That is why AmbuGo did not change this light."])])
+        a = win(u, .76, 1, .04, 0)
+        if a > 0:
+            self.j11_table(ui, a)
+
+    def j11_table(self, ui, a):
+        A = int(255 * a)
+        box = (290, 300, 1630, 860)
+        ui.rect((box[0] + 4, box[1] + 8, box[2] + 4, box[3] + 8), fill=(0, 0, 0, int(34 * a)), r=18)
+        ui.rect(box, fill=(255, 255, 255, int(250 * a)), outline=(218, 220, 224, A), w=1, r=18)
+        ui.text((box[0] + 40, box[1] + 46), "What changing the light does to each road", G(700, 34), INK + (A,), "lm")
+        cols = [box[0] + 40, box[0] + 360, box[0] + 860]
+        ui.text((cols[1], box[1] + 106), "Next green  (no change → change)", G(500, 23, True), MUTED + (A,), "lm")
+        ui.text((cols[2], box[1] + 106), "Stopped vehicle-seconds, 4,085–4,200 s", G(500, 23, True), MUTED + (A,), "lm")
+        rows = [("Cross road", "4,096 → 4,160 s", "64 s later", "79 → 463", NO),
+                ("South road", "4,144 → 4,122 s", "22 s sooner", "242 → 195", OK),
+                ("Ambulance's road", "4,122 → 4,096 s", "26 s sooner", "173 → 131", OK)]
+        for i, (nm, g1, g2, st, c) in enumerate(rows):
+            y = box[1] + 168 + i * 82
+            ui.line([(box[0] + 30, y - 38), (box[2] - 30, y - 38)], (230, 231, 234, A), 1.2)
+            ui.text((cols[0], y), nm, G(600, 30), (AMB_BLUE if "Ambulance" in nm else INK) + (A,), "lm")
+            ui.text((cols[1], y - 12), g1, G(500, 28), INK + (A,), "lm")
+            ui.text((cols[1], y + 20), g2, G(600, 23), c + (A,), "lm")
+            ui.text((cols[2], y), st, G(600, 30), c + (A,), "lm")
+        y = box[1] + 168 + 3 * 82
+        ui.line([(box[0] + 30, y - 38), (box[2] - 30, y - 38)], (200, 202, 206, A), 2)
+        ui.text((cols[0], y), "All three roads", G(700, 30), INK + (A,), "lm")
+        ui.text((cols[1], y), "ambulance through 11 s earlier", G(500, 26), INK + (A,), "lm")
+        ui.text((cols[2], y), "493 → 789  (+296)", G(700, 30), NO + (A,), "lm")
+        ui.text((box[0] + 40, box[3] - 36), "Measured in the two archived runs. AmbuGo's advance estimate was +306 vehicle-seconds.",
+                G(400, 22, True), MUTED + (A,), "lm")
 
     def road_badges(self, ui, v, to, j, run_name, t, xoff):
         run = self.runs[run_name]
-        names = {"J11": {"E_J01_J11": "cross road", "E_J10_J11": "ambulance's road"},
+        names = {"J11": {"E_J01_J11": "cross road", "E_J10_J11": "ambulance's road", "E_J21_J11": "south road"},
                  "J21": {"E_J22_J21": "east road", "E_J31_J21": "south road", "E_J20_J21": "west road",
                          "E_J11_J21": "ambulance's road"}}[j]
         wp = self.warp[j]
@@ -321,20 +429,8 @@ class Film:
             (.45, 1, [f"About {g['burden']:,.0f} vehicle-seconds in total, well within its limit of 10,000,",
                       f"and the ambulance saves about {g['benefit']:.0f} s. So the light is changed."])])
         v, to = panes[0]
-        wp = self.warp["J21"]
-        b = win(u, .12, 1, .06, 0)
-        if b > 0:
-            for e, nm in [("E_J22_J21", "east road"), ("E_J31_J21", "south road"), ("E_J20_J21", "west road")]:
-                A = arms[e]
-                c, d, half = self.net.stopline(e)
-                p = to(wp(c - d * 55)[0])
-                txt1, txt2 = nm, f"+{A['term_queue'] + A['term_arrival']:,.0f} veh·s"
-                f1, f2 = G(500, 22), G(700, 28)
-                w = max(ui.tw(txt1, f1), ui.tw(txt2, f2)) + 28
-                ui.rect((p[0] - w / 2, p[1] - 36, p[0] + w / 2, p[1] + 36), fill=(255, 255, 255, int(245 * b)),
-                        outline=(150, 70, 20, int(255 * b)), w=2, r=10)
-                ui.text((p[0], p[1] - 14), txt1, f1, MUTED + (int(255 * b),), "mm")
-                ui.text((p[0], p[1] + 14), txt2, f2, (150, 70, 20, int(255 * b)), "mm")
+        self.forecast_tags(ui, to, "J21", g, [("E_J22_J21", "east road"), ("E_J31_J21", "south road"), ("E_J20_J21", "west road")],
+                           win(u, .12, 1, .06, 0))
         a = win(u, .08, 1, .05, 0)
         rows = [(True, "Time saved for the ambulance", f"{g['benefit']:.1f} s", "must be at least 5 s"),
                 (True, "Extra waiting caused for other traffic", f"{g['burden']:,.0f} veh·s", "limit 10,000 vehicle-seconds"),
@@ -392,7 +488,7 @@ class Film:
         img = Image.new("RGBA", (W, H), (240, 240, 240, 255))
         panes = []
         if len(sc["runs"]) == 1:
-            pv, to = self.pane(j, sc["runs"][0], t, W, H, zoom)
+            pv, to = self.pane(j, sc["runs"][0], t, W, H, zoom, sc.get("shift", (0, 0)))
             img = pv.down()
             panes.append((pv, to))
         else:
