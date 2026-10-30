@@ -96,27 +96,38 @@ class Plan(Simple):
             M(8, "J11", "P2", [(0, 4091), (.8, 4170), (1, 4170)], ["In a recorded run where it was changed anyway, the cross road",
                                                                    "waited 64 s longer so the ambulance passed 11 s sooner."],
               [("road", J1_CROSS, COST, "+64 s wait")], zoom=1.05),
-            # ------------------------------------------------ junction 2: the delay forecast, one term at a time
-            M(5, "J21", "P3", [(0, 4120), (1, 4132)], ["At the next signal, the forecast is made", "about 50 seconds before the ambulance arrives."],
-              [("amb", "Ambulance")], zoom=1.05),
+            # ------------------------------------------------ junction 2: what the change is, what it costs, then watch it
+            M(6, "J21", "P3", [(0, 4118), (1, 4132)], ["At the next junction the ambulance is still about",
+                                                       "50 seconds away, on this road. Its light is red."],
+              [("road", J2_AMB, AMB, "Ambulance's road"), ("amb", "Ambulance", "Ambulance, about 50 s away")], zoom=.95),
+            M(5, "J21", "P3", [(0, 4132), (1, 4132)], ["Right now the east road has the green light."],
+              [("road", J2_EAST, GAIN, "East road: green now")]),
+            M(6, "J21", "P3", [(0, 4132), (1, 4132)], ["Without any change, the ambulance would wait",
+                                                       f"about {g2['nominal_wait']:.0f} seconds for its turn."],
+              [("road", J2_AMB, AMB, f"would wait {g2['nominal_wait']:.0f} s")]),
+            M(7, "J21", "P3", [(0, 4132), (1, 4132)], ["The change AmbuGo considers: end the east road's green",
+                                                       "early and give the green to the ambulance."],
+              verdict=("East green ends early  →  ambulance gets green", (70, 74, 80))),
+            M(6, "J21", "P3", [(0, 4132), (1, 4132)], [f"That would take about {g2['D']:.0f} seconds of green from the",
+                                                       "other three roads, so their cars would wait longer."],
+              [("road", J2_EAST, COST, None), ("road", J2_SOUTH, COST, None), ("road", J2_WEST, COST, None)]),
             M(9, "J21", "P3", [(0, 4132), (1, 4132)], [], card=True, eq=True),
-            M(6, "J21", "P3", [(0, 4132), (1, 4132)], [f"East road: about {E['q_hat']:.1f} cars already queued,",
-                                                       "estimated from counts that arrive late and with noise."],
-              [("road", J2_EAST, COST, f"≈ {E['q_hat']:.1f} queued")]),
-            M(6, "J21", "P3", [(0, 4132), (1, 4132)], [f"About {E['lam']:.2f} more cars per second are expected,",
-                                                       f"on a road already {E['X'] * 100:.0f}% busy."],
-              [("road", J2_EAST, COST, f"{E['lam']:.2f} cars/s  ·  {E['X'] * 100:.0f}% busy")]),
-            M(5, "J21", "P3", [(0, 4132), (1, 4132)], ["Expected extra waiting on the east road:",
-                                                       f"{E['term_queue'] + E['term_arrival']:,.0f} vehicle-seconds."],
-              [("road", J2_EAST, COST, f"+{E['term_queue'] + E['term_arrival']:,.0f} veh·s")]),
-            M(5, "J21", "P3", [(0, 4132), (1, 4132)], ["The same for the south and west roads."],
-              [("road", J2_SOUTH, COST, f"+{arms[J2_SOUTH]['term_queue'] + arms[J2_SOUTH]['term_arrival']:,.0f} veh·s"),
-               ("road", J2_WEST, COST, f"+{arms[J2_WEST]['term_queue'] + arms[J2_WEST]['term_arrival']:,.0f} veh·s")]),
-            M(7, "J21", "P3", [(0, 4132), (1, 4132)], [f"Total forecast: {g2['burden']:,.0f} vehicle-seconds, within the limit of 10,000,",
-                                                       f"and the ambulance saves {g2['benefit']:.0f} seconds."],
-              verdict=("Change the light", GAIN)),
-            M(8, "J21", "P3", [(0, 4132), (1, 4146)], ["The change is made safely: minimum green,", "then amber, then all-red."], [("junction", None)]),
-            M(7, "J21", "P3", [(0, 4146), (1, 4180)], ["The ambulance gets green 86 seconds sooner", "than without the change."],
+            M(7, "J21", "P3", [(0, 4132), (1, 4132)], [f"East road: about {E['q_hat']:.0f} cars waiting, and more arriving.",
+                                                       f"Extra waiting, added up over all its cars: {E['term_queue'] + E['term_arrival']:,.0f} seconds."],
+              [("road", J2_EAST, COST, f"+{E['term_queue'] + E['term_arrival']:,.0f} s waiting")]),
+            M(6, "J21", "P3", [(0, 4132), (1, 4132)],
+              [f"South road: {arms[J2_SOUTH]['term_queue'] + arms[J2_SOUTH]['term_arrival']:,.0f} seconds.  "
+               f"West road: {arms[J2_WEST]['term_queue'] + arms[J2_WEST]['term_arrival']:,.0f} seconds."],
+              [("road", J2_SOUTH, COST, f"+{arms[J2_SOUTH]['term_queue'] + arms[J2_SOUTH]['term_arrival']:,.0f} s"),
+               ("road", J2_WEST, COST, f"+{arms[J2_WEST]['term_queue'] + arms[J2_WEST]['term_arrival']:,.0f} s")]),
+            M(7, "J21", "P3", [(0, 4132), (1, 4132)], [f"In total {g2['burden']:,.0f} seconds of extra waiting, under the limit",
+                                                       f"of 10,000, to save the ambulance {g2['benefit']:.0f} seconds."],
+              verdict=("Make the change", GAIN)),
+            M(8, "J21", "P3", [(0, 4132), (1, 4141.5)], ["Now watch the east road's light:", "green, then amber, then red."],
+              [("road", J2_EAST, lambda t: self.light(J2_EAST, t)[1], lambda t: f"east light: {self.light(J2_EAST, t)[0]}")]),
+            M(6, "J21", "P3", [(0, 4141.5), (1, 4146)], ["After two seconds of red in every direction,", "the ambulance's light turns green."],
+              [("road", J2_AMB, lambda t: self.light(J2_AMB, t)[1], lambda t: f"ambulance's light: {self.light(J2_AMB, t)[0]}")]),
+            M(7, "J21", "P3", [(0, 4146), (1, 4180)], ["The ambulance drives through, 86 seconds sooner", "than it would have without the change."],
               [("amb", "Ambulance")], zoom=.85),
             # ------------------------------------------------ close
             M(6, "J21", "P3", [(0, 4180), (1, 4180)], [], card=["AmbuGo plans the route and the signal changes together,",
@@ -133,6 +144,14 @@ class Plan(Simple):
             s["ov"], s["key"] = None, "beat"
         self.scenes = S
         self._netbg = None
+
+    def light(self, e, t, j="J21", run="P3"):
+        mode, served, el, rq = self.runs[run].signal(j, t)
+        if served == e and mode == "green":
+            return "GREEN", (24, 128, 56)
+        if served == e and mode == "amber":
+            return "AMBER", (196, 132, 0)
+        return "RED", (197, 34, 31)
 
     # ------------------------------------------------------------------ the planning diagram
     def net_xy(self, xy):

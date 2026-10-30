@@ -439,6 +439,17 @@ check("plan", "east road busy (X, %)", 87, 100 * {x["edge"]: x for x in gates[(4
 check("plan", "east arrivals shown (cars/s)", 0.14, {x["edge"]: x for x in gates[(4132, "J21")]["arms"]}["E_J22_J21"]["lam"], "gates.json", .005)
 check("plan", "green lost D shown (s)", 44, gates[(4132, "J21")]["D"], "gates.json", .5)
 
+# ------------------------------------------------------------------ plan film, junction 2 (plain-language beats)
+gg = gates[(4132, "J21")]
+ag = {x["edge"]: x for x in gg["arms"]}
+check("plan-J2", "east road 'about 8 cars waiting' (q̂ rounded)", 8, round(ag["E_J22_J21"]["q_hat"]), "gates.json", 0)
+check("plan-J2", "east road has green at the decision", "E_J22_J21", gg["signal_edge"], "gates.json")
+check("plan-J2", "ambulance 'about 50 s away' (free-flow ETA)", 50, gg["arrival"], "gates.json", 3)
+check("plan-J2", "all-red lasts 2 s before the ambulance's green", 2,
+      first(sg, "J21", 4132, "green", "E_J11_J21") - first(sg, "J21", 4132, "allred"), "P3 signals.json", 0)
+check("plan-J2", "ambulance's light red during 4118–4132", True,
+      all(not (sg.get((t, "J21"), (None, None))[0] == "green" and sg[(t, "J21")][1] == "E_J11_J21") for t in range(4118, 4133)), "P3 signals.json")
+
 # ------------------------------------------------------------------ report
 fails = [c for c in checks if not c["ok"]]
 out = HERE / "reports"

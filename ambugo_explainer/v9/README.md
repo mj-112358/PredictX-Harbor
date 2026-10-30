@@ -16,7 +16,7 @@ A 2 min 25 s, 1080p explanatory replay of one archived AmbuGo v9 JSEL episode on
 
 ## Plan film (latest cut)
 
-`output/AmbuGo_v9_Plan.mp4` (140.5 s) adds two things to the simple cut, keeping one caption and one highlight per beat:
+`output/AmbuGo_v9_Plan.mp4` (162.5 s) adds two things to the simple cut, keeping one caption and one highlight per beat:
 
 * the trip is planned at dispatch, with route and signal changes chosen together;
 * the forecast model (Eq. 20) is explained term by term with the logged values.
@@ -72,7 +72,7 @@ python3 mapfilm.py --jobs 4
 
 Requirements: Python ≥ 3.12, `numpy`, `pillow`, `matplotlib`, `fonttools`, `sumolib` 1.28.0, and `ffmpeg` with libx264. The fonts are in `../inputs/fonts`; DejaVu is used as a glyph fallback.
 
-Check every on-screen number in both films (214 checks, exit code 1 on any failure):
+Check every on-screen number in both films (219 checks, exit code 1 on any failure):
 
 ```bash
 python3 verify.py

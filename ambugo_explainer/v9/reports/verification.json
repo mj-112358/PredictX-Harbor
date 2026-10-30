@@ -1,5 +1,5 @@
 {
- "n": 214,
+ "n": 219,
  "failed": 0,
  "checks": [
   {
@@ -1796,6 +1796,46 @@
    "shown": 44,
    "recomputed": 44.194547148486485,
    "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "plan-J2",
+   "label": "east road 'about 8 cars waiting' (q\u0302 rounded)",
+   "shown": 8,
+   "recomputed": 8.0,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "plan-J2",
+   "label": "east road has green at the decision",
+   "shown": "E_J22_J21",
+   "recomputed": "E_J22_J21",
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "plan-J2",
+   "label": "ambulance 'about 50 s away' (free-flow ETA)",
+   "shown": 50,
+   "recomputed": 52.57770347358667,
+   "source": "gates.json",
+   "ok": true
+  },
+  {
+   "scene": "plan-J2",
+   "label": "all-red lasts 2 s before the ambulance's green",
+   "shown": 2,
+   "recomputed": 2.0,
+   "source": "P3 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "plan-J2",
+   "label": "ambulance's light red during 4118\u20134132",
+   "shown": true,
+   "recomputed": true,
+   "source": "P3 signals.json",
    "ok": true
   }
  ]

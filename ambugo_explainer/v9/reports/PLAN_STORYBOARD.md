@@ -1,6 +1,6 @@
 # AmbuGo v9 plan film: storyboard and voiceover
 
-* **File:** `output/AmbuGo_v9_Plan.mp4`, 1920×1080, 30 fps, 2:20.5 (140.5 s), no audio. Render it with `python3 planfilm.py --jobs 4`.
+* **File:** `output/AmbuGo_v9_Plan.mp4`, 1920×1080, 30 fps, 2:42.5 (162.5 s), no audio. Render it with `python3 planfilm.py --jobs 4`.
 * **What it adds over the simple cut:**
   * the trip is planned at dispatch: route and signal changes are chosen together, using the delay forecast;
   * the forecast model itself (Eq. 20) is shown term by term with the logged values.
@@ -29,23 +29,26 @@
 | 10 | 0:51.5–0:56.5 | Junction 1 map, 4,079 → 4,091 | Along the route, each signal is asked about 30 seconds before the ambulance gets there. | ambulance |
 | 11 | 0:56.5–1:02.5 | J1, paused | Here a change would save only 3.6 seconds, under the 5-second minimum. | ambulance's road "saves 3.6 s" + verdict "No change" |
 | 12 | 1:02.5–1:10.5 | J1, JFAST run 4,091 → 4,170 | In a recorded run where it was changed anyway, the cross road waited 64 s longer so the ambulance passed 11 s sooner. | cross road "+64 s wait" |
-| 13 | 1:10.5–1:15.5 | Junction 2 map, 4,120 → 4,132 | At the next signal, the forecast is made about 50 seconds before the ambulance arrives. | ambulance |
-| 14 | 1:15.5–1:24.5 | card over blurred map | (card) How AmbuGo forecasts the extra waiting on each other road: Eq. 20, with D (green lost, ≈ 44 s), q̂·D (cars queued × green lost), λD²/2max(1−X, 0.05) (expected arrivals, growing as the road nears capacity) | the card |
-| 15 | 1:24.5–1:30.5 | J2, paused 4,132 | East road: about 7.7 cars already queued, estimated from counts that arrive late and with noise. | east road "≈ 7.7 queued" |
-| 16 | 1:30.5–1:36.5 | J2 | About 0.14 more cars per second are expected, on a road already 87% busy. | east road "0.14 cars/s · 87% busy" |
-| 17 | 1:36.5–1:41.5 | J2 | Expected extra waiting on the east road: 1,362 vehicle-seconds. | east road "+1,362 veh·s" |
-| 18 | 1:41.5–1:46.5 | J2 | The same for the south and west roads. | south "+1,692", west "+273" |
-| 19 | 1:46.5–1:53.5 | J2 | Total forecast: 3,326 vehicle-seconds, within the limit of 10,000, and the ambulance saves 43 seconds. | verdict "Change the light" |
-| 20 | 1:53.5–2:01.5 | J2, 4,132 → 4,146 | The change is made safely: minimum green, then amber, then all-red. | junction ring |
-| 21 | 2:01.5–2:08.5 | J2, 4,146 → 4,180 | The ambulance gets green 86 seconds sooner than without the change. | ambulance |
-| 22 | 2:08.5–2:14.5 | blurred | AmbuGo plans the route and the signal changes together, forecasting the delay every change would cause. | — |
-| 23 | 2:14.5–2:20.5 | blurred | Across 1,728 simulations: trips 44.6% faster than with no priority, with less extra congestion than changing every light. | — |
+| 13 | 1:10.5–1:16.5 | Junction 2 map, 4,118 → 4,132 | At the next junction the ambulance is still about 50 seconds away, on this road. Its light is red. | ambulance's road (blue) + edge marker "Ambulance, about 50 s away" |
+| 14 | 1:16.5–1:21.5 | J2, paused 4,132 | Right now the east road has the green light. | east road (green), "East road: green now" |
+| 15 | 1:21.5–1:27.5 | J2 | Without any change, the ambulance would wait about 43 seconds for its turn. | ambulance's road, "would wait 43 s" |
+| 16 | 1:27.5–1:34.5 | J2 | The change AmbuGo considers: end the east road's green early and give the green to the ambulance. | pill "East green ends early → ambulance gets green" |
+| 17 | 1:34.5–1:40.5 | J2 | That would take about 44 seconds of green from the other three roads, so their cars would wait longer. | the three other roads (orange) |
+| 18 | 1:40.5–1:49.5 | card over blurred map | (card) How AmbuGo forecasts the extra waiting on each other road: Eq. 20, with each term in words | the card |
+| 19 | 1:49.5–1:56.5 | J2 | East road: about 8 cars waiting, and more arriving. Extra waiting, added up over all its cars: 1,362 seconds. | east road, "+1,362 s waiting" |
+| 20 | 1:56.5–2:02.5 | J2 | South road: 1,692 seconds. West road: 273 seconds. | south and west roads |
+| 21 | 2:02.5–2:09.5 | J2 | In total 3,326 seconds of extra waiting, under the limit of 10,000, to save the ambulance 43 seconds. | verdict "Make the change" |
+| 22 | 2:09.5–2:17.5 | J2, 4,132 → 4,141.5 (≈1.2×) | Now watch the east road's light: green, then amber, then red. | east road, coloured by its live light; label "east light: GREEN / AMBER / RED" |
+| 23 | 2:17.5–2:23.5 | J2, 4,141.5 → 4,146 | After two seconds of red in every direction, the ambulance's light turns green. | ambulance's road, label "ambulance's light: RED / GREEN" |
+| 24 | 2:23.5–2:30.5 | J2, 4,146 → 4,180 | The ambulance drives through, 86 seconds sooner than it would have without the change. | ambulance |
+| 25 | 2:30.5–2:36.5 | blurred | AmbuGo plans the route and the signal changes together, forecasting the delay every change would cause. | — |
+| 26 | 2:36.5–2:42.5 | blurred | Across 1,728 simulations: trips 44.6% faster than with no priority, with less extra congestion than changing every light. | — |
 
 **Sources.**
 
 * The plan numbers come from `plans.json` (the logged candidate table at 4,065 s and 4,091 s).
 * The forecast-model numbers come from `gates.json` (J21 at 4,132 s).
-* All numbers are checked by `verify.py`, section `plan` (214 checks in total, 0 failed).
+* All numbers are checked by `verify.py`, section `plan` (219 checks in total, 0 failed).
 
 **The planning diagram.** It is drawn over a faded Google Maps view of Mohali as a schematic of the 16-junction district, not to map scale.
 
@@ -61,14 +64,17 @@
 10. Each light along the route is asked about thirty seconds before the ambulance gets there.
 11. At this one, a change would save less than four seconds, not enough to be worth it.
 12. In a recorded run where the light was changed anyway, the cross road waited an extra minute, to get the ambulance through eleven seconds sooner.
-13. At the next light, the forecast is made almost a minute ahead.
-14. Here is the forecast. For every other road, it multiplies the cars already queued by the green time they would lose. Then it adds the cars expected to arrive in that time, which counts more heavily on roads that are already close to capacity.
-15. On the east road, about eight cars are already waiting. AmbuGo estimates this from sensor counts that arrive late and with noise.
-16. About one more car arrives every seven seconds, on a road that is already almost ninety percent busy.
-17. Together, that is about thirteen hundred and sixty vehicle-seconds of extra waiting.
-18. The same calculation is made for the south and west roads.
-19. In total about thirty-three hundred vehicle-seconds, well within the limit, and the ambulance saves forty-three seconds. So the light changes.
-20. It changes safely: the current green finishes its minimum, then amber, then all-red.
-21. The ambulance gets its green eighty-six seconds sooner.
-22. So AmbuGo plans the route and the light changes together, and forecasts the delay every change would cause.
-23. Across all the simulations, trips were forty-five percent faster than with no priority, with less extra congestion than changing every light.
+13. At the next junction, the ambulance is still about fifty seconds away, and its light is red.
+14. Right now, the east road has the green.
+15. Without any change, the ambulance would wait about forty-three seconds.
+16. So AmbuGo considers a change: end the east road's green early, and give the green to the ambulance.
+17. But that takes about forty-four seconds of green away from the other three roads.
+18. Here is how it forecasts the cost. For each road, it takes the cars already waiting, times the green they lose, plus the cars that will arrive meanwhile. That last part counts more on roads that are already busy.
+19. On the east road, about eight cars are waiting and more are arriving. Added up over all of them, that is about thirteen hundred and sixty seconds of extra waiting.
+20. The south road adds about seventeen hundred, and the west road under three hundred.
+21. In total about thirty-three hundred seconds of extra waiting, well under the limit, to save the ambulance forty-three seconds. So the change is made.
+22. Watch the east road's light: green, then amber, then red.
+23. After two seconds of red in every direction, the ambulance's light turns green.
+24. The ambulance drives through, eighty-six seconds sooner than it otherwise would have.
+25. So AmbuGo plans the route and the light changes together, and forecasts the delay every change would cause.
+26. Across all the simulations, trips were forty-five percent faster than with no priority, with less extra congestion than changing every light.

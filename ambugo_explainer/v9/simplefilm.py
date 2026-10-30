@@ -157,7 +157,8 @@ class Simple(MapFilm):
         run = self.runs[sc["run"]]
         a_in = ease(min(1.0, u * sc["dur"] / .45))                 # every beat fades its own overlay in
         v, to, wp = self.mpane(sc, t, zoom)
-        for h in sc["hl"]:
+        hls = [tuple(x(t) if callable(x) else x for x in h) for h in sc["hl"]]     # labels/colours may follow the clock
+        for h in hls:
             if h[0] == "road":
                 self.road_glow(v, wp, to, h[1], h[2], a_in)
         self.bars(v, wp, run, sc["j"], t, to, zoom)
@@ -168,11 +169,12 @@ class Simple(MapFilm):
         ui = View(W, H, 0, 0, 1)
         ui.im = Image.new("RGBA", (W * SS, H * SS), (0, 0, 0, 0))
         ui.d = ImageDraw.Draw(ui.im)
-        for h in sc["hl"]:
+        for h in hls:
             if h[0] == "road" and h[3]:
                 self.road_label(ui, wp, to, h[1], h[2], h[3], a_in)
             elif h[0] == "amb":
-                self.amb_tag(ui, v, to, sc["j"], sc["run"], t, h[1], a_in, off_text="Ambulance (approaching)")
+                self.amb_tag(ui, v, to, sc["j"], sc["run"], t, h[1], a_in,
+                             off_text=h[2] if len(h) > 2 else "Ambulance (approaching)")
             elif h[0] == "junction":
                 p = to(wp.C)
                 r = 190 * zoom
