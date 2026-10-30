@@ -128,7 +128,7 @@ class Plan(Simple):
             M(6, "J21", "P3", [(0, 4141.5), (1, 4146)], ["After two seconds of red in every direction,", "the ambulance's light turns green."],
               [("road", J2_AMB, lambda t: self.light(J2_AMB, t)[1], lambda t: f"ambulance's light: {self.light(J2_AMB, t)[0]}")]),
             M(7, "J21", "P3", [(0, 4146), (1, 4180)], ["The ambulance drives through, 86 seconds sooner", "than it would have without the change."],
-              [("amb", "Ambulance")], zoom=.85),
+              [("amb", "Ambulance")], zoom=.8, shift=(260, -200)),
             # ------------------------------------------------ close
             M(6, "J21", "P3", [(0, 4180), (1, 4180)], [], card=["AmbuGo plans the route and the signal changes together,",
                                                                 "forecasting the delay every change would cause."]),
