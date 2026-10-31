@@ -157,6 +157,7 @@ def composite(panel, frame_rgb, f):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--stills", type=float, nargs="*")
+    ap.add_argument("--jobs", type=int, default=4)
     a = ap.parse_args()
     src = OUT / "AmbuGo_v9_Plan.mp4"
     panel = Panel()
@@ -169,24 +170,57 @@ def main():
             fr = Image.frombytes("RGB", (MW, PH), raw)
             composite(panel, fr, int(round(s * FPS))).save(d / f"graphs_{s:06.2f}.jpg", quality=90)
         return
-    n = int(round(panel.film.total * FPS))
-    dec = subprocess.Popen([shutil.which("ffmpeg"), "-loglevel", "error", "-i", str(src), "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
-                           stdout=subprocess.PIPE)
-    out = OUT / "AmbuGo_v9_Plan_with_graphs.mp4"
+    render(src, int(round(panel.film.total * FPS)), a.jobs)
+
+
+_panel = None
+
+
+def _init():
+    global _panel
+    _panel = Panel()
+
+
+def _chunk(args):
+    src, f0, f1, path = args
+    size = MW * PH * 3
+    dec = subprocess.Popen([shutil.which("ffmpeg"), "-loglevel", "error", "-ss", f"{f0 / FPS:.6f}", "-i", str(src),
+                            "-frames:v", str(f1 - f0), "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
     enc = subprocess.Popen([shutil.which("ffmpeg"), "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
                             "-s", f"{MW + PW}x{PH}", "-r", str(FPS), "-i", "-", "-an", "-c:v", "libx264", "-preset", "medium",
-                            "-crf", "18", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(out)], stdin=subprocess.PIPE)
-    size = MW * PH * 3
-    for f in range(n):
+                            "-crf", "18", "-pix_fmt", "yuv420p", "-threads", "1", str(path)], stdin=subprocess.PIPE)
+    done = 0
+    for f in range(f0, f1):
         raw = dec.stdout.read(size)
         if len(raw) < size:
             break
-        enc.stdin.write(composite(panel, Image.frombytes("RGB", (MW, PH), raw), f).tobytes())
-        if f % 300 == 0:
-            print(f"{f}/{n}", flush=True)
+        enc.stdin.write(composite(_panel, Image.frombytes("RGB", (MW, PH), raw), f).tobytes())
+        done += 1
     enc.stdin.close()
-    enc.wait()
+    assert enc.wait() == 0
     dec.wait()
+    return done
+
+
+def render(src, n, jobs):
+    import multiprocessing as mp
+    import time
+    tmp = OUT / "_parts_graphs"
+    shutil.rmtree(tmp, ignore_errors=True)
+    tmp.mkdir(parents=True)
+    parts = [(src, f0, min(n, f0 + 150), tmp / f"p{i:04d}.mp4") for i, f0 in enumerate(range(0, n, 150))]
+    t0 = time.time()
+    with mp.get_context("fork").Pool(jobs, initializer=_init) as pool:
+        tot = 0
+        for k in pool.imap_unordered(_chunk, parts):
+            tot += k
+            print(f"{tot}/{n} frames {time.time() - t0:.0f}s", flush=True)
+    assert tot == n, (tot, n)
+    (tmp / "list.txt").write_text("".join(f"file '{p[3].name}'\n" for p in parts))
+    out = OUT / "AmbuGo_v9_Plan_with_graphs.mp4"
+    subprocess.run([shutil.which("ffmpeg"), "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(tmp / "list.txt"),
+                    "-c", "copy", "-movflags", "+faststart", str(out)], check=True)
+    shutil.rmtree(tmp)
     print(out)
 
 
