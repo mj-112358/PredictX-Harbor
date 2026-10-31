@@ -32,6 +32,24 @@ It states the selection rule exactly: at the paper's ε = 0, the fastest admissi
 python3 planfilm.py --jobs 4
 ```
 
+## Plan film with live graphs
+
+`output/AmbuGo_v9_Plan_with_graphs.mp4` (2880×1080, 162.5 s) is the plan film on the left with a live data panel on the right. The panel's data comes from the same recorded runs as the map: seed 40, load 0.95, one ambulance. Every frame follows the film's own clock:
+
+* **Which run.** It shows the run on screen: the AmbuGo run, or the always-change JFAST run during that comparison scene.
+* **Which moment.** It shows the simulation time on the map. The graphs stop growing whenever the film is paused.
+* **Ambulance speed.** In km/h, from the ambulance's recorded trajectory.
+* **Cars standing still in the whole district.** Ordinary vehicles with speed < 0.1 m/s across all 16 junctions, in the run on screen and in the same traffic with no signal priority (S0).
+* **Source data and render commands:** `panel_data.py` writes `data/panel_series.json`; `panelfilm.py` composites it onto `output/AmbuGo_v9_Plan.mp4` without re-rendering the map.
+
+```bash
+python3 panel_data.py
+```
+
+```bash
+python3 panelfilm.py
+```
+
 ## Simple film
 
 `output/AmbuGo_v9_Simple.mp4` (106 s) tells the same two-junction story as 19 single-focus beats. Each beat has one caption and at most one highlighted road, the ambulance or the junction. There are no split screens, panels or tables.
@@ -72,7 +90,7 @@ python3 mapfilm.py --jobs 4
 
 Requirements: Python ≥ 3.12, `numpy`, `pillow`, `matplotlib`, `fonttools`, `sumolib` 1.28.0, and `ffmpeg` with libx264. The fonts are in `../inputs/fonts`; DejaVu is used as a glyph fallback.
 
-Check every on-screen number in both films (219 checks, exit code 1 on any failure):
+Check every on-screen number in both films (229 checks, exit code 1 on any failure):
 
 ```bash
 python3 verify.py

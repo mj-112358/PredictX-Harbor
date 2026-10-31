@@ -1,5 +1,5 @@
 {
- "n": 219,
+ "n": 229,
  "failed": 0,
  "checks": [
   {
@@ -1836,6 +1836,86 @@
    "shown": true,
    "recomputed": true,
    "source": "P3 signals.json",
+   "ok": true
+  },
+  {
+   "scene": "panel",
+   "label": "P3: travel time in panel data equals the run",
+   "shown": 252.5,
+   "recomputed": 252.5,
+   "source": "panel_series.json",
+   "ok": true
+  },
+  {
+   "scene": "panel",
+   "label": "P3: ambulance speed series ends at arrival (last sample < travel time)",
+   "shown": true,
+   "recomputed": true,
+   "source": "panel_series.json",
+   "ok": true
+  },
+  {
+   "scene": "panel",
+   "label": "P3: max ambulance speed \u2264 40 km/h (district speed limit 11.11 m/s)",
+   "shown": true,
+   "recomputed": true,
+   "source": "panel_series.json",
+   "ok": true
+  },
+  {
+   "scene": "panel",
+   "label": "P0: travel time in panel data equals the run",
+   "shown": 572.0,
+   "recomputed": 572.0,
+   "source": "panel_series.json",
+   "ok": true
+  },
+  {
+   "scene": "panel",
+   "label": "P0: max ambulance speed \u2264 40 km/h (district speed limit 11.11 m/s)",
+   "shown": true,
+   "recomputed": true,
+   "source": "panel_series.json",
+   "ok": true
+  },
+  {
+   "scene": "panel",
+   "label": "P2: travel time in panel data equals the run",
+   "shown": 240.5,
+   "recomputed": 240.5,
+   "source": "panel_series.json",
+   "ok": true
+  },
+  {
+   "scene": "panel",
+   "label": "P2: ambulance speed series ends at arrival (last sample < travel time)",
+   "shown": true,
+   "recomputed": true,
+   "source": "panel_series.json",
+   "ok": true
+  },
+  {
+   "scene": "panel",
+   "label": "P2: max ambulance speed \u2264 40 km/h (district speed limit 11.11 m/s)",
+   "shown": true,
+   "recomputed": true,
+   "source": "panel_series.json",
+   "ok": true
+  },
+  {
+   "scene": "panel",
+   "label": "P3 and P0 stopped counts identical at dispatch (same traffic)",
+   "shown": 79,
+   "recomputed": 79.0,
+   "source": "panel_series.json",
+   "ok": true
+  },
+  {
+   "scene": "panel",
+   "label": "P3 and P2 identical until the J11 decision (stopped, 0\u201327 s)",
+   "shown": true,
+   "recomputed": true,
+   "source": "panel_series.json",
    "ok": true
   }
  ]

@@ -450,6 +450,21 @@ check("plan-J2", "all-red lasts 2 s before the ambulance's green", 2,
 check("plan-J2", "ambulance's light red during 4118–4132", True,
       all(not (sg.get((t, "J21"), (None, None))[0] == "green" and sg[(t, "J21")][1] == "E_J11_J21") for t in range(4118, 4133)), "P3 signals.json")
 
+# ------------------------------------------------------------------ live graph panel (panel_data.py / panelfilm.py)
+ps = J("panel_series.json")
+for run, travel in [("P3", 252.5), ("P0", 572.0), ("P2", 240.5)]:
+    S_ = ps[run]
+    check("panel", f"{run}: travel time in panel data equals the run", travel, S_["travel_s"], "panel_series.json", 0)
+    last = max(t for t, k in zip(S_["t"], S_["amb_kmh"]) if k is not None)
+    if travel < ps["meta"]["span"]:
+        check("panel", f"{run}: ambulance speed series ends at arrival (last sample < travel time)", True,
+              travel - 1.0 <= last < travel, "panel_series.json")
+    check("panel", f"{run}: max ambulance speed ≤ 40 km/h (district speed limit 11.11 m/s)", True,
+          max(k for k in S_["amb_kmh"] if k is not None) <= 11.11 * 3.6 + 0.01, "panel_series.json")
+check("panel", "P3 and P0 stopped counts identical at dispatch (same traffic)", ps["P3"]["stopped"][0], ps["P0"]["stopped"][0], "panel_series.json", 0)
+check("panel", "P3 and P2 identical until the J11 decision (stopped, 0–27 s)", True,
+      ps["P3"]["stopped"][:54] == ps["P2"]["stopped"][:54], "panel_series.json")
+
 # ------------------------------------------------------------------ report
 fails = [c for c in checks if not c["ok"]]
 out = HERE / "reports"
